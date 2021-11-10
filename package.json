@@ -1,9 +1,13 @@
 {
   "name": "Dilswer",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./dist/index.js",
+  "exports": {
+    "./decorators": "./dist/decorators/index.js"
+  },
   "license": "MIT",
   "scripts": {
+    "build": "tsc",
     "test": "jest --coverage"
   },
   "devDependencies": {

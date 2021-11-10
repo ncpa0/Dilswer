@@ -1,6 +1,6 @@
 import { AllDataTypes } from "..";
-import { ValidationError } from "./validation-error/validation-error";
-import { validateType } from "./validators/validate-type";
+import { ValidationError } from "../checker-machine/validation-error/validation-error";
+import { validateType } from "../checker-machine/validators/validate-type";
 
 export type ValidationErrorHandlerArgs = [
   error: ValidationError,

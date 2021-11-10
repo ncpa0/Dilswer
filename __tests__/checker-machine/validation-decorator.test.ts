@@ -2,7 +2,7 @@ import { DataType } from "../../src";
 import {
   ClassWithValidation,
   validate,
-} from "../../src/checker-machine/validation-decorator";
+} from "../../src/decorators/validation-decorator";
 import { ValidationError } from "../../src/checker-machine/validation-error/validation-error";
 
 describe("validator decorator", () => {
