@@ -1,10 +1,11 @@
-import { AllDataTypes, ParseDataType } from "..";
+import { AllDataTypes } from "..";
+import { ParseDataType, ReWrap } from "../type-utils";
 import { ValidationError } from "./validation-error/validation-error";
 import { validateType } from "./validators/validate-type";
 
 export const createValidatedFunction = <DT extends AllDataTypes, R, ER = void>(
   validator: DT,
-  onValidationSuccess: (data: ParseDataType<DT>) => R,
+  onValidationSuccess: (data: ReWrap<ParseDataType<DT>>) => R,
   onValidationError?: (error: ValidationError, passedData: unknown) => ER
 ) => {
   const call = (data: unknown) => {

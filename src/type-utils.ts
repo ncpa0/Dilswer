@@ -1,3 +1,4 @@
+import { AllDataTypes } from ".";
 import type {
   ArrayOf,
   BasicDataType,
@@ -14,9 +15,15 @@ export type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T>
 
 export type UnknownFunction = (...args: unknown[]) => unknown;
 
-export type ReWrap<O> = {
-  [K in keyof O]: O[K];
-};
+export type ReWrap<T> = T extends Function
+  ? T
+  : T extends Set<infer ST>
+  ? Set<ReWrap<ST>>
+  : T extends object
+  ? T extends infer O
+    ? { [K in keyof O]: ReWrap<O[K]> }
+    : never
+  : T;
 
 export type EnsureStringType<T> = T extends string ? T : string;
 
@@ -90,3 +97,5 @@ export type ParseRecordType<S extends RecordOf> = {
     S["recordOf"][K]["type"]
   >;
 };
+
+export type GetDataType<D extends AllDataTypes> = ReWrap<ParseDataType<D>>;

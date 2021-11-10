@@ -358,7 +358,7 @@ describe("createChecker", () => {
               baz: { type: DataType.Number },
               qux: {
                 type: DataType.RecordOf({
-                  corg: { type: DataType.Function },
+                  corge: { type: DataType.Function }
                 }),
               },
             }),
@@ -368,18 +368,17 @@ describe("createChecker", () => {
         const checker = createChecker(validator);
 
         expect(
-          checker({ foo: "foo", bar: { baz: 1, qux: { corg: () => {} } } })
+          checker({ foo: "foo", bar: { baz: 1, qux: { corge: () => {} } } })
         ).toEqual(true);
 
         expect(
-          checker({ foo: 0, bar: { baz: 1, qux: { corg: () => {} } } })
+          checker({ foo: 0, bar: { baz: 1, qux: { corge: () => {} } } })
         ).toEqual(false);
         expect(
-          checker({ foo: "foo", bar: { baz: 1, qux: { corg: Symbol() } } })
+          checker({ foo: "foo", bar: { baz: 1, qux: { corge: Symbol() } } })
         ).toEqual(false);
-
         expect(
-          checker({ foo: "foo", bar: { baz: "1", qux: { corg: () => {} } } })
+          checker({ foo: "foo", bar: { baz: "1", qux: { corge: () => {} } } })
         ).toEqual(false);
       });
     });

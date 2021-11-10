@@ -15,4 +15,4 @@ export {
   OneOf,
   SetOf,
 } from "./types";
-export { ParseDataType } from "./type-utils";
+export { GetDataType } from "./type-utils";
