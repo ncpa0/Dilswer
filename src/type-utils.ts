@@ -31,18 +31,22 @@ export type EnsureStringType<T> = T extends string ? T : string;
 
 export type ExcludeRequired<S extends TypeSchema> = EnsureStringType<
   Exclude<
-    ValueOf<{
-      [K in keyof S]: S[K]["required"] extends false ? K : undefined;
-    }>,
+    ValueOf<
+      {
+        [K in keyof S]: S[K]["required"] extends false ? K : undefined;
+      }
+    >,
     undefined
   >
 >;
 
 export type ExcludeOptional<S extends TypeSchema> = EnsureStringType<
   Exclude<
-    ValueOf<{
-      [K in keyof S]: S[K]["required"] extends false ? undefined : K;
-    }>,
+    ValueOf<
+      {
+        [K in keyof S]: S[K]["required"] extends false ? undefined : K;
+      }
+    >,
     undefined
   >
 >;
@@ -63,11 +67,15 @@ export type GetTypeFromArrayOf<D extends ComplexDataType> = D extends ArrayOf<
   ? T[number]
   : never;
 
-export type GetFieldDescriptorsFromSetOf<D extends ComplexDataType> =
-  D extends SetOf<infer T> ? T[number] : never;
+export type GetFieldDescriptorsFromSetOf<
+  D extends ComplexDataType
+> = D extends SetOf<infer T> ? T[number] : never;
 
-export type GetTypeFromRecordOf<D extends ComplexDataType> =
-  D extends RecordOf<any> ? D : never;
+export type GetTypeFromRecordOf<D extends ComplexDataType> = D extends RecordOf<
+  any
+>
+  ? D
+  : never;
 
 export type GetTypeFromOneOf<D extends ComplexDataType> = D extends OneOf<
   infer T
@@ -79,8 +87,9 @@ export type GetTypeFromEnum<D extends ComplexDataType> = D extends Enum<infer T>
   ? T
   : never;
 
-export type GetTypeFromEnumMember<D extends ComplexDataType> =
-  D extends EnumMember<infer T> ? T : never;
+export type GetTypeFromEnumMember<
+  D extends ComplexDataType
+> = D extends EnumMember<infer T> ? T : never;
 
 export type ParseComplexType<D extends ComplexDataType> = {
   arrayOf: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
@@ -98,6 +107,8 @@ export type ParseBasicDataType<D extends BasicDataType> = {
   boolean: boolean;
   symbol: symbol;
   function: UnknownFunction;
+  null: null;
+  undefined: undefined;
 }[D];
 
 export type ParseDataType<D> = D extends BasicDataType
@@ -110,10 +121,11 @@ export type ParseRecordType<S extends RecordOf> = {
   [K in ExcludeRequired<S["recordOf"]>]?: ParseDataType<
     S["recordOf"][K]["type"]
   >;
-} & {
-  [K in ExcludeOptional<S["recordOf"]>]: ParseDataType<
-    S["recordOf"][K]["type"]
-  >;
-};
+} &
+  {
+    [K in ExcludeOptional<S["recordOf"]>]: ParseDataType<
+      S["recordOf"][K]["type"]
+    >;
+  };
 
 export type GetDataType<D extends AllDataTypes> = ReWrap<ParseDataType<D>>;

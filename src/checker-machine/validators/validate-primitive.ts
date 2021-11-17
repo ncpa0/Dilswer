@@ -8,6 +8,8 @@ export const validatePrimitive = (
 ) => {
   if (type === "unknown") return;
 
+  if (type === "null" && data === null) return;
+
   const dataType = typeof data;
 
   if (dataType === type) return;

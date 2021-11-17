@@ -17,6 +17,8 @@ export const BasicDataTypes = {
   Boolean: "boolean",
   Symbol: "symbol",
   Function: "function",
+  Null: "null",
+  Undefined: "undefined",
 } as const;
 
 export const DataType = {
@@ -33,17 +35,15 @@ export const DataType = {
   OneOf<DT extends AllDataTypes[]>(...args: DT): OneOf<DT> {
     return { oneOf: args };
   },
-  Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
-    [key in T]: TEnumValue;
-  }): Enum<TEnumValue> {
-    if (typeof enumInstance !== "object" || enumInstance === null) {
-      throw Error("Provided argument is not an Enum.");
-    }
-
-    // @ts-expect-error
-    return { enumInstance };
-  },
   EnumMember<M extends number | string>(enumMember: M): EnumMember<M> {
     return { enumMember };
+  },
+  Enum<T extends string, TEnumValue extends string | number>(
+    enumInstance: {
+      [key in T]: TEnumValue;
+    }
+  ): Enum<TEnumValue> {
+    // @ts-expect-error
+    return { enumInstance };
   },
 };

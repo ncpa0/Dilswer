@@ -9,6 +9,8 @@ describe("createChecker", () => {
 
       expect(checker("foo")).toEqual(true);
 
+      expect(checker(null)).toEqual(false);
+      expect(checker(undefined)).toEqual(false);
       expect(checker(1)).toEqual(false);
       expect(checker(false)).toEqual(false);
       expect(checker(Symbol())).toEqual(false);
@@ -25,6 +27,8 @@ describe("createChecker", () => {
 
       expect(checker(1)).toEqual(true);
 
+      expect(checker(null)).toEqual(false);
+      expect(checker(undefined)).toEqual(false);
       expect(checker("foo")).toEqual(false);
       expect(checker(false)).toEqual(false);
       expect(checker(Symbol())).toEqual(false);
@@ -42,6 +46,8 @@ describe("createChecker", () => {
       expect(checker(false)).toEqual(true);
       expect(checker(true)).toEqual(true);
 
+      expect(checker(null)).toEqual(false);
+      expect(checker(undefined)).toEqual(false);
       expect(checker(1)).toEqual(false);
       expect(checker("foo")).toEqual(false);
       expect(checker(Symbol())).toEqual(false);
@@ -58,9 +64,47 @@ describe("createChecker", () => {
 
       expect(checker(Symbol())).toEqual(true);
 
+      expect(checker(null)).toEqual(false);
+      expect(checker(undefined)).toEqual(false);
       expect(checker(1)).toEqual(false);
       expect(checker("foo")).toEqual(false);
       expect(checker(false)).toEqual(false);
+      expect(checker(() => ["foo"])).toEqual(false);
+      expect(checker(["foo"])).toEqual(false);
+      expect(checker({ foo: "foo" })).toEqual(false);
+      expect(checker(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a null", () => {
+      const validator = DataType.Null;
+
+      const checker = createChecker(validator);
+
+      expect(checker(null)).toEqual(true);
+
+      expect(checker(undefined)).toEqual(false);
+      expect(checker("foo")).toEqual(false);
+      expect(checker(1)).toEqual(false);
+      expect(checker(false)).toEqual(false);
+      expect(checker(Symbol())).toEqual(false);
+      expect(checker(() => ["foo"])).toEqual(false);
+      expect(checker(["foo"])).toEqual(false);
+      expect(checker({ foo: "foo" })).toEqual(false);
+      expect(checker(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a undefined", () => {
+      const validator = DataType.Undefined;
+
+      const checker = createChecker(validator);
+
+      expect(checker(undefined)).toEqual(true);
+
+      expect(checker(null)).toEqual(false);
+      expect(checker("foo")).toEqual(false);
+      expect(checker(1)).toEqual(false);
+      expect(checker(false)).toEqual(false);
+      expect(checker(Symbol())).toEqual(false);
       expect(checker(() => ["foo"])).toEqual(false);
       expect(checker(["foo"])).toEqual(false);
       expect(checker({ foo: "foo" })).toEqual(false);
@@ -72,6 +116,8 @@ describe("createChecker", () => {
 
       const checker = createChecker(validator);
 
+      expect(checker(null)).toEqual(true);
+      expect(checker(undefined)).toEqual(true);
       expect(checker(Symbol())).toEqual(true);
       expect(checker(1)).toEqual(true);
       expect(checker("foo")).toEqual(true);
@@ -92,6 +138,8 @@ describe("createChecker", () => {
 
         expect(checker("foobarbaz")).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(1)).toEqual(false);
         expect(checker(true)).toEqual(false);
         expect(checker(false)).toEqual(false);
@@ -108,6 +156,8 @@ describe("createChecker", () => {
 
         expect(checker(1)).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker("foobarbaz")).toEqual(false);
         expect(checker(true)).toEqual(false);
         expect(checker(false)).toEqual(false);
@@ -125,6 +175,8 @@ describe("createChecker", () => {
         expect(checker(true)).toEqual(true);
         expect(checker(false)).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker("foobarbaz")).toEqual(false);
         expect(checker(1)).toEqual(false);
         expect(checker(0)).toEqual(false);
@@ -142,8 +194,27 @@ describe("createChecker", () => {
         expect(checker("foo")).toEqual(true);
         expect(checker(123)).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(true)).toEqual(false);
         expect(checker(false)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker([])).toEqual(false);
+        expect(checker(Symbol())).toEqual(false);
+      });
+
+      it("should validate a union of boolean and null", () => {
+        const validator = DataType.OneOf(DataType.Boolean, DataType.Null);
+
+        const checker = createChecker(validator);
+
+        expect(checker(null)).toEqual(true);
+        expect(checker(true)).toEqual(true);
+        expect(checker(false)).toEqual(true);
+
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(123)).toEqual(false);
         expect(checker(() => {})).toEqual(false);
         expect(checker({})).toEqual(false);
         expect(checker([])).toEqual(false);
@@ -159,6 +230,8 @@ describe("createChecker", () => {
         expect(checker(true)).toEqual(true);
         expect(checker(Symbol())).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker("foo")).toEqual(false);
         expect(checker(123)).toEqual(false);
         expect(checker(() => {})).toEqual(false);
@@ -182,6 +255,8 @@ describe("createChecker", () => {
         expect(checker("BAR")).toEqual(true);
         expect(checker(Symbol())).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker("foo")).toEqual(false);
         expect(checker(123)).toEqual(false);
         expect(checker(() => {})).toEqual(false);
@@ -202,6 +277,8 @@ describe("createChecker", () => {
         expect(checker(123)).toEqual(true);
         expect(checker(() => {})).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(true)).toEqual(false);
         expect(checker(false)).toEqual(false);
         expect(checker({})).toEqual(false);
@@ -227,6 +304,8 @@ describe("createChecker", () => {
         expect(checker([])).toEqual(true);
         expect(checker([{ foo: "foo" }])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(123)).toEqual(false);
         expect(checker(true)).toEqual(false);
         expect(checker(false)).toEqual(false);
@@ -249,6 +328,8 @@ describe("createChecker", () => {
         expect(checker(["foo", "bar", "baz"])).toEqual(true);
         expect(checker([1, 2, 3, 4])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(["foo", 1])).toEqual(false);
         expect(checker([1, 23, 4, 5, 6, 6, ""])).toEqual(false);
       });
@@ -268,6 +349,8 @@ describe("createChecker", () => {
         expect(checker([{}])).toEqual(true);
         expect(checker([[]])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(1)).toEqual(false);
         expect(checker("")).toEqual(false);
         expect(checker(true)).toEqual(false);
@@ -283,6 +366,8 @@ describe("createChecker", () => {
         expect(checker([])).toEqual(true);
         expect(checker(["foo"])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(["bar", 1])).toEqual(false);
         expect(checker([true])).toEqual(false);
         expect(checker({ 0: "baz" })).toEqual(false);
@@ -307,6 +392,8 @@ describe("createChecker", () => {
         expect(checker([T.BAR, "FOO"])).toEqual(true);
         expect(checker(["BAR"])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(["bar", 1])).toEqual(false);
         expect(checker([true])).toEqual(false);
         expect(checker({ 0: "baz" })).toEqual(false);
@@ -325,6 +412,34 @@ describe("createChecker", () => {
         expect(checker([() => {}])).toEqual(true);
         expect(checker([true, () => {}, false])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(["bar", 1])).toEqual(false);
+        expect(checker([true, 6])).toEqual(false);
+        expect(checker([{}, false])).toEqual(false);
+        expect(checker({ 0: "baz" })).toEqual(false);
+        expect(checker("foo")).toEqual(false);
+        expect(checker(1)).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+      });
+
+      it("should validate against array of undefined or nulls", () => {
+        const validator = DataType.ArrayOf(DataType.Null, DataType.Undefined);
+
+        const checker = createChecker(validator);
+
+        expect(checker([])).toEqual(true);
+        expect(checker([null])).toEqual(true);
+        expect(checker([undefined])).toEqual(true);
+        expect(checker([null, undefined, null, null])).toEqual(true);
+
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
+        expect(checker([null, null, null, {}])).toEqual(false);
+        expect(checker([() => {}])).toEqual(false);
+        expect(checker([true])).toEqual(false);
+        expect(checker([false])).toEqual(false);
         expect(checker(["bar", 1])).toEqual(false);
         expect(checker([true, 6])).toEqual(false);
         expect(checker([{}, false])).toEqual(false);
@@ -349,6 +464,8 @@ describe("createChecker", () => {
         expect(checker([[], [["foo"]]])).toEqual(true);
         expect(checker([[1], [["foo"]]])).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker([[1], [[1]]])).toEqual(false);
         expect(checker([["1"]])).toEqual(false);
         expect(checker([[1], [[[]]]])).toEqual(false);
@@ -357,6 +474,17 @@ describe("createChecker", () => {
     });
 
     describe("for records", () => {
+      it("should not validate null for empty objects", () => {
+        const validator = DataType.RecordOf({});
+
+        const checker = createChecker(validator);
+
+        expect(checker({})).toEqual(true);
+
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(null)).toEqual(false);
+      });
+
       it("should validate for optional properties", () => {
         const validator = DataType.RecordOf({
           foo: { required: true, type: DataType.String },
@@ -386,6 +514,8 @@ describe("createChecker", () => {
         expect(checker({ foo: "123", bar: -2, baz: () => {} })).toEqual(true);
         expect(checker({ foo: "123", bar: -2, baz: undefined })).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker({ foo: "foo", bar: "123", baz: true })).toEqual(false);
         expect(checker({ foo: "foo", bar: "123", baz: true })).toEqual(false);
         expect(checker({ foo: false, bar: 1, baz: true })).toEqual(false);
@@ -427,6 +557,8 @@ describe("createChecker", () => {
           })
         ).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(
           checker({ foo: 0, bar: { baz: 1, qux: { corge: () => {} } } })
         ).toEqual(false);
@@ -449,6 +581,25 @@ describe("createChecker", () => {
           })
         ).toEqual(false);
       });
+
+      it("should correctly validate against a record with undefined and null properties", () => {
+        const validator = DataType.RecordOf({
+          foo: { type: DataType.Undefined },
+          bar: { type: DataType.Null },
+        });
+
+        const checker = createChecker(validator);
+
+        expect(checker({ foo: undefined, bar: null })).toEqual(true);
+
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(null)).toEqual(false);
+        expect(checker({ foo: undefined })).toEqual(false);
+        expect(checker({ bar: null })).toEqual(false);
+        expect(checker({ foo: "undefined", bar: "null" })).toEqual(false);
+        expect(checker({ foo: "undefined", bar: null })).toEqual(false);
+        expect(checker({ foo: undefined, bar: "null" })).toEqual(false);
+      });
     });
 
     describe("for sets", () => {
@@ -460,6 +611,8 @@ describe("createChecker", () => {
         expect(checker(new Set())).toEqual(true);
         expect(checker(new Set([1, 2, 3]))).toEqual(true);
 
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(null)).toEqual(false);
         expect(checker(new Set([1, 2, 3, ""]))).toEqual(false);
         expect(checker(new Set([true]))).toEqual(false);
         expect(checker(new Set([Symbol()]))).toEqual(false);
@@ -479,6 +632,8 @@ describe("createChecker", () => {
         expect(checker(new Set())).toEqual(true);
         expect(checker(new Set([() => {}]))).toEqual(true);
 
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(null)).toEqual(false);
         expect(checker(new Set([() => {}, "foo"]))).toEqual(false);
         expect(checker(new Set([true]))).toEqual(false);
         expect(checker(new Set([Symbol()]))).toEqual(false);
@@ -502,6 +657,36 @@ describe("createChecker", () => {
           true
         );
 
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(null)).toEqual(false);
+        expect(checker(new Set(["foo", Symbol(), () => {}]))).toEqual(false);
+        expect(checker(new Set([true]))).toEqual(false);
+        expect(checker(new Set([123]))).toEqual(false);
+        expect(checker(new Set([{}]))).toEqual(false);
+        expect(checker(1)).toEqual(false);
+        expect(checker("foo")).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker([])).toEqual(false);
+      });
+
+      it("should validate for set of records or undefined", () => {
+        const validator = DataType.SetOf(
+          DataType.Undefined,
+          DataType.RecordOf({ foo: { type: DataType.String } })
+        );
+
+        const checker = createChecker(validator);
+
+        expect(checker(new Set())).toEqual(true);
+        expect(checker(new Set([undefined]))).toEqual(true);
+        expect(checker(new Set([{ foo: "" }]))).toEqual(true);
+        expect(checker(new Set([undefined, { foo: "" }, undefined]))).toEqual(
+          true
+        );
+
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(null)).toEqual(false);
         expect(checker(new Set(["foo", Symbol(), () => {}]))).toEqual(false);
         expect(checker(new Set([true]))).toEqual(false);
         expect(checker(new Set([123]))).toEqual(false);
@@ -535,8 +720,12 @@ describe("createChecker", () => {
 
         expect(checker(Foo)).toEqual(false);
         expect(checker("D")).toEqual(false);
+        expect(checker(null)).toEqual(false);
         expect(checker(undefined)).toEqual(false);
+        expect(checker(0)).toEqual(false);
         expect(checker(1)).toEqual(false);
+        expect(checker(2)).toEqual(false);
+        expect(checker(3)).toEqual(false);
         expect(checker(() => {})).toEqual(false);
         expect(checker([])).toEqual(false);
         expect(checker({})).toEqual(false);
@@ -563,9 +752,12 @@ describe("createChecker", () => {
         expect(checker(2)).toEqual(true);
 
         expect(checker(Foo)).toEqual(false);
-        expect(checker("D")).toEqual(false);
+        expect(checker(null)).toEqual(false);
         expect(checker(undefined)).toEqual(false);
         expect(checker("A")).toEqual(false);
+        expect(checker("B")).toEqual(false);
+        expect(checker("C")).toEqual(false);
+        expect(checker("D")).toEqual(false);
         expect(checker(() => {})).toEqual(false);
         expect(checker([])).toEqual(false);
         expect(checker({})).toEqual(false);
@@ -589,6 +781,8 @@ describe("createChecker", () => {
         expect(checker(Foo.A)).toEqual(true);
         expect(checker("A")).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(Foo)).toEqual(false);
         expect(checker(Foo.B)).toEqual(false);
         expect(checker(Foo.C)).toEqual(false);
@@ -620,9 +814,12 @@ describe("createChecker", () => {
         expect(checker(Foo.A)).toEqual(true);
         expect(checker(0)).toEqual(true);
 
+        expect(checker(null)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
         expect(checker(Foo)).toEqual(false);
         expect(checker(Foo.B)).toEqual(false);
         expect(checker(Foo.C)).toEqual(false);
+        expect(checker("A")).toEqual(false);
         expect(checker("B")).toEqual(false);
         expect(checker("C")).toEqual(false);
         expect(checker("D")).toEqual(false);
