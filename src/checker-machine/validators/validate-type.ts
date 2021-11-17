@@ -1,6 +1,8 @@
 import { AllDataTypes, BasicDataType } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 import { validateArray } from "./validate-array";
+import { validateEnum } from "./validate-enum";
+import { validateEnumMember } from "./validate-enum-member";
 import { validateOneOf } from "./validate-one-of";
 import { validatePrimitive } from "./validate-primitive";
 import { validateRecord } from "./validate-record";
@@ -29,5 +31,13 @@ export const validateType = (
 
   if ("oneOf" in type) {
     return validateOneOf(path, type, data);
+  }
+
+  if ("enumMember" in type) {
+    return validateEnumMember(path, type, data);
+  }
+
+  if ("enumInstance" in type) {
+    return validateEnum(path, type, data);
   }
 };

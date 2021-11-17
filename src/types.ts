@@ -17,9 +17,23 @@ export type OneOf<DT extends AllDataTypes[] = any[]> = {
   oneOf: DT;
 };
 
+export type Enum<E = any> = {
+  enumInstance: E;
+};
+
+export type EnumMember<M = any> = {
+  enumMember: M;
+};
+
 export type BasicDataType = ValueOf<typeof BasicDataTypes>;
 
-export type ComplexDataType = ArrayOf | RecordOf | SetOf | OneOf;
+export type ComplexDataType =
+  | ArrayOf
+  | RecordOf
+  | SetOf
+  | OneOf
+  | Enum
+  | EnumMember;
 
 export type AllDataTypes = BasicDataType | ComplexDataType;
 

@@ -1,6 +1,8 @@
 import { AllDataTypes } from ".";
 import type {
   ArrayOf,
+  Enum,
+  EnumMember,
   FieldDescriptor,
   OneOf,
   RecordOf,
@@ -30,5 +32,18 @@ export const DataType = {
   },
   OneOf<DT extends AllDataTypes[]>(...args: DT): OneOf<DT> {
     return { oneOf: args };
+  },
+  Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
+    [key in T]: TEnumValue;
+  }): Enum<TEnumValue> {
+    if (typeof enumInstance !== "object" || enumInstance === null) {
+      throw Error("Provided argument is not an Enum.");
+    }
+
+    // @ts-expect-error
+    return { enumInstance };
+  },
+  EnumMember<M extends number | string>(enumMember: M): EnumMember<M> {
+    return { enumMember };
   },
 };

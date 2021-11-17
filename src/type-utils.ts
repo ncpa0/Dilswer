@@ -3,6 +3,8 @@ import type {
   ArrayOf,
   BasicDataType,
   ComplexDataType,
+  Enum,
+  EnumMember,
   OneOf,
   RecordOf,
   SetOf,
@@ -50,27 +52,43 @@ export type EnsureIsKey<K> = K extends
   | "recordOf"
   | "setOf"
   | "oneOf"
+  | "enumInstance"
+  | "enumMember"
   ? K
   : "recordOf";
 
-export type GetTypeFromArrayOf<D extends ComplexDataType> =
-  D extends ArrayOf<any> ? D["arrayOf"][number] : never;
+export type GetTypeFromArrayOf<D extends ComplexDataType> = D extends ArrayOf<
+  infer T
+>
+  ? T[number]
+  : never;
 
 export type GetFieldDescriptorsFromSetOf<D extends ComplexDataType> =
-  D extends SetOf<any> ? D["setOf"][number] : never;
+  D extends SetOf<infer T> ? T[number] : never;
 
 export type GetTypeFromRecordOf<D extends ComplexDataType> =
   D extends RecordOf<any> ? D : never;
 
-export type GetTypeFromOneOf<D extends ComplexDataType> = D extends OneOf<any>
-  ? D["oneOf"][number]
+export type GetTypeFromOneOf<D extends ComplexDataType> = D extends OneOf<
+  infer T
+>
+  ? T[number]
   : never;
+
+export type GetTypeFromEnum<D extends ComplexDataType> = D extends Enum<infer T>
+  ? T
+  : never;
+
+export type GetTypeFromEnumMember<D extends ComplexDataType> =
+  D extends EnumMember<infer T> ? T : never;
 
 export type ParseComplexType<D extends ComplexDataType> = {
   arrayOf: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
   recordOf: ParseRecordType<GetTypeFromRecordOf<D>>;
   setOf: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;
   oneOf: ParseDataType<GetTypeFromOneOf<D>>;
+  enumInstance: GetTypeFromEnum<D>;
+  enumMember: GetTypeFromEnumMember<D>;
 }[EnsureIsKey<keyof D>];
 
 export type ParseBasicDataType<D extends BasicDataType> = {

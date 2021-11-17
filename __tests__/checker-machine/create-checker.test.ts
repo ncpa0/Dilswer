@@ -166,6 +166,29 @@ describe("createChecker", () => {
         expect(checker([])).toEqual(false);
       });
 
+      it("should validate a union of enum value and symbol", () => {
+        enum T {
+          FOO = "FOO",
+          BAR = "BAR",
+        }
+
+        const validator = DataType.OneOf(DataType.Enum(T), DataType.Symbol);
+
+        const checker = createChecker(validator);
+
+        expect(checker(T.FOO)).toEqual(true);
+        expect(checker(T.BAR)).toEqual(true);
+        expect(checker("FOO")).toEqual(true);
+        expect(checker("BAR")).toEqual(true);
+        expect(checker(Symbol())).toEqual(true);
+
+        expect(checker("foo")).toEqual(false);
+        expect(checker(123)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker([])).toEqual(false);
+      });
+
       it("should validate a union of functions, string and numbers", () => {
         const validator = DataType.OneOf(
           DataType.Function,
@@ -269,6 +292,30 @@ describe("createChecker", () => {
         expect(checker(() => {})).toEqual(false);
       });
 
+      it("should validate against simple array of enum values", () => {
+        enum T {
+          FOO = "FOO",
+          BAR = "BAR",
+        }
+        const validator = DataType.ArrayOf(DataType.Enum(T));
+
+        const checker = createChecker(validator);
+
+        expect(checker([])).toEqual(true);
+        expect(checker([T.BAR])).toEqual(true);
+        expect(checker([T.BAR, T.FOO])).toEqual(true);
+        expect(checker([T.BAR, "FOO"])).toEqual(true);
+        expect(checker(["BAR"])).toEqual(true);
+
+        expect(checker(["bar", 1])).toEqual(false);
+        expect(checker([true])).toEqual(false);
+        expect(checker({ 0: "baz" })).toEqual(false);
+        expect(checker("foo")).toEqual(false);
+        expect(checker(1)).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+      });
+
       it("should validate against array of functions or booleans", () => {
         const validator = DataType.ArrayOf(DataType.Function, DataType.Boolean);
 
@@ -351,6 +398,11 @@ describe("createChecker", () => {
       });
 
       it("should validate for nested records", () => {
+        enum T {
+          FOO = "FOO",
+          BAR = "BAR",
+        }
+
         const validator = DataType.RecordOf({
           foo: { type: DataType.String },
           bar: {
@@ -358,9 +410,10 @@ describe("createChecker", () => {
               baz: { type: DataType.Number },
               qux: {
                 type: DataType.RecordOf({
-                  corge: { type: DataType.Function }
+                  corge: { type: DataType.Function },
                 }),
               },
+              thud: { type: DataType.EnumMember(T.BAR), required: false },
             }),
           },
         });
@@ -368,7 +421,10 @@ describe("createChecker", () => {
         const checker = createChecker(validator);
 
         expect(
-          checker({ foo: "foo", bar: { baz: 1, qux: { corge: () => {} } } })
+          checker({
+            foo: "foo",
+            bar: { baz: 1, qux: { corge: () => {} }, thud: T.BAR },
+          })
         ).toEqual(true);
 
         expect(
@@ -379,6 +435,18 @@ describe("createChecker", () => {
         ).toEqual(false);
         expect(
           checker({ foo: "foo", bar: { baz: "1", qux: { corge: () => {} } } })
+        ).toEqual(false);
+        expect(
+          checker({
+            foo: "foo",
+            bar: { baz: 1, qux: { corge: () => {} }, thud: T.FOO },
+          })
+        ).toEqual(false);
+        expect(
+          checker({
+            foo: "foo",
+            bar: { baz: 1, qux: { corge: () => {} }, thud: 0 },
+          })
         ).toEqual(false);
       });
     });
@@ -443,6 +511,130 @@ describe("createChecker", () => {
         expect(checker(true)).toEqual(false);
         expect(checker({})).toEqual(false);
         expect(checker([])).toEqual(false);
+      });
+    });
+
+    describe("for enums", () => {
+      it("should correctly check if the string value is assignable to the enum", () => {
+        enum Foo {
+          A = "A",
+          B = "B",
+          C = "C",
+        }
+
+        const validator = DataType.Enum(Foo);
+
+        const checker = createChecker(validator);
+
+        expect(checker(Foo.A)).toEqual(true);
+        expect(checker(Foo.B)).toEqual(true);
+        expect(checker(Foo.C)).toEqual(true);
+        expect(checker("A")).toEqual(true);
+        expect(checker("B")).toEqual(true);
+        expect(checker("C")).toEqual(true);
+
+        expect(checker(Foo)).toEqual(false);
+        expect(checker("D")).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(1)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+        expect(checker([])).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker(false)).toEqual(false);
+      });
+
+      it("should correctly check if the numeric value is assignable to the enum", () => {
+        enum Foo {
+          A,
+          B,
+          C,
+        }
+
+        const validator = DataType.Enum(Foo);
+
+        const checker = createChecker(validator);
+
+        expect(checker(Foo.A)).toEqual(true);
+        expect(checker(Foo.B)).toEqual(true);
+        expect(checker(Foo.C)).toEqual(true);
+        expect(checker(0)).toEqual(true);
+        expect(checker(1)).toEqual(true);
+        expect(checker(2)).toEqual(true);
+
+        expect(checker(Foo)).toEqual(false);
+        expect(checker("D")).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
+        expect(checker("A")).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+        expect(checker([])).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker(false)).toEqual(false);
+      });
+    });
+
+    describe("for enum members", () => {
+      it("should correctly check if the string value equals to the enum member", () => {
+        enum Foo {
+          A = "A",
+          B = "B",
+          C = "C",
+        }
+
+        const validator = DataType.EnumMember(Foo.A);
+
+        const checker = createChecker(validator);
+
+        expect(checker(Foo.A)).toEqual(true);
+        expect(checker("A")).toEqual(true);
+
+        expect(checker(Foo)).toEqual(false);
+        expect(checker(Foo.B)).toEqual(false);
+        expect(checker(Foo.C)).toEqual(false);
+        expect(checker("B")).toEqual(false);
+        expect(checker("C")).toEqual(false);
+        expect(checker("D")).toEqual(false);
+        expect(checker(1)).toEqual(false);
+        expect(checker(2)).toEqual(false);
+        expect(checker(3)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+        expect(checker([])).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker(false)).toEqual(false);
+      });
+
+      it("should correctly check if the string value equals to the enum member", () => {
+        enum Foo {
+          A,
+          B,
+          C,
+        }
+
+        const validator = DataType.EnumMember(Foo.A);
+
+        const checker = createChecker(validator);
+
+        expect(checker(Foo.A)).toEqual(true);
+        expect(checker(0)).toEqual(true);
+
+        expect(checker(Foo)).toEqual(false);
+        expect(checker(Foo.B)).toEqual(false);
+        expect(checker(Foo.C)).toEqual(false);
+        expect(checker("B")).toEqual(false);
+        expect(checker("C")).toEqual(false);
+        expect(checker("D")).toEqual(false);
+        expect(checker(1)).toEqual(false);
+        expect(checker(2)).toEqual(false);
+        expect(checker(3)).toEqual(false);
+        expect(checker(undefined)).toEqual(false);
+        expect(checker(() => {})).toEqual(false);
+        expect(checker([])).toEqual(false);
+        expect(checker({})).toEqual(false);
+        expect(checker(true)).toEqual(false);
+        expect(checker(false)).toEqual(false);
       });
     });
   });
