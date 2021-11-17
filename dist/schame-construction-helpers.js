@@ -19,6 +19,8 @@ exports.BasicDataTypes = {
     Boolean: "boolean",
     Symbol: "symbol",
     Function: "function",
+    Null: "null",
+    Undefined: "undefined",
 };
 exports.DataType = __assign(__assign({}, exports.BasicDataTypes), { RecordOf: function (args) {
         return { recordOf: args };
@@ -40,4 +42,9 @@ exports.DataType = __assign(__assign({}, exports.BasicDataTypes), { RecordOf: fu
             args[_i] = arguments[_i];
         }
         return { oneOf: args };
+    }, EnumMember: function (enumMember) {
+        return { enumMember: enumMember };
+    }, Enum: function (enumInstance) {
+        // @ts-expect-error
+        return { enumInstance: enumInstance };
     } });

@@ -2,6 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateType = void 0;
 var validate_array_1 = require("./validate-array");
+var validate_enum_1 = require("./validate-enum");
+var validate_enum_member_1 = require("./validate-enum-member");
 var validate_one_of_1 = require("./validate-one-of");
 var validate_primitive_1 = require("./validate-primitive");
 var validate_record_1 = require("./validate-record");
@@ -21,6 +23,12 @@ var validateType = function (path, type, data) {
     }
     if ("oneOf" in type) {
         return (0, validate_one_of_1.validateOneOf)(path, type, data);
+    }
+    if ("enumMember" in type) {
+        return (0, validate_enum_member_1.validateEnumMember)(path, type, data);
+    }
+    if ("enumInstance" in type) {
+        return (0, validate_enum_1.validateEnum)(path, type, data);
     }
 };
 exports.validateType = validateType;

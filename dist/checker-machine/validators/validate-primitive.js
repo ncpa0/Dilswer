@@ -5,6 +5,8 @@ var validation_error_1 = require("../validation-error/validation-error");
 var validatePrimitive = function (path, type, data) {
     if (type === "unknown")
         return;
+    if (type === "null" && data === null)
+        return;
     var dataType = typeof data;
     if (dataType === type)
         return;
