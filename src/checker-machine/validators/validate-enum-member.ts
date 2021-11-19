@@ -1,4 +1,4 @@
-import { EnumMember } from "../../types";
+import type { EnumMember } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 
 export const validateEnumMember = (

@@ -37,7 +37,7 @@ var validateArray = function (path, type, data) {
     try {
         for (var _b = __values(data.entries()), _c = _b.next(); !_c.done; _c = _b.next()) {
             var _d = __read(_c.value, 2), index = _d[0], elem = _d[1];
-            (0, validate_one_of_1.validateOneOf)(path + "." + index, { oneOf: type.arrayOf }, elem);
+            (0, validate_one_of_1.validateOneOf)("".concat(path, ".").concat(index), { oneOf: type.arrayOf }, elem);
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }

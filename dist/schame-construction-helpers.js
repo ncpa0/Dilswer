@@ -42,6 +42,8 @@ exports.DataType = __assign(__assign({}, exports.BasicDataTypes), { RecordOf: fu
             args[_i] = arguments[_i];
         }
         return { oneOf: args };
+    }, Literal: function (value) {
+        return { literal: value };
     }, EnumMember: function (enumMember) {
         return { enumMember: enumMember };
     }, Enum: function (enumInstance) {

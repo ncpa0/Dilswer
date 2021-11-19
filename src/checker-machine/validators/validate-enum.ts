@@ -1,4 +1,4 @@
-import { Enum } from "../../types";
+import type { Enum } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 
 export const validateEnum = (path: string, type: Enum<any>, data: unknown) => {

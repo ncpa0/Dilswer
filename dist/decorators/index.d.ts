@@ -1,1 +1,1 @@
-export { validate, ClassWithValidation } from "./validation-decorator";
+export { ClassWithValidation, validate } from "./validation-decorator";

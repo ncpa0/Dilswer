@@ -25,7 +25,9 @@ var validateOneOf = function (path, type, data) {
                 passed = true;
                 break;
             }
-            catch (e) { }
+            catch (e) {
+                continue;
+            }
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }

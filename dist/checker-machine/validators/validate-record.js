@@ -48,7 +48,7 @@ var validateRecord = function (path, type, data) {
             }
             // @ts-expect-error
             var value = data[key];
-            (0, validate_type_1.validateType)(path + "." + key, fieldDescriptor.type, value);
+            (0, validate_type_1.validateType)("".concat(path, ".").concat(key), fieldDescriptor.type, value);
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }

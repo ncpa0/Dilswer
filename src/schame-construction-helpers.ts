@@ -1,4 +1,4 @@
-import { AllDataTypes } from ".";
+import type { AllDataTypes } from ".";
 import type {
   ArrayOf,
   Enum,

@@ -1,4 +1,4 @@
-import { BasicDataType } from "../../types";
+import type { BasicDataType } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 
 export const validatePrimitive = (

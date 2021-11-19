@@ -1,4 +1,4 @@
-import { AllDataTypes } from "..";
+import type { AllDataTypes } from "..";
 import { ValidationError } from "../checker-machine/validation-error/validation-error";
 import { validateType } from "../checker-machine/validators/validate-type";
 

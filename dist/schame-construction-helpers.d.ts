@@ -1,5 +1,5 @@
-import { AllDataTypes } from ".";
-import type { ArrayOf, Enum, EnumMember, OneOf, RecordOf, SetOf, TypeSchema } from "./types";
+import type { AllDataTypes } from ".";
+import type { ArrayOf, Enum, EnumMember, Literal, OneOf, RecordOf, SetOf, TypeSchema } from "./types";
 export declare const BasicDataTypes: {
     readonly Unknown: "unknown";
     readonly String: "string";
@@ -15,6 +15,7 @@ export declare const DataType: {
     ArrayOf<DT extends AllDataTypes[]>(...args: DT): ArrayOf<DT>;
     SetOf<DT_1 extends AllDataTypes[]>(...args: DT_1): SetOf<DT_1>;
     OneOf<DT_2 extends AllDataTypes[]>(...args: DT_2): OneOf<DT_2>;
+    Literal<V extends string | number | boolean>(value: V): Literal<V>;
     EnumMember<M extends string | number>(enumMember: M): EnumMember<M>;
     Enum<T extends string, TEnumValue extends string | number>(enumInstance: { [key in T]: TEnumValue; }): Enum<TEnumValue>;
     Unknown: "unknown";

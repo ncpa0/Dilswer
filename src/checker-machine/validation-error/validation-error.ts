@@ -1,4 +1,4 @@
-import { AllDataTypes } from "../../types";
+import type { AllDataTypes } from "../../types";
 
 export class ValidationError extends Error {
   static isValidationError(e: unknown | ValidationError): e is ValidationError {

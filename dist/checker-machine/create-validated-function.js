@@ -6,6 +6,7 @@ var createValidatedFunction = function (validator, onValidationSuccess, onValida
     var call = function (data) {
         try {
             (0, validate_type_1.validateType)("$", validator, data);
+            // @ts-expect-error
             return onValidationSuccess(data);
         }
         catch (e) {

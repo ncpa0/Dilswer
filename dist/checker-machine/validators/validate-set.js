@@ -27,7 +27,7 @@ var validateSet = function (path, type, data) {
     try {
         for (var data_1 = __values(data), data_1_1 = data_1.next(); !data_1_1.done; data_1_1 = data_1.next()) {
             var elem = data_1_1.value;
-            (0, validate_one_of_1.validateOneOf)(path + ".SET", { oneOf: type.setOf }, elem);
+            (0, validate_one_of_1.validateOneOf)("".concat(path, ".SET"), { oneOf: type.setOf }, elem);
         }
     }
     catch (e_1_1) { e_1 = { error: e_1_1 }; }

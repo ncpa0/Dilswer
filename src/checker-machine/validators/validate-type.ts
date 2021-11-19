@@ -1,5 +1,4 @@
-import { AllDataTypes, BasicDataType } from "../../types";
-import { ValidationError } from "../validation-error/validation-error";
+import type { AllDataTypes } from "../../types";
 import { validateArray } from "./validate-array";
 import { validateEnum } from "./validate-enum";
 import { validateEnumMember } from "./validate-enum-member";

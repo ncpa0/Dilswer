@@ -1,5 +1,5 @@
-import { ParseDataType, ReWrap } from "../type-utils";
-import { AllDataTypes } from "../types";
+import type { ParseDataType, ReWrap } from "../type-utils";
+import type { AllDataTypes } from "../types";
 import { validateType } from "./validators/validate-type";
 
 export const createChecker = <DT extends AllDataTypes>(dataType: DT) => {

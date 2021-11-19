@@ -12,6 +12,9 @@ export declare type SetOf<DT extends AllDataTypes[] = any[]> = {
 export declare type OneOf<DT extends AllDataTypes[] = any[]> = {
     oneOf: DT;
 };
+export declare type Literal<V extends string | number | boolean = string | number | boolean> = {
+    literal: V;
+};
 export declare type Enum<E = any> = {
     enumInstance: E;
 };
@@ -19,7 +22,7 @@ export declare type EnumMember<M = any> = {
     enumMember: M;
 };
 export declare type BasicDataType = ValueOf<typeof BasicDataTypes>;
-export declare type ComplexDataType = ArrayOf | RecordOf | SetOf | OneOf | Enum | EnumMember;
+export declare type ComplexDataType = ArrayOf | RecordOf | SetOf | OneOf | Literal | Enum | EnumMember;
 export declare type AllDataTypes = BasicDataType | ComplexDataType;
 export declare type FieldDescriptor = {
     required?: boolean;

@@ -1,5 +1,5 @@
-import { AllDataTypes } from "../..";
-import { ArrayOf, BasicDataType } from "../../types";
+import type { AllDataTypes } from "../..";
+import type { ArrayOf } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 import { validateOneOf } from "./validate-one-of";
 

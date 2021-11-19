@@ -1,5 +1,5 @@
-import { AllDataTypes } from "../..";
-import { OneOf } from "../../types";
+import type { AllDataTypes } from "../..";
+import type { OneOf } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 import { validateType } from "./validate-type";
 
@@ -15,7 +15,9 @@ export const validateOneOf = (
       validateType(path, dataType, data);
       passed = true;
       break;
-    } catch (e) {}
+    } catch (e) {
+      continue;
+    }
   }
 
   if (passed) return;

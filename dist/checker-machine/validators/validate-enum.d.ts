@@ -1,2 +1,2 @@
-import { Enum } from "../../types";
+import type { Enum } from "../../types";
 export declare const validateEnum: (path: string, type: Enum<any>, data: unknown) => void;

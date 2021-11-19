@@ -1,8 +1,7 @@
-import { AllDataTypes } from "../..";
-import { SetOf } from "../../types";
+import type { AllDataTypes } from "../..";
+import type { SetOf } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 import { validateOneOf } from "./validate-one-of";
-import { validateType } from "./validate-type";
 
 const isSet = (data: unknown): data is Set<unknown> => {
   return (

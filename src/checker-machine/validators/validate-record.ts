@@ -1,4 +1,4 @@
-import { RecordOf } from "../../types";
+import type { RecordOf } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 import { validateType } from "./validate-type";
 
