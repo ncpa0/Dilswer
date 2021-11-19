@@ -3,7 +3,7 @@ import type {
   ArrayOf,
   Enum,
   EnumMember,
-  FieldDescriptor,
+  Literal,
   OneOf,
   RecordOf,
   SetOf,
@@ -35,14 +35,15 @@ export const DataType = {
   OneOf<DT extends AllDataTypes[]>(...args: DT): OneOf<DT> {
     return { oneOf: args };
   },
+  Literal<V extends string | number | boolean>(value: V): Literal<V> {
+    return { literal: value };
+  },
   EnumMember<M extends number | string>(enumMember: M): EnumMember<M> {
     return { enumMember };
   },
-  Enum<T extends string, TEnumValue extends string | number>(
-    enumInstance: {
-      [key in T]: TEnumValue;
-    }
-  ): Enum<TEnumValue> {
+  Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
+    [key in T]: TEnumValue;
+  }): Enum<TEnumValue> {
     // @ts-expect-error
     return { enumInstance };
   },

@@ -17,6 +17,12 @@ export type OneOf<DT extends AllDataTypes[] = any[]> = {
   oneOf: DT;
 };
 
+export type Literal<
+  V extends string | number | boolean = string | number | boolean
+> = {
+  literal: V;
+};
+
 export type Enum<E = any> = {
   enumInstance: E;
 };
@@ -32,6 +38,7 @@ export type ComplexDataType =
   | RecordOf
   | SetOf
   | OneOf
+  | Literal
   | Enum
   | EnumMember;
 
