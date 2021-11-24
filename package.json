@@ -1,11 +1,24 @@
 {
-  "name": "Dilswer",
+  "name": "dilswer",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "exports": {
     "./decorators": "./dist/decorators/index.js"
   },
   "license": "MIT",
+  "repository": {
+    "url": "https://github.com/ncpa0cpl/Dilswer"
+  },
+  "author": {
+    "name": "Szymon Bretner (ncpa0cpl)",
+    "url": "https://github.com/ncpa0cpl"
+  },
+  "description": "Data validation library with TypeScript integration.",
+  "keywords": [
+    "data",
+    "validation",
+    "typescript"
+  ],
   "scripts": {
     "build": "tsc",
     "test": "jest --coverage"
