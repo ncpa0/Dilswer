@@ -3,7 +3,7 @@ import type { ValueOf } from "./type-utils";
 export declare type ArrayOf<DT extends AllDataTypes[] = any[]> = {
     arrayOf: DT;
 };
-export declare type RecordOf<TS extends TypeSchema = TypeSchema> = {
+export declare type RecordOf<TS extends RecordTypeSchema = RecordTypeSchema> = {
     recordOf: TS;
 };
 export declare type SetOf<DT extends AllDataTypes[] = any[]> = {
@@ -28,4 +28,4 @@ export declare type FieldDescriptor = {
     required?: boolean;
     type: AllDataTypes;
 };
-export declare type TypeSchema = Record<string, FieldDescriptor>;
+export declare type RecordTypeSchema = Record<string, FieldDescriptor>;

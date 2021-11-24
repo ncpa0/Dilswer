@@ -1,15 +1,15 @@
 import type { AllDataTypes } from ".";
-import type { ArrayOf, BasicDataType, ComplexDataType, Enum, EnumMember, Literal, OneOf, RecordOf, SetOf, TypeSchema } from "./types";
+import type { ArrayOf, BasicDataType, ComplexDataType, Enum, EnumMember, Literal, OneOf, RecordOf, RecordTypeSchema, SetOf } from "./types";
 export declare type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T> ? T : never;
 export declare type UnknownFunction = (...args: unknown[]) => unknown;
 export declare type ReWrap<T> = T extends Function ? T : T extends Set<infer ST> ? Set<ReWrap<ST>> : T extends object ? T extends infer O ? {
     [K in keyof O]: ReWrap<O[K]>;
 } : never : T;
 export declare type EnsureStringType<T> = T extends string ? T : string;
-export declare type ExcludeRequired<S extends TypeSchema> = EnsureStringType<Exclude<ValueOf<{
+export declare type ExcludeRequired<S extends RecordTypeSchema> = EnsureStringType<Exclude<ValueOf<{
     [K in keyof S]: S[K]["required"] extends false ? K : undefined;
 }>, undefined>>;
-export declare type ExcludeOptional<S extends TypeSchema> = EnsureStringType<Exclude<ValueOf<{
+export declare type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<Exclude<ValueOf<{
     [K in keyof S]: S[K]["required"] extends false ? undefined : K;
 }>, undefined>>;
 export declare type EnsureIsKey<K> = K extends "arrayOf" | "recordOf" | "setOf" | "oneOf" | "literal" | "enumInstance" | "enumMember" ? K : "recordOf";
