@@ -6,8 +6,8 @@ import type {
   Literal,
   OneOf,
   RecordOf,
+  RecordTypeSchema,
   SetOf,
-  TypeSchema,
 } from "./types";
 
 export const BasicDataTypes = {
@@ -23,7 +23,7 @@ export const BasicDataTypes = {
 
 export const DataType = {
   ...BasicDataTypes,
-  RecordOf<TS extends TypeSchema>(args: TS): RecordOf<TS> {
+  RecordOf<TS extends RecordTypeSchema>(args: TS): RecordOf<TS> {
     return { recordOf: args };
   },
   ArrayOf<DT extends AllDataTypes[]>(...args: DT): ArrayOf<DT> {

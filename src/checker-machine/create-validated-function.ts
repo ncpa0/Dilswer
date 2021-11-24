@@ -4,13 +4,13 @@ import type { ValidationError } from "./validation-error/validation-error";
 import { validateType } from "./validators/validate-type";
 
 export const createValidatedFunction = <DT extends AllDataTypes, R, ER = void>(
-  validator: DT,
+  dataType: DT,
   onValidationSuccess: (data: ReWrap<ParseDataType<DT>>) => R,
   onValidationError?: (error: ValidationError, passedData: unknown) => ER
 ) => {
   const call = (data: unknown) => {
     try {
-      validateType("$", validator, data);
+      validateType("$", dataType, data);
       // @ts-expect-error
       return onValidationSuccess(data);
     } catch (e) {

@@ -5,7 +5,7 @@ export type ArrayOf<DT extends AllDataTypes[] = any[]> = {
   arrayOf: DT;
 };
 
-export type RecordOf<TS extends TypeSchema = TypeSchema> = {
+export type RecordOf<TS extends RecordTypeSchema = RecordTypeSchema> = {
   recordOf: TS;
 };
 
@@ -49,4 +49,4 @@ export type FieldDescriptor = {
   type: AllDataTypes;
 };
 
-export type TypeSchema = Record<string, FieldDescriptor>;
+export type RecordTypeSchema = Record<string, FieldDescriptor>;

@@ -8,8 +8,8 @@ import type {
   Literal,
   OneOf,
   RecordOf,
+  RecordTypeSchema,
   SetOf,
-  TypeSchema,
 } from "./types";
 
 export type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T>
@@ -30,7 +30,7 @@ export type ReWrap<T> = T extends Function
 
 export type EnsureStringType<T> = T extends string ? T : string;
 
-export type ExcludeRequired<S extends TypeSchema> = EnsureStringType<
+export type ExcludeRequired<S extends RecordTypeSchema> = EnsureStringType<
   Exclude<
     ValueOf<{
       [K in keyof S]: S[K]["required"] extends false ? K : undefined;
@@ -39,7 +39,7 @@ export type ExcludeRequired<S extends TypeSchema> = EnsureStringType<
   >
 >;
 
-export type ExcludeOptional<S extends TypeSchema> = EnsureStringType<
+export type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<
   Exclude<
     ValueOf<{
       [K in keyof S]: S[K]["required"] extends false ? undefined : K;

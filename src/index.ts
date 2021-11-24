@@ -7,8 +7,12 @@ export {
   ArrayOf,
   BasicDataType,
   ComplexDataType,
+  Enum,
+  EnumMember,
   FieldDescriptor,
+  Literal,
   OneOf,
   RecordOf,
+  RecordTypeSchema as TypeSchema,
   SetOf,
 } from "./types";
