@@ -1,0 +1,13 @@
+__tests__
+.vscode
+coverage
+node_modules
+src
+.eslintignore
+.eslintrs.json
+.gitignore
+.npmignore
+.npmrc
+.prettierrc.json
+jest.config.js
+tsconfig.json

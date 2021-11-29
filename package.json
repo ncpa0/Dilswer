@@ -16,6 +16,8 @@
   "description": "Data validation library with TypeScript integration.",
   "keywords": [
     "data",
+    "type",
+    "validator",
     "validation",
     "typescript"
   ],
