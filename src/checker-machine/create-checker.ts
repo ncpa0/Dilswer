@@ -2,8 +2,14 @@ import type { ParseDataType, ReWrap } from "../type-utils";
 import type { AllDataTypes } from "../types";
 import { validateType } from "./validators/validate-type";
 
-export const createChecker = <DT extends AllDataTypes>(dataType: DT) => {
-  return (data: unknown): data is ReWrap<ParseDataType<DT>> => {
+/**
+ * Higher order function that generates a validator which will
+ * check the provided `data` against the `dataType` type
+ * structure definition and returns a boolean indicating if the
+ * check was successful.
+ */
+export const createValidator = <DT extends AllDataTypes>(dataType: DT) => {
+  const validator = (data: unknown): data is ReWrap<ParseDataType<DT>> => {
     try {
       validateType("$", dataType, data);
       return true;
@@ -11,4 +17,9 @@ export const createChecker = <DT extends AllDataTypes>(dataType: DT) => {
       return false;
     }
   };
+
+  return validator;
 };
+
+/** Function alias for the `createValidator`. */
+export const createChecker = createValidator;

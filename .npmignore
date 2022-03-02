@@ -4,7 +4,7 @@ coverage
 node_modules
 src
 .eslintignore
-.eslintrs.json
+.eslintrc.json
 .gitignore
 .npmignore
 .npmrc

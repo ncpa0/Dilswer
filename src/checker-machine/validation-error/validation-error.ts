@@ -1,6 +1,6 @@
 import type { AllDataTypes } from "../../types";
 
-export class ValidationError extends Error {
+export class ValidationError extends TypeError {
   static isValidationError(e: unknown | ValidationError): e is ValidationError {
     return (
       typeof e === "object" &&
@@ -16,7 +16,7 @@ export class ValidationError extends Error {
   receivedValue: unknown;
 
   constructor(path: string, expected: AllDataTypes, value: unknown) {
-    super("Invalid Data");
+    super("Value does not conform the data type structure definition.");
     this.expectedValueType = expected;
     this.fieldPath = path;
     this.receivedValue = value;

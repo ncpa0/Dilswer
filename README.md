@@ -1,10 +1,6 @@
 # Dilswer
 
-<font size="4">
-    Small and lightweight data validation library with TypeScript integration.
-</font>
-
-<br>
+Small and lightweight data validation library with TypeScript integration.
 
 Keep your type definitions in one place, and have but one source of truth for
 both the runtime validation types and the TypeScript type definitions.
@@ -126,6 +122,62 @@ TypeScript engine and the data validation library.
 **Dilswer** gives you a tool that you can use to define any kind of type, and
 then validate data at runtime with against it or infer a TypeScript type
 directly from it.
+
+## Dilswer Exports
+
+#### dilswer.createValidator()
+
+```ts
+const createValidator: <DT extends AllDataTypes>(
+  dataType: DT
+) => (data: unknown) => data is ParseDataType<DT>;
+```
+
+Higher order function that generates a validator which will check the provided
+`data` against the `dataType` type structure definition and returns a boolean
+indicating if the check was successful.
+
+#### dilswer.createChecker()
+
+Alias for the `createValidator()`.
+
+#### dilswer.createTypeGuardedFunction()
+
+```ts
+const createTypeGuardedFunction: <DT extends AllDataTypes, R, ER = void>(
+  dataType: DT,
+  onValidationSuccess: (data: ReWrap<ParseDataType<DT>>) => R,
+  onValidationError?: (error: ValidationError, data: unknown) => ER
+) => (data: unknown) => R | ER;
+```
+
+Higher order function that generates a new function which will check the
+provided `data` against the `dataType` type structure, and if the check is
+successful then the first callback `onValidationSuccess` is invoked with `data`
+as it's argument, otherwise the second callback `onValidationError` is invoked
+with the type validation error as it's argument (unless the callback is not
+specified).
+
+#### dilswer.createValidatedFunction()
+
+Alias for the `createTypeGuardedFunction()`.
+
+#### dilswer.ensureDataType()
+
+```ts
+const ensureDataType: <DT extends AllDataTypes>(
+  dataType: DT,
+  data: unknown
+) => void;
+```
+
+Checks the provided `data` against the `dataType` type definition and throws an
+ValidationError if the `data` does not conform to the `dataType`.
+
+#### dilswer.DataType
+
+Object containing all the dilswer runtime type definitions (like `Number`,
+`String`, `ArrayOf(...)`, etc.)
 
 ## Data Types
 
