@@ -19,7 +19,7 @@ exports.ValidationError = void 0;
 var ValidationError = /** @class */ (function (_super) {
     __extends(ValidationError, _super);
     function ValidationError(path, expected, value) {
-        var _this = _super.call(this, "Invalid Data") || this;
+        var _this = _super.call(this, "Value does not conform the data type structure definition.") || this;
         _this._validation_error = true;
         _this.expectedValueType = expected;
         _this.fieldPath = path;
@@ -33,5 +33,5 @@ var ValidationError = /** @class */ (function (_super) {
             "_validation_error" in e);
     };
     return ValidationError;
-}(Error));
+}(TypeError));
 exports.ValidationError = ValidationError;

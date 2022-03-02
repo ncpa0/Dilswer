@@ -1,9 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createChecker = void 0;
+exports.createChecker = exports.createValidator = void 0;
 var validate_type_1 = require("./validators/validate-type");
-var createChecker = function (dataType) {
-    return function (data) {
+/**
+ * Higher order function that generates a validator which will
+ * check the provided `data` against the `dataType` type
+ * structure definition and returns a boolean indicating if the
+ * check was successful.
+ */
+var createValidator = function (dataType) {
+    var validator = function (data) {
         try {
             (0, validate_type_1.validateType)("$", dataType, data);
             return true;
@@ -12,5 +18,8 @@ var createChecker = function (dataType) {
             return false;
         }
     };
+    return validator;
 };
-exports.createChecker = createChecker;
+exports.createValidator = createValidator;
+/** Function alias for the `createValidator`. */
+exports.createChecker = exports.createValidator;
