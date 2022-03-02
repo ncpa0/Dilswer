@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createValidatedFunction = exports.createTypeGuardedFunction = void 0;
-var validate_type_1 = require("./validators/validate-type");
+const validate_type_1 = require("./validators/validate-type");
 /**
  * Higher order function that generates a new function which will
  * check the provided `data` against the `dataType` type
@@ -11,8 +11,8 @@ var validate_type_1 = require("./validators/validate-type");
  * invoked with the type validation error as it's argument
  * (unless the callback is not specified).
  */
-var createTypeGuardedFunction = function (dataType, onValidationSuccess, onValidationError) {
-    var caller = function (data) {
+const createTypeGuardedFunction = (dataType, onValidationSuccess, onValidationError) => {
+    const caller = (data) => {
         try {
             (0, validate_type_1.validateType)("$", dataType, data);
             // @ts-expect-error

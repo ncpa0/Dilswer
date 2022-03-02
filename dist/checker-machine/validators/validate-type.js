@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.validateType = void 0;
-var validate_array_1 = require("./validate-array");
-var validate_enum_1 = require("./validate-enum");
-var validate_enum_member_1 = require("./validate-enum-member");
-var validate_literal_1 = require("./validate-literal");
-var validate_one_of_1 = require("./validate-one-of");
-var validate_primitive_1 = require("./validate-primitive");
-var validate_record_1 = require("./validate-record");
-var validate_set_1 = require("./validate-set");
-var validateType = function (path, type, data) {
+const validate_array_1 = require("./validate-array");
+const validate_enum_1 = require("./validate-enum");
+const validate_enum_member_1 = require("./validate-enum-member");
+const validate_literal_1 = require("./validate-literal");
+const validate_one_of_1 = require("./validate-one-of");
+const validate_primitive_1 = require("./validate-primitive");
+const validate_record_1 = require("./validate-record");
+const validate_set_1 = require("./validate-set");
+const validateType = (path, type, data) => {
     if (typeof type === "string") {
         return (0, validate_primitive_1.validatePrimitive)(path, type, data);
     }

@@ -1,15 +1,15 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.createChecker = exports.createValidator = void 0;
-var validate_type_1 = require("./validators/validate-type");
+const validate_type_1 = require("./validators/validate-type");
 /**
  * Higher order function that generates a validator which will
  * check the provided `data` against the `dataType` type
  * structure definition and returns a boolean indicating if the
  * check was successful.
  */
-var createValidator = function (dataType) {
-    var validator = function (data) {
+const createValidator = (dataType) => {
+    const validator = (data) => {
         try {
             (0, validate_type_1.validateType)("$", dataType, data);
             return true;

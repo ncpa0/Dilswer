@@ -1,3 +1,28 @@
+declare const _default: {
+    createChecker: <DT extends import("./types").AllDataTypes>(dataType: DT) => (data: unknown) => data is import("./type-utils").ReWrap<import("./type-utils").ParseDataType<DT>>;
+    createValidator: <DT extends import("./types").AllDataTypes>(dataType: DT) => (data: unknown) => data is import("./type-utils").ReWrap<import("./type-utils").ParseDataType<DT>>;
+    createTypeGuardedFunction: <DT_1 extends import("./types").AllDataTypes, R, ER = void>(dataType: DT_1, onValidationSuccess: (data: import("./type-utils").ReWrap<import("./type-utils").ParseDataType<DT_1>>) => R, onValidationError?: ((error: import("./checker-machine/validation-error/validation-error").ValidationError, passedData: unknown) => ER) | undefined) => (data: unknown) => R | ER;
+    createValidatedFunction: <DT_1 extends import("./types").AllDataTypes, R, ER = void>(dataType: DT_1, onValidationSuccess: (data: import("./type-utils").ReWrap<import("./type-utils").ParseDataType<DT_1>>) => R, onValidationError?: ((error: import("./checker-machine/validation-error/validation-error").ValidationError, passedData: unknown) => ER) | undefined) => (data: unknown) => R | ER;
+    ensureDataType: <DT_2 extends import("./types").AllDataTypes>(dataType: DT_2, data: unknown) => void;
+    DataType: {
+        RecordOf<TS extends import("./types").RecordTypeSchema>(args: TS): import("./types").RecordOf<TS>;
+        ArrayOf<DT_3 extends import("./types").AllDataTypes[]>(...args: DT_3): import("./types").ArrayOf<DT_3>;
+        SetOf<DT_4 extends import("./types").AllDataTypes[]>(...args: DT_4): import("./types").SetOf<DT_4>;
+        OneOf<DT_5 extends import("./types").AllDataTypes[]>(...args: DT_5): import("./types").OneOf<DT_5>;
+        Literal<V extends string | number | boolean>(value: V): import("./types").Literal<V>;
+        EnumMember<M extends string | number>(enumMember: M): import("./types").EnumMember<M>;
+        Enum<T extends string, TEnumValue extends string | number>(enumInstance: { [key in T]: TEnumValue; }): import("./types").Enum<TEnumValue>;
+        Unknown: "unknown";
+        String: "string";
+        Number: "number";
+        Boolean: "boolean";
+        Symbol: "symbol";
+        Function: "function";
+        Null: "null";
+        Undefined: "undefined";
+    };
+};
+export default _default;
 export { createChecker, createValidator, } from "./checker-machine/create-checker";
 export { createTypeGuardedFunction, createValidatedFunction, } from "./checker-machine/create-validated-function";
 export { ensureDataType } from "./checker-machine/ensure-data-type";

@@ -1,3 +1,23 @@
+import {
+  createChecker,
+  createValidator,
+} from "./checker-machine/create-checker";
+import {
+  createTypeGuardedFunction,
+  createValidatedFunction,
+} from "./checker-machine/create-validated-function";
+import { ensureDataType } from "./checker-machine/ensure-data-type";
+import { DataType } from "./schame-construction-helpers";
+
+export default {
+  createChecker,
+  createValidator,
+  createTypeGuardedFunction,
+  createValidatedFunction,
+  ensureDataType,
+  DataType,
+};
+
 export {
   createChecker,
   createValidator,

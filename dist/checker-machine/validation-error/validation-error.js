@@ -1,37 +1,19 @@
 "use strict";
-var __extends = (this && this.__extends) || (function () {
-    var extendStatics = function (d, b) {
-        extendStatics = Object.setPrototypeOf ||
-            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
-        return extendStatics(d, b);
-    };
-    return function (d, b) {
-        if (typeof b !== "function" && b !== null)
-            throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
-        extendStatics(d, b);
-        function __() { this.constructor = d; }
-        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-    };
-})();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ValidationError = void 0;
-var ValidationError = /** @class */ (function (_super) {
-    __extends(ValidationError, _super);
-    function ValidationError(path, expected, value) {
-        var _this = _super.call(this, "Value does not conform the data type structure definition.") || this;
-        _this._validation_error = true;
-        _this.expectedValueType = expected;
-        _this.fieldPath = path;
-        _this.receivedValue = value;
-        return _this;
+class ValidationError extends TypeError {
+    constructor(path, expected, value) {
+        super("Value does not conform the data type structure definition.");
+        this._validation_error = true;
+        this.expectedValueType = expected;
+        this.fieldPath = path;
+        this.receivedValue = value;
     }
-    ValidationError.isValidationError = function (e) {
+    static isValidationError(e) {
         return (typeof e === "object" &&
             e !== null &&
             e instanceof Error &&
             "_validation_error" in e);
-    };
-    return ValidationError;
-}(TypeError));
+    }
+}
 exports.ValidationError = ValidationError;

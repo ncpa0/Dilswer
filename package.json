@@ -2,10 +2,6 @@
   "name": "dilswer",
   "version": "1.0.3",
   "main": "./dist/index.js",
-  "exports": {
-    ".": "./dist",
-    "./decorators": "./dist/decorators/index.js"
-  },
   "license": "MIT",
   "repository": {
     "url": "https://github.com/ncpa0cpl/Dilswer"
