@@ -8,6 +8,7 @@ import {
 } from "./checker-machine/create-validated-function";
 import { ensureDataType } from "./checker-machine/ensure-data-type";
 import { DataType } from "./schame-construction-helpers";
+import { And, Exclude, Omit, Partial, Pick, Required } from "./utilities";
 
 export default {
   createChecker,
@@ -15,6 +16,12 @@ export default {
   createTypeGuardedFunction,
   createValidatedFunction,
   ensureDataType,
+  And,
+  Exclude,
+  Omit,
+  Partial,
+  Pick,
+  Required,
   DataType,
 };
 
@@ -43,3 +50,4 @@ export {
   RecordTypeSchema as TypeSchema,
   SetOf,
 } from "./types";
+export * from "./utilities";
