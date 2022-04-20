@@ -1,3 +1,4 @@
+import { dataTypeSymbol } from "../schame-construction-helpers";
 import type { BasicDataType, OneOf } from "../types";
 import type { ExcludeOneOf } from "./types";
 
@@ -10,6 +11,7 @@ export const Exclude = <U extends OneOf, E extends BasicDataType>(
   ...excludeTypes: E[]
 ): ExcludeOneOf<U, E> => {
   return {
+    [dataTypeSymbol]: true,
     oneOf: union.oneOf.filter((t) => !excludeTypes.includes(t)),
   };
 };

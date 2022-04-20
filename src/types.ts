@@ -1,33 +1,43 @@
-import type { BasicDataTypes } from "./schame-construction-helpers";
+import type {
+  BasicDataTypes,
+  dataTypeSymbol,
+} from "./schame-construction-helpers";
 import type { ValueOf } from "./type-utils";
 
 export type ArrayOf<DT extends AllDataTypes[] = any[]> = {
+  readonly [dataTypeSymbol]: true;
   readonly arrayOf: DT;
 };
 
 export type RecordOf<TS extends RecordTypeSchema = RecordTypeSchema> = {
+  readonly [dataTypeSymbol]: true;
   readonly recordOf: TS;
 };
 
 export type SetOf<DT extends AllDataTypes[] = any[]> = {
+  readonly [dataTypeSymbol]: true;
   readonly setOf: DT;
 };
 
 export type OneOf<DT extends AllDataTypes[] = any[]> = {
+  readonly [dataTypeSymbol]: true;
   readonly oneOf: DT;
 };
 
 export type Literal<
   V extends string | number | boolean = string | number | boolean
 > = {
+  readonly [dataTypeSymbol]: true;
   readonly literal: V;
 };
 
 export type Enum<E = any> = {
+  readonly [dataTypeSymbol]: true;
   readonly enumInstance: E;
 };
 
 export type EnumMember<M = any> = {
+  readonly [dataTypeSymbol]: true;
   readonly enumMember: M;
 };
 
@@ -49,4 +59,6 @@ export type FieldDescriptor = {
   readonly type: AllDataTypes;
 };
 
-export type RecordTypeSchema = Readonly<Record<string, FieldDescriptor>>;
+export interface RecordTypeSchema {
+  readonly [key: string]: FieldDescriptor | AllDataTypes;
+}

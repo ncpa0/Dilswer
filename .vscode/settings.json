@@ -4,5 +4,6 @@
     "source.organizeImports": true,
     "source.fixAll.eslint": true
   },
-  "cSpell.words": ["dilswer"]
+  "cSpell.words": ["dilswer"],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }

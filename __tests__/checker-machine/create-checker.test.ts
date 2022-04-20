@@ -705,6 +705,39 @@ describe("createChecker", () => {
         expect(checker({ foo: "undefined", bar: null })).toEqual(false);
         expect(checker({ foo: undefined, bar: "null" })).toEqual(false);
       });
+
+      it("should correctly parse the new record syntax", () => {
+        const def = DataType.RecordOf({
+          foo: DataType.String,
+          bar: DataType.ArrayOf(DataType.String, DataType.Number),
+          baz: DataType.RecordOf({
+            qux: DataType.Boolean,
+          }),
+          optional: { type: DataType.Number, required: false },
+        });
+
+        const validate = createChecker(def);
+
+        expect(validate({ foo: "foo", bar: [1], baz: { qux: true } })).toEqual(
+          true
+        );
+        expect(
+          validate({ foo: "", bar: [""], baz: { qux: false }, optional: 10 })
+        ).toEqual(true);
+        expect(
+          validate({ bar: [""], baz: { qux: false }, optional: 10 })
+        ).toEqual(false);
+        expect(
+          validate({ foo: 0, bar: [""], baz: { qux: false }, optional: 10 })
+        ).toEqual(false);
+        expect(
+          validate({ foo: "", baz: { qux: false }, optional: 10 })
+        ).toEqual(false);
+        expect(validate({ foo: "", bar: [""], optional: 10 })).toEqual(false);
+        expect(
+          validate({ foo: "", bar: [""], baz: { qux: false }, optional: "10" })
+        ).toEqual(false);
+      });
     });
 
     describe("for sets", () => {

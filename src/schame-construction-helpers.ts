@@ -10,6 +10,8 @@ import type {
   SetOf,
 } from "./types";
 
+export const dataTypeSymbol: unique symbol = Symbol();
+
 export const BasicDataTypes = {
   Unknown: "unknown",
   String: "string",
@@ -24,22 +26,40 @@ export const BasicDataTypes = {
 export const DataType = {
   ...BasicDataTypes,
   RecordOf<TS extends RecordTypeSchema>(args: TS): RecordOf<TS> {
-    return { recordOf: args };
+    return {
+      [dataTypeSymbol]: true,
+      recordOf: args,
+    };
   },
   ArrayOf<DT extends AllDataTypes[]>(...args: DT): ArrayOf<DT> {
-    return { arrayOf: args };
+    return {
+      [dataTypeSymbol]: true,
+      arrayOf: args,
+    };
   },
   SetOf<DT extends AllDataTypes[]>(...args: DT): SetOf<DT> {
-    return { setOf: args };
+    return {
+      [dataTypeSymbol]: true,
+      setOf: args,
+    };
   },
   OneOf<DT extends AllDataTypes[]>(...args: DT): OneOf<DT> {
-    return { oneOf: args };
+    return {
+      [dataTypeSymbol]: true,
+      oneOf: args,
+    };
   },
   Literal<V extends string | number | boolean>(value: V): Literal<V> {
-    return { literal: value };
+    return {
+      [dataTypeSymbol]: true,
+      literal: value,
+    };
   },
   EnumMember<M extends number | string>(enumMember: M): EnumMember<M> {
-    return { enumMember };
+    return {
+      [dataTypeSymbol]: true,
+      enumMember,
+    };
   },
   Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
     [key in T]: TEnumValue;

@@ -1,3 +1,4 @@
+import { dataTypeSymbol } from "../schame-construction-helpers";
 import type { RecordOf, RecordTypeSchema } from "../types";
 import type { SumRecord } from "./types";
 
@@ -10,17 +11,18 @@ export const And = <R1 extends RecordTypeSchema, R2 extends RecordTypeSchema>(
   recordDataTypeB: RecordOf<R2>
 ): SumRecord<R1, R2> => {
   return {
+    [dataTypeSymbol]: true,
     recordOf: {
       ...(Object.fromEntries(
         Object.entries(recordDataTypeA.recordOf).map(([key, desc]) => [
           key,
-          { ...desc },
+          typeof desc === "object" && desc !== null ? { ...desc } : desc,
         ])
       ) as R1),
       ...(Object.fromEntries(
         Object.entries(recordDataTypeB.recordOf).map(([key, desc]) => [
           key,
-          { ...desc },
+          typeof desc === "object" && desc !== null ? { ...desc } : desc,
         ])
       ) as R2),
     },

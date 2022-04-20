@@ -1,3 +1,5 @@
+import { dataTypeSymbol } from "../schame-construction-helpers";
+import { isFieldDescriptor } from "../shared/is-field-descriptor";
 import type { RecordOf, RecordTypeSchema } from "../types";
 import type { RequiredRecord } from "./types";
 
@@ -9,10 +11,13 @@ export const Required = <R extends RecordTypeSchema>(
   recordDataType: RecordOf<R>
 ): RequiredRecord<R> => {
   return {
+    [dataTypeSymbol]: true,
     recordOf: Object.fromEntries(
       Object.entries(recordDataType.recordOf).map(([key, descriptor]) => [
         key,
-        { ...descriptor, required: true },
+        isFieldDescriptor(descriptor)
+          ? { ...descriptor, required: true }
+          : { type: descriptor, required: true },
       ])
     ) as any,
   };

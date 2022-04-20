@@ -1,3 +1,5 @@
+import { dataTypeSymbol } from "../schame-construction-helpers";
+import { isFieldDescriptor } from "../shared/is-field-descriptor";
 import type { RecordOf, RecordTypeSchema } from "../types";
 import type { PartialRecord } from "./types";
 
@@ -9,10 +11,13 @@ export const Partial = <R extends RecordTypeSchema>(
   recordDataType: RecordOf<R>
 ): PartialRecord<R> => {
   return {
+    [dataTypeSymbol]: true,
     recordOf: Object.fromEntries(
       Object.entries(recordDataType.recordOf).map(([key, descriptor]) => [
         key,
-        { ...descriptor, required: false },
+        isFieldDescriptor(descriptor)
+          ? { ...descriptor, required: false }
+          : { type: descriptor, required: false },
       ])
     ) as any,
   };

@@ -1,16 +1,21 @@
 import type {
+  AllDataTypes,
   BasicDataType,
+  FieldDescriptor,
   OneOf,
   RecordOf,
   RecordTypeSchema,
 } from "../types";
 
+type GetType<T extends AllDataTypes | FieldDescriptor> =
+  T extends FieldDescriptor ? T["type"] : T;
+
 export type RequiredRecord<R extends RecordTypeSchema> = RecordOf<{
-  [K in keyof R]: { required: true; type: R[K]["type"] };
+  [K in keyof R]: { required: true; type: GetType<R[K]> };
 }>;
 
 export type PartialRecord<R extends RecordTypeSchema> = RecordOf<{
-  [K in keyof R]: { required: false; type: R[K]["type"] };
+  [K in keyof R]: { required: false; type: GetType<R[K]> };
 }>;
 
 export type OmitRecord<
