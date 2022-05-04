@@ -19,7 +19,7 @@
     "typescript"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p ./tsconfig.build.json",
     "test": "jest --coverage",
     "tsc": "tsc --noEmit",
     "lint": "eslint ."
