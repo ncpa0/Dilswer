@@ -372,7 +372,7 @@ enum MyEnum {
   B = "VALUE_B",
 }
 
-const foo = DataType.Enum(MyEnum.A);
+const foo = DataType.EnumMember(MyEnum.A);
 
 type T = GetDataType<typeof foo>; // type T = MyEnum.A
 
