@@ -3,9 +3,9 @@ import { createChecker, DataType } from "../../src";
 describe("createChecker", () => {
   describe("for primitives", () => {
     it("should validate against a string", () => {
-      const validator = DataType.String;
+      const typeDef = DataType.String;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker("foo")).toEqual(true);
 
@@ -21,9 +21,9 @@ describe("createChecker", () => {
     });
 
     it("should validate against a number", () => {
-      const validator = DataType.Number;
+      const typeDef = DataType.Number;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker(1)).toEqual(true);
 
@@ -39,9 +39,9 @@ describe("createChecker", () => {
     });
 
     it("should validate against a boolean", () => {
-      const validator = DataType.Boolean;
+      const typeDef = DataType.Boolean;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker(false)).toEqual(true);
       expect(checker(true)).toEqual(true);
@@ -58,9 +58,9 @@ describe("createChecker", () => {
     });
 
     it("should validate against a symbol", () => {
-      const validator = DataType.Symbol;
+      const typeDef = DataType.Symbol;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker(Symbol())).toEqual(true);
 
@@ -76,9 +76,9 @@ describe("createChecker", () => {
     });
 
     it("should validate against a null", () => {
-      const validator = DataType.Null;
+      const typeDef = DataType.Null;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker(null)).toEqual(true);
 
@@ -94,9 +94,9 @@ describe("createChecker", () => {
     });
 
     it("should validate against a undefined", () => {
-      const validator = DataType.Undefined;
+      const typeDef = DataType.Undefined;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker(undefined)).toEqual(true);
 
@@ -112,9 +112,9 @@ describe("createChecker", () => {
     });
 
     it("should validate against unknown", () => {
-      const validator = DataType.Unknown;
+      const typeDef = DataType.Unknown;
 
-      const checker = createChecker(validator);
+      const checker = createChecker(typeDef);
 
       expect(checker(null)).toEqual(true);
       expect(checker(undefined)).toEqual(true);
@@ -132,9 +132,9 @@ describe("createChecker", () => {
   describe("for complex types", () => {
     describe("for literals", () => {
       it("should validate against a string literal", () => {
-        const validator = DataType.Literal("foo");
+        const typeDef = DataType.Literal("foo");
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker("foo")).toEqual(true);
 
@@ -153,9 +153,9 @@ describe("createChecker", () => {
       });
 
       it("should validate against a numeric literal", () => {
-        const validator = DataType.Literal(69);
+        const typeDef = DataType.Literal(69);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(69)).toEqual(true);
 
@@ -175,9 +175,9 @@ describe("createChecker", () => {
       });
 
       it("should validate against a boolean literal", () => {
-        const validator = DataType.Literal(false);
+        const typeDef = DataType.Literal(false);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(false)).toEqual(true);
 
@@ -194,9 +194,9 @@ describe("createChecker", () => {
 
     describe("for unions", () => {
       it("should validate a union of string type", () => {
-        const validator = DataType.OneOf(DataType.String);
+        const typeDef = DataType.OneOf(DataType.String);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker("foobarbaz")).toEqual(true);
 
@@ -212,9 +212,9 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of number type", () => {
-        const validator = DataType.OneOf(DataType.Number);
+        const typeDef = DataType.OneOf(DataType.Number);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(1)).toEqual(true);
 
@@ -230,9 +230,9 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of boolean type", () => {
-        const validator = DataType.OneOf(DataType.Boolean);
+        const typeDef = DataType.OneOf(DataType.Boolean);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(true)).toEqual(true);
         expect(checker(false)).toEqual(true);
@@ -249,9 +249,9 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of string and numbers", () => {
-        const validator = DataType.OneOf(DataType.String, DataType.Number);
+        const typeDef = DataType.OneOf(DataType.String, DataType.Number);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker("foo")).toEqual(true);
         expect(checker(123)).toEqual(true);
@@ -267,9 +267,9 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of boolean and null", () => {
-        const validator = DataType.OneOf(DataType.Boolean, DataType.Null);
+        const typeDef = DataType.OneOf(DataType.Boolean, DataType.Null);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(null)).toEqual(true);
         expect(checker(true)).toEqual(true);
@@ -284,9 +284,9 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of booleans and symbols", () => {
-        const validator = DataType.OneOf(DataType.Boolean, DataType.Symbol);
+        const typeDef = DataType.OneOf(DataType.Boolean, DataType.Symbol);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(false)).toEqual(true);
         expect(checker(true)).toEqual(true);
@@ -307,9 +307,9 @@ describe("createChecker", () => {
           BAR = "BAR",
         }
 
-        const validator = DataType.OneOf(DataType.Enum(T), DataType.Symbol);
+        const typeDef = DataType.OneOf(DataType.Enum(T), DataType.Symbol);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(T.FOO)).toEqual(true);
         expect(checker(T.BAR)).toEqual(true);
@@ -327,13 +327,13 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of functions, string and numbers", () => {
-        const validator = DataType.OneOf(
+        const typeDef = DataType.OneOf(
           DataType.Function,
           DataType.String,
           DataType.Number
         );
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker("foo")).toEqual(true);
         expect(checker(123)).toEqual(true);
@@ -349,7 +349,7 @@ describe("createChecker", () => {
       });
 
       it("should validate a union of functions, string and arrays of objects with foo property", () => {
-        const validator = DataType.OneOf(
+        const typeDef = DataType.OneOf(
           DataType.Function,
           DataType.String,
           DataType.ArrayOf(
@@ -359,7 +359,7 @@ describe("createChecker", () => {
           )
         );
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker("foo")).toEqual(true);
         expect(checker(() => {})).toEqual(true);
@@ -379,12 +379,12 @@ describe("createChecker", () => {
       });
 
       it("should validate for an array of string or array of number", () => {
-        const validator = DataType.OneOf(
+        const typeDef = DataType.OneOf(
           DataType.ArrayOf(DataType.String),
           DataType.ArrayOf(DataType.Number)
         );
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([])).toEqual(true);
         expect(checker(["foo", "bar", "baz"])).toEqual(true);
@@ -397,7 +397,7 @@ describe("createChecker", () => {
       });
 
       it("should validate against a union of similar records", () => {
-        const validator = DataType.OneOf(
+        const typeDef = DataType.OneOf(
           DataType.RecordOf({
             id: { type: DataType.Literal("1") },
             value: { type: DataType.Number },
@@ -413,7 +413,7 @@ describe("createChecker", () => {
           })
         );
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker({ id: "1", value: 1 })).toEqual(true);
         expect(checker({ id: "2", value: "2" })).toEqual(true);
@@ -442,9 +442,9 @@ describe("createChecker", () => {
 
     describe("for arrays", () => {
       it("should validate against any array when type is unknown", () => {
-        const validator = DataType.ArrayOf(DataType.Unknown);
+        const typeDef = DataType.ArrayOf(DataType.Unknown);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([])).toEqual(true);
         expect(checker([1])).toEqual(true);
@@ -464,9 +464,9 @@ describe("createChecker", () => {
       });
 
       it("should validate against simple array of string", () => {
-        const validator = DataType.ArrayOf(DataType.String);
+        const typeDef = DataType.ArrayOf(DataType.String);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([])).toEqual(true);
         expect(checker(["foo"])).toEqual(true);
@@ -487,9 +487,9 @@ describe("createChecker", () => {
           FOO = "FOO",
           BAR = "BAR",
         }
-        const validator = DataType.ArrayOf(DataType.Enum(T));
+        const typeDef = DataType.ArrayOf(DataType.Enum(T));
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([])).toEqual(true);
         expect(checker([T.BAR])).toEqual(true);
@@ -509,9 +509,9 @@ describe("createChecker", () => {
       });
 
       it("should validate against array of functions or booleans", () => {
-        const validator = DataType.ArrayOf(DataType.Function, DataType.Boolean);
+        const typeDef = DataType.ArrayOf(DataType.Function, DataType.Boolean);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([true, false])).toEqual(true);
         expect(checker([() => {}])).toEqual(true);
@@ -530,9 +530,9 @@ describe("createChecker", () => {
       });
 
       it("should validate against array of undefined or nulls", () => {
-        const validator = DataType.ArrayOf(DataType.Null, DataType.Undefined);
+        const typeDef = DataType.ArrayOf(DataType.Null, DataType.Undefined);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([])).toEqual(true);
         expect(checker([null])).toEqual(true);
@@ -556,12 +556,12 @@ describe("createChecker", () => {
       });
 
       it("should validate against nested arrays", () => {
-        const validator = DataType.ArrayOf(
+        const typeDef = DataType.ArrayOf(
           DataType.ArrayOf(DataType.Number),
           DataType.ArrayOf(DataType.ArrayOf(DataType.String))
         );
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker([])).toEqual(true);
         expect(checker([[], [], []])).toEqual(true);
@@ -580,9 +580,9 @@ describe("createChecker", () => {
 
     describe("for records", () => {
       it("should not validate null for empty objects", () => {
-        const validator = DataType.RecordOf({});
+        const typeDef = DataType.RecordOf({});
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker({})).toEqual(true);
 
@@ -591,12 +591,12 @@ describe("createChecker", () => {
       });
 
       it("should validate for optional properties", () => {
-        const validator = DataType.RecordOf({
+        const typeDef = DataType.RecordOf({
           foo: { required: true, type: DataType.String },
           bar: { required: false, type: DataType.Number },
         });
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker({ foo: "foo" })).toEqual(true);
         expect(checker({ foo: "foo", bar: 1 })).toEqual(true);
@@ -606,13 +606,13 @@ describe("createChecker", () => {
       });
 
       it("should validate for simple records", () => {
-        const validator = DataType.RecordOf({
+        const typeDef = DataType.RecordOf({
           foo: { type: DataType.String },
           bar: { type: DataType.Number },
           baz: { type: DataType.Unknown },
         });
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker({ foo: "foo", bar: 123, baz: true })).toEqual(true);
         expect(checker({ foo: "", bar: 0, baz: [] })).toEqual(true);
@@ -638,7 +638,7 @@ describe("createChecker", () => {
           BAR = "BAR",
         }
 
-        const validator = DataType.RecordOf({
+        const typeDef = DataType.RecordOf({
           foo: { type: DataType.String },
           bar: {
             type: DataType.RecordOf({
@@ -653,7 +653,7 @@ describe("createChecker", () => {
           },
         });
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(
           checker({
@@ -688,12 +688,12 @@ describe("createChecker", () => {
       });
 
       it("should correctly validate against a record with undefined and null properties", () => {
-        const validator = DataType.RecordOf({
+        const typeDef = DataType.RecordOf({
           foo: { type: DataType.Undefined },
           bar: { type: DataType.Null },
         });
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker({ foo: undefined, bar: null })).toEqual(true);
 
@@ -707,7 +707,7 @@ describe("createChecker", () => {
       });
 
       it("should correctly parse the new record syntax", () => {
-        const def = DataType.RecordOf({
+        const typeDef = DataType.RecordOf({
           foo: DataType.String,
           bar: DataType.ArrayOf(DataType.String, DataType.Number),
           baz: DataType.RecordOf({
@@ -716,7 +716,7 @@ describe("createChecker", () => {
           optional: { type: DataType.Number, required: false },
         });
 
-        const validate = createChecker(def);
+        const validate = createChecker(typeDef);
 
         expect(validate({ foo: "foo", bar: [1], baz: { qux: true } })).toEqual(
           true
@@ -742,9 +742,9 @@ describe("createChecker", () => {
 
     describe("for sets", () => {
       it("should validate for set of numbers", () => {
-        const validator = DataType.SetOf(DataType.Number);
+        const typeDef = DataType.SetOf(DataType.Number);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(new Set())).toEqual(true);
         expect(checker(new Set([1, 2, 3]))).toEqual(true);
@@ -763,9 +763,9 @@ describe("createChecker", () => {
       });
 
       it("should validate for set of functions", () => {
-        const validator = DataType.SetOf(DataType.Function);
+        const typeDef = DataType.SetOf(DataType.Function);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(new Set())).toEqual(true);
         expect(checker(new Set([() => {}]))).toEqual(true);
@@ -784,9 +784,9 @@ describe("createChecker", () => {
       });
 
       it("should validate for set of symbols or strings", () => {
-        const validator = DataType.SetOf(DataType.Symbol, DataType.String);
+        const typeDef = DataType.SetOf(DataType.Symbol, DataType.String);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(new Set())).toEqual(true);
         expect(checker(new Set([Symbol()]))).toEqual(true);
@@ -809,12 +809,12 @@ describe("createChecker", () => {
       });
 
       it("should validate for set of records or undefined", () => {
-        const validator = DataType.SetOf(
+        const typeDef = DataType.SetOf(
           DataType.Undefined,
           DataType.RecordOf({ foo: { type: DataType.String } })
         );
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(new Set())).toEqual(true);
         expect(checker(new Set([undefined]))).toEqual(true);
@@ -845,9 +845,9 @@ describe("createChecker", () => {
           C = "C",
         }
 
-        const validator = DataType.Enum(Foo);
+        const typeDef = DataType.Enum(Foo);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(Foo.A)).toEqual(true);
         expect(checker(Foo.B)).toEqual(true);
@@ -878,9 +878,9 @@ describe("createChecker", () => {
           C,
         }
 
-        const validator = DataType.Enum(Foo);
+        const typeDef = DataType.Enum(Foo);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(Foo.A)).toEqual(true);
         expect(checker(Foo.B)).toEqual(true);
@@ -912,9 +912,9 @@ describe("createChecker", () => {
           C = "C",
         }
 
-        const validator = DataType.EnumMember(Foo.A);
+        const typeDef = DataType.EnumMember(Foo.A);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(Foo.A)).toEqual(true);
         expect(checker("A")).toEqual(true);
@@ -945,9 +945,9 @@ describe("createChecker", () => {
           C,
         }
 
-        const validator = DataType.EnumMember(Foo.A);
+        const typeDef = DataType.EnumMember(Foo.A);
 
-        const checker = createChecker(validator);
+        const checker = createChecker(typeDef);
 
         expect(checker(Foo.A)).toEqual(true);
         expect(checker(0)).toEqual(true);
