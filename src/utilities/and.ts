@@ -1,4 +1,4 @@
-import { dataTypeSymbol } from "../schame-construction-helpers";
+import { dataTypeSymbol } from "../type-def-helpers";
 import type { RecordOf, RecordTypeSchema } from "../types";
 import type { SumRecord } from "./types";
 

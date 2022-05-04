@@ -1,4 +1,4 @@
-import { dataTypeSymbol } from "../schame-construction-helpers";
+import { dataTypeSymbol } from "../type-def-helpers";
 import type { AllDataTypes, FieldDescriptor } from "../types";
 
 export const isFieldDescriptor = (

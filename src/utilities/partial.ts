@@ -1,5 +1,5 @@
-import { dataTypeSymbol } from "../schame-construction-helpers";
 import { isFieldDescriptor } from "../shared/is-field-descriptor";
+import { dataTypeSymbol } from "../type-def-helpers";
 import type { RecordOf, RecordTypeSchema } from "../types";
 import type { PartialRecord } from "./types";
 

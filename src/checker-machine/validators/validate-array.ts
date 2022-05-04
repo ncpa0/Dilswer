@@ -1,5 +1,5 @@
 import type { AllDataTypes } from "../..";
-import { DataType } from "../../schame-construction-helpers";
+import { DataType } from "../../type-def-helpers";
 import type { ArrayOf } from "../../types";
 import { ValidationError } from "../validation-error/validation-error";
 import { validateOneOf } from "./validate-one-of";

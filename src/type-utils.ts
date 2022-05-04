@@ -1,5 +1,5 @@
 import type { AllDataTypes } from ".";
-import type { dataTypeSymbol } from "./schame-construction-helpers";
+import type { dataTypeSymbol } from "./type-def-helpers";
 import type {
   ArrayOf,
   BasicDataType,

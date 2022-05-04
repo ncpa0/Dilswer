@@ -1,7 +1,4 @@
-import type {
-  BasicDataTypes,
-  dataTypeSymbol,
-} from "./schame-construction-helpers";
+import type { BasicDataTypes, dataTypeSymbol } from "./type-def-helpers";
 import type { ValueOf } from "./type-utils";
 
 export type ArrayOf<DT extends AllDataTypes[] = any[]> = {
