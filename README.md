@@ -5,11 +5,51 @@ Small and lightweight data validation library with TypeScript integration.
 Keep your type definitions in one place, and have but one source of truth for
 both the runtime validation types and the TypeScript type definitions.
 
+## Table Of Contents
+
+1. [Quick Start](#quick-start)
+   1. [Create type definitions](#create-type-definitions)
+   2. [Create a TypeScript type from a Dilswer definition](#create-a-typescript-type-from-a-dilswer-definition)
+   3. [Create a validation function](#create-a-validation-function)
+   4. [Create a function with a validated input](#create-a-function-with-a-validated-input)
+2. [Motivation](#motivation)
+3. [Main exported functions](#main-exported-functions)
+    1. [createValidator()](#dilswer.createvalidator())
+    2. [createChecker()](#dilswer.createchecker())
+    3. [createTypeGuardedFunction()](#dilswer.createtypeguardedfunction())
+    4. [createValidatedFunction()](#dilswer.createvalidatedfunction())
+    5. [ensureDataType()](#dilswer.ensuredatatype())
+    6. [DataType](#dilswer.datatype())
+4. [Data Types](#data-types)
+    1. [String](#datatype.string)
+    2. [Number](#datatype.number)
+    3. [Boolean](#datatype.boolean)
+    4. [Symbol](#datatype.symbol)
+    5. [Null](#datatype.null)
+    6. [Undefined](#datatype.undefined)
+    7. [Function](#datatype.function)
+    8. [Unknown](#datatype.unknown)
+    9. [OneOf](#datatype.oneof(...datatype's))
+    10. [ArrayOf](#datatype.arrayof(...datatype's))
+    11. [RecordOf](#datatype.recordof(record<string,-fielddescriptor>))
+    12. [SetOf](#datatype.setof(...datatype's))
+    13. [Literal](#datatype.literal(string-|-number-|-boolean))
+    14. [Enum](#datatype.enum(enum))
+    15. [EnumMember](#datatype.enummember(enum-member))
+5. [Utility Functions](#utility-functions)
+    1. [And](#and())
+    1. [Omit](#omit())
+    1. [Pick](#pick())
+    1. [Partial](#partial())
+    1. [Required](#required())
+    1. [Exclude](#exclude())
+
 ## Quick Start
 
 #### Create type definitions
 
 ```ts
+// person-type.ts
 import { DataType } from "dilswer";
 
 export const PersonDataType = DataType.RecordOf({
@@ -43,10 +83,10 @@ type Person = GetDataType<typeof PersonDataType>;
 #### Create a validation function
 
 ```ts
-import { createChecker } from "dilswer";
+import { createValidator } from "dilswer";
 import { PersonDataType } from "./person-type.ts";
 
-const isPerson = createChecker(PersonDataType);
+const isPerson = createValidator(PersonDataType);
 
 // Result:
 // const isPerson: (data: unknown) => data is {
@@ -72,7 +112,7 @@ if (isPerson(person)) {
 #### Create a function with a validated input
 
 ```ts
-import { createChecker } from "dilswer";
+import { createValidator } from "dilswer";
 import { PersonDataType } from "./person-type.ts";
 
 const processPerson = createValidatedFunction(
@@ -123,7 +163,7 @@ TypeScript engine and the data validation library.
 then validate data at runtime with against it or infer a TypeScript type
 directly from it.
 
-## Dilswer Exports
+## Main exported functions
 
 #### dilswer.createValidator()
 
@@ -247,17 +287,18 @@ type T = GetDataType<typeof foo>; // type T = (string | number)[]
 #### DataType.RecordOf(Record<string, FieldDescriptor>)
 
 will match any object which structure matches the key-value pairs of object
-properties and FieldDescriptor objects passed to the argument.
+properties and FieldDescriptor's passed to the argument.
 
 Example
 
 ```ts
 const foo = DataType.RecordOf({
+  foo: DataType.Boolean,
   bar: { type: DataType.String },
   baz: { type: DataType.Number, required: false },
 });
 
-type T = GetDataType<typeof foo>; // type T = {bar: string, baz?: number | undefined}
+type T = GetDataType<typeof foo>; // type T = {foo: boolean, bar: string, baz?: number | undefined}
 ```
 
 #### DataType.SetOf(...DataType's)
@@ -314,9 +355,10 @@ const foo = DataType.Enum(MyEnum);
 
 type T = GetDataType<typeof foo>; // type T = MyEnum
 
-const validate = createChecker(foo);
+const validate = createValidator(foo);
 
 validate(MyEnum.A); // => true
+validate(MyEnum.B); // => true
 ```
 
 #### DataType.EnumMember(enum member)
@@ -334,9 +376,129 @@ const foo = DataType.Enum(MyEnum.A);
 
 type T = GetDataType<typeof foo>; // type T = MyEnum.A
 
-const validate = createChecker(foo);
+const validate = createValidator(foo);
 
 validate("VALUE_A"); // => true
 validate(MyEnum.A); // => true
 validate(MyEnum.B); // => false
+```
+
+### Utility Functions
+
+#### And()
+
+`And()` utility function can combine two Record Type Definitions into one. If
+any of the properties between the two combined Type Defs have the same key-name,
+the definition of the second one takes priority.
+
+```ts
+const typeDefOne = DataType.RecordOf({
+  foo: DataType.Number,
+  bar: DataType.Number,
+});
+
+const typeDefTwo = DataType.RecordOf({
+  bar: DataType.ArrayOf(DataType.String),
+  baz: DataType.Boolean,
+});
+
+const typeDefSum = And(typeDefOne, typeDefTwo);
+// typeDefSum = {
+//    foo: number;
+//    bar: string[];
+//    baz: boolean;
+// }
+```
+
+#### Omit()
+
+`Omit()` utility function removes specified keys from a Record Type Definition.
+
+```ts
+const typeDefOne = DataType.RecordOf({
+  foo: DataType.Number,
+  bar: DataType.Number,
+  baz: DataType.Number,
+  qux: DataType.Number,
+});
+
+const typeDefOmitted = Omit(typeDefOne, "bar", "qux");
+// typeDefOmitted = {
+//    foo: number;
+//    baz: number;
+// }
+```
+
+#### Pick()
+
+`Pick()` utility function removes all not specified keys from a Record Type
+Definition.
+
+```ts
+const typeDefOne = DataType.RecordOf({
+  foo: DataType.Number,
+  bar: DataType.Number,
+  baz: DataType.Number,
+  qux: DataType.Number,
+});
+
+const typeDefPick = Pick(typeDefOne, "bar", "qux");
+// typeDefPick = {
+//    bar: number;
+//    qux: number;
+// }
+```
+
+#### Partial()
+
+`Partial()` utility type makes all the Record's Type Definition keys optional.
+
+```ts
+const typeDefOne = DataType.RecordOf({
+  foo: DataType.Number,
+  bar: DataType.String,
+  baz: DataType.ArrayOf(DataType.Number),
+});
+
+const typeDefPartial = Partial(typeDefOne);
+// typeDefPartial = {
+//    foo?: number | undefined;
+//    bar?: string | undefined;
+//    baz?: number[] | undefined;
+// }
+```
+
+#### Required()
+
+`Required()` utility type makes all the Record's Type Definition keys to be
+required (vs optional).
+
+```ts
+const typeDefOne = DataType.RecordOf({
+  foo: { type: DataType.Number, required: false },
+  bar: { type: DataType.String, required: false },
+  baz: { type: DataType.ArrayOf(DataType.Number), required: false },
+});
+
+const typeDefRequired = Required(typeDefOne);
+// typeDefRequired = {
+//    foo: number;
+//    bar: string;
+//    baz: number[];
+// }
+```
+
+#### Exclude()
+
+`Exclude()` utility function removes Type Definitions from an Type Def union.
+
+```ts
+const typeDefOne = DataType.OneOf(
+  DataType.String,
+  DataType.Number,
+  DataType.Boolean
+);
+
+const typeDefExcluded = Exclude(typeDefOne, DataType.Number);
+// typeDefExcluded = string | boolean;
 ```
