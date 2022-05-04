@@ -1,5 +1,8 @@
 import type { AllDataTypes } from ".";
-import type { ArrayOf, BasicDataType, ComplexDataType, Enum, EnumMember, Literal, OneOf, RecordOf, RecordTypeSchema, SetOf } from "./types";
+import type { dataTypeSymbol } from "./type-def-helpers";
+import type { ArrayOf, BasicDataType, ComplexDataType, Enum, EnumMember, FieldDescriptor, Literal, OneOf, RecordOf, RecordTypeSchema, SetOf } from "./types";
+declare type GetDescriptorType<T extends AllDataTypes | FieldDescriptor> = T extends FieldDescriptor ? T["type"] : T;
+declare type IsRequiredDescriptor<T extends AllDataTypes | FieldDescriptor> = T extends FieldDescriptor ? T["required"] : true;
 export declare type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T> ? T : never;
 export declare type UnknownFunction = (...args: unknown[]) => unknown;
 export declare type ReWrap<T> = T extends Function ? T : T extends Set<infer ST> ? Set<ReWrap<ST>> : T extends object ? T extends infer O ? {
@@ -7,12 +10,12 @@ export declare type ReWrap<T> = T extends Function ? T : T extends Set<infer ST>
 } : never : T;
 export declare type EnsureStringType<T> = T extends string ? T : string;
 export declare type ExcludeRequired<S extends RecordTypeSchema> = EnsureStringType<Exclude<ValueOf<{
-    [K in keyof S]: S[K]["required"] extends false ? K : undefined;
+    [K in keyof S]: IsRequiredDescriptor<S[K]> extends false ? K : undefined;
 }>, undefined>>;
 export declare type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<Exclude<ValueOf<{
-    [K in keyof S]: S[K]["required"] extends false ? undefined : K;
+    [K in keyof S]: IsRequiredDescriptor<S[K]> extends false ? undefined : K;
 }>, undefined>>;
-export declare type EnsureIsKey<K> = K extends "arrayOf" | "recordOf" | "setOf" | "oneOf" | "literal" | "enumInstance" | "enumMember" ? K : "recordOf";
+export declare type EnsureIsKey<K> = K extends "arrayOf" | "recordOf" | "setOf" | "oneOf" | "literal" | "enumInstance" | "enumMember" ? K : "invalid";
 export declare type GetTypeFromArrayOf<D extends ComplexDataType> = D extends ArrayOf<infer T> ? T[number] : never;
 export declare type GetFieldDescriptorsFromSetOf<D extends ComplexDataType> = D extends SetOf<infer T> ? T[number] : never;
 export declare type GetTypeFromRecordOf<D extends ComplexDataType> = D extends RecordOf<any> ? D : never;
@@ -28,7 +31,8 @@ export declare type ParseComplexType<D extends ComplexDataType> = {
     literal: GetTypeFromLiteral<D>;
     enumInstance: GetTypeFromEnum<D>;
     enumMember: GetTypeFromEnumMember<D>;
-}[EnsureIsKey<keyof D>];
+    invalid: never;
+}[EnsureIsKey<Exclude<keyof D, typeof dataTypeSymbol>>];
 export declare type ParseBasicDataType<D extends BasicDataType> = {
     unknown: unknown;
     string: string;
@@ -41,8 +45,9 @@ export declare type ParseBasicDataType<D extends BasicDataType> = {
 }[D];
 export declare type ParseDataType<D> = D extends BasicDataType ? ParseBasicDataType<D> : D extends ComplexDataType ? ParseComplexType<D> : never;
 export declare type ParseRecordType<S extends RecordOf> = {
-    [K in ExcludeRequired<S["recordOf"]>]?: ParseDataType<S["recordOf"][K]["type"]>;
+    [K in ExcludeRequired<S["recordOf"]>]?: ParseDataType<GetDescriptorType<S["recordOf"][K]>>;
 } & {
-    [K in ExcludeOptional<S["recordOf"]>]: ParseDataType<S["recordOf"][K]["type"]>;
+    [K in ExcludeOptional<S["recordOf"]>]: ParseDataType<GetDescriptorType<S["recordOf"][K]>>;
 };
 export declare type GetDataType<D extends AllDataTypes> = ReWrap<ParseDataType<D>>;
+export {};
