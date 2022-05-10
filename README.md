@@ -15,11 +15,10 @@ both the runtime validation types and the TypeScript type definitions.
 2. [Motivation](#motivation)
 3. [Main exported functions](#main-exported-functions)
    1. [createValidator()](#dilswercreatevalidator)
-   2. [createChecker()](#dilswercreatechecker)
-   3. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
-   4. [createValidatedFunction()](#dilswercreatevalidatedfunction)
-   5. [ensureDataType()](#dilswerensuredatatype)
-   6. [DataType](#dilswerdatatype)
+   2. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
+   3. [createValidatedFunction()](#dilswercreatevalidatedfunction)
+   4. [ensureDataType()](#dilswerensuredatatype)
+   5. [DataType](#dilswerdatatype)
 4. [Data Types](#data-types)
    1. [String](#datatypestring)
    2. [Number](#datatypenumber)
@@ -176,10 +175,6 @@ const createValidator: <DT extends AllDataTypes>(
 Higher order function that generates a validator which will check the provided
 `data` against the `dataType` type structure definition and returns a boolean
 indicating if the check was successful.
-
-#### dilswer.createChecker()
-
-Alias for the `createValidator()`.
 
 #### dilswer.createTypeGuardedFunction()
 
