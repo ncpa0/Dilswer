@@ -64,7 +64,10 @@ export const DataType = {
   Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
     [key in T]: TEnumValue;
   }): Enum<TEnumValue> {
-    // @ts-expect-error
-    return { enumInstance };
+    return {
+      [dataTypeSymbol]: true,
+      // @ts-expect-error
+      enumInstance,
+    };
   },
 };

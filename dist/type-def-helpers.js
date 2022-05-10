@@ -49,6 +49,9 @@ exports.DataType = Object.assign(Object.assign({}, exports.BasicDataTypes), { Re
         };
     },
     Enum(enumInstance) {
-        // @ts-expect-error
-        return { enumInstance };
+        return {
+            [exports.dataTypeSymbol]: true,
+            // @ts-expect-error
+            enumInstance,
+        };
     } });

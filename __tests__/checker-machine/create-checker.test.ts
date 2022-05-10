@@ -1,131 +1,131 @@
-import { createChecker, DataType } from "../../src";
+import { createValidator, DataType } from "../../src";
 
-describe("createChecker", () => {
+describe("createValidator", () => {
   describe("for primitives", () => {
     it("should validate against a string", () => {
       const typeDef = DataType.String;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker("foo")).toEqual(true);
+      expect(validate("foo")).toEqual(true);
 
-      expect(checker(null)).toEqual(false);
-      expect(checker(undefined)).toEqual(false);
-      expect(checker(1)).toEqual(false);
-      expect(checker(false)).toEqual(false);
-      expect(checker(Symbol())).toEqual(false);
-      expect(checker(() => ["foo"])).toEqual(false);
-      expect(checker(["foo"])).toEqual(false);
-      expect(checker({ foo: "foo" })).toEqual(false);
-      expect(checker(new Set(["foo"]))).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
     it("should validate against a number", () => {
       const typeDef = DataType.Number;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker(1)).toEqual(true);
+      expect(validate(1)).toEqual(true);
 
-      expect(checker(null)).toEqual(false);
-      expect(checker(undefined)).toEqual(false);
-      expect(checker("foo")).toEqual(false);
-      expect(checker(false)).toEqual(false);
-      expect(checker(Symbol())).toEqual(false);
-      expect(checker(() => ["foo"])).toEqual(false);
-      expect(checker(["foo"])).toEqual(false);
-      expect(checker({ foo: "foo" })).toEqual(false);
-      expect(checker(new Set(["foo"]))).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
     it("should validate against a boolean", () => {
       const typeDef = DataType.Boolean;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker(false)).toEqual(true);
-      expect(checker(true)).toEqual(true);
+      expect(validate(false)).toEqual(true);
+      expect(validate(true)).toEqual(true);
 
-      expect(checker(null)).toEqual(false);
-      expect(checker(undefined)).toEqual(false);
-      expect(checker(1)).toEqual(false);
-      expect(checker("foo")).toEqual(false);
-      expect(checker(Symbol())).toEqual(false);
-      expect(checker(() => ["foo"])).toEqual(false);
-      expect(checker(["foo"])).toEqual(false);
-      expect(checker({ foo: "foo" })).toEqual(false);
-      expect(checker(new Set(["foo"]))).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
     it("should validate against a symbol", () => {
       const typeDef = DataType.Symbol;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker(Symbol())).toEqual(true);
+      expect(validate(Symbol())).toEqual(true);
 
-      expect(checker(null)).toEqual(false);
-      expect(checker(undefined)).toEqual(false);
-      expect(checker(1)).toEqual(false);
-      expect(checker("foo")).toEqual(false);
-      expect(checker(false)).toEqual(false);
-      expect(checker(() => ["foo"])).toEqual(false);
-      expect(checker(["foo"])).toEqual(false);
-      expect(checker({ foo: "foo" })).toEqual(false);
-      expect(checker(new Set(["foo"]))).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
     it("should validate against a null", () => {
       const typeDef = DataType.Null;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker(null)).toEqual(true);
+      expect(validate(null)).toEqual(true);
 
-      expect(checker(undefined)).toEqual(false);
-      expect(checker("foo")).toEqual(false);
-      expect(checker(1)).toEqual(false);
-      expect(checker(false)).toEqual(false);
-      expect(checker(Symbol())).toEqual(false);
-      expect(checker(() => ["foo"])).toEqual(false);
-      expect(checker(["foo"])).toEqual(false);
-      expect(checker({ foo: "foo" })).toEqual(false);
-      expect(checker(new Set(["foo"]))).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
     it("should validate against a undefined", () => {
       const typeDef = DataType.Undefined;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker(undefined)).toEqual(true);
+      expect(validate(undefined)).toEqual(true);
 
-      expect(checker(null)).toEqual(false);
-      expect(checker("foo")).toEqual(false);
-      expect(checker(1)).toEqual(false);
-      expect(checker(false)).toEqual(false);
-      expect(checker(Symbol())).toEqual(false);
-      expect(checker(() => ["foo"])).toEqual(false);
-      expect(checker(["foo"])).toEqual(false);
-      expect(checker({ foo: "foo" })).toEqual(false);
-      expect(checker(new Set(["foo"]))).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
     it("should validate against unknown", () => {
       const typeDef = DataType.Unknown;
 
-      const checker = createChecker(typeDef);
+      const validate = createValidator(typeDef);
 
-      expect(checker(null)).toEqual(true);
-      expect(checker(undefined)).toEqual(true);
-      expect(checker(Symbol())).toEqual(true);
-      expect(checker(1)).toEqual(true);
-      expect(checker("foo")).toEqual(true);
-      expect(checker(false)).toEqual(true);
-      expect(checker(() => ["foo"])).toEqual(true);
-      expect(checker(["foo"])).toEqual(true);
-      expect(checker({ foo: "foo" })).toEqual(true);
-      expect(checker(new Set(["foo"]))).toEqual(true);
+      expect(validate(null)).toEqual(true);
+      expect(validate(undefined)).toEqual(true);
+      expect(validate(Symbol())).toEqual(true);
+      expect(validate(1)).toEqual(true);
+      expect(validate("foo")).toEqual(true);
+      expect(validate(false)).toEqual(true);
+      expect(validate(() => ["foo"])).toEqual(true);
+      expect(validate(["foo"])).toEqual(true);
+      expect(validate({ foo: "foo" })).toEqual(true);
+      expect(validate(new Set(["foo"]))).toEqual(true);
     });
   });
 
@@ -134,61 +134,61 @@ describe("createChecker", () => {
       it("should validate against a string literal", () => {
         const typeDef = DataType.Literal("foo");
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker("foo")).toEqual(true);
+        expect(validate("foo")).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker("f")).toEqual(false);
-        expect(checker("fo")).toEqual(false);
-        expect(checker("fooo")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker(["foo"])).toEqual(false);
-        expect(checker(() => "foo")).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("f")).toEqual(false);
+        expect(validate("fo")).toEqual(false);
+        expect(validate("fooo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate(["foo"])).toEqual(false);
+        expect(validate(() => "foo")).toEqual(false);
       });
 
       it("should validate against a numeric literal", () => {
         const typeDef = DataType.Literal(69);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(69)).toEqual(true);
+        expect(validate(69)).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(6)).toEqual(false);
-        expect(checker(9)).toEqual(false);
-        expect(checker(6.9)).toEqual(false);
-        expect(checker(0.69)).toEqual(false);
-        expect(checker(69.01)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker([69])).toEqual(false);
-        expect(checker(() => 69)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(6)).toEqual(false);
+        expect(validate(9)).toEqual(false);
+        expect(validate(6.9)).toEqual(false);
+        expect(validate(0.69)).toEqual(false);
+        expect(validate(69.01)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate([69])).toEqual(false);
+        expect(validate(() => 69)).toEqual(false);
       });
 
       it("should validate against a boolean literal", () => {
         const typeDef = DataType.Literal(false);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(false)).toEqual(true);
+        expect(validate(false)).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(0)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker([false])).toEqual(false);
-        expect(checker(() => false)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(0)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate([false])).toEqual(false);
+        expect(validate(() => false)).toEqual(false);
       });
     });
 
@@ -196,109 +196,109 @@ describe("createChecker", () => {
       it("should validate a union of string type", () => {
         const typeDef = DataType.OneOf(DataType.String);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker("foobarbaz")).toEqual(true);
+        expect(validate("foobarbaz")).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate a union of number type", () => {
         const typeDef = DataType.OneOf(DataType.Number);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(1)).toEqual(true);
+        expect(validate(1)).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker("foobarbaz")).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("foobarbaz")).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate a union of boolean type", () => {
         const typeDef = DataType.OneOf(DataType.Boolean);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(true)).toEqual(true);
-        expect(checker(false)).toEqual(true);
+        expect(validate(true)).toEqual(true);
+        expect(validate(false)).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker("foobarbaz")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(0)).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("foobarbaz")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(0)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate a union of string and numbers", () => {
         const typeDef = DataType.OneOf(DataType.String, DataType.Number);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker("foo")).toEqual(true);
-        expect(checker(123)).toEqual(true);
+        expect(validate("foo")).toEqual(true);
+        expect(validate(123)).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
       });
 
       it("should validate a union of boolean and null", () => {
         const typeDef = DataType.OneOf(DataType.Boolean, DataType.Null);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(null)).toEqual(true);
-        expect(checker(true)).toEqual(true);
-        expect(checker(false)).toEqual(true);
+        expect(validate(null)).toEqual(true);
+        expect(validate(true)).toEqual(true);
+        expect(validate(false)).toEqual(true);
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(123)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(123)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
       });
 
       it("should validate a union of booleans and symbols", () => {
         const typeDef = DataType.OneOf(DataType.Boolean, DataType.Symbol);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(false)).toEqual(true);
-        expect(checker(true)).toEqual(true);
-        expect(checker(Symbol())).toEqual(true);
+        expect(validate(false)).toEqual(true);
+        expect(validate(true)).toEqual(true);
+        expect(validate(Symbol())).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(123)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(123)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate a union of enum value and symbol", () => {
@@ -309,21 +309,21 @@ describe("createChecker", () => {
 
         const typeDef = DataType.OneOf(DataType.Enum(T), DataType.Symbol);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(T.FOO)).toEqual(true);
-        expect(checker(T.BAR)).toEqual(true);
-        expect(checker("FOO")).toEqual(true);
-        expect(checker("BAR")).toEqual(true);
-        expect(checker(Symbol())).toEqual(true);
+        expect(validate(T.FOO)).toEqual(true);
+        expect(validate(T.BAR)).toEqual(true);
+        expect(validate("FOO")).toEqual(true);
+        expect(validate("BAR")).toEqual(true);
+        expect(validate(Symbol())).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(123)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(123)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate a union of functions, string and numbers", () => {
@@ -333,19 +333,19 @@ describe("createChecker", () => {
           DataType.Number
         );
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker("foo")).toEqual(true);
-        expect(checker(123)).toEqual(true);
-        expect(checker(() => {})).toEqual(true);
+        expect(validate("foo")).toEqual(true);
+        expect(validate(123)).toEqual(true);
+        expect(validate(() => {})).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
       });
 
       it("should validate a union of functions, string and arrays of objects with foo property", () => {
@@ -359,23 +359,23 @@ describe("createChecker", () => {
           )
         );
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker("foo")).toEqual(true);
-        expect(checker(() => {})).toEqual(true);
-        expect(checker([])).toEqual(true);
-        expect(checker([{ foo: "foo" }])).toEqual(true);
+        expect(validate("foo")).toEqual(true);
+        expect(validate(() => {})).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate([{ foo: "foo" }])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(123)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([[]])).toEqual(false);
-        expect(checker([{}])).toEqual(false);
-        expect(checker([{ foo: 1 }])).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(123)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([[]])).toEqual(false);
+        expect(validate([{}])).toEqual(false);
+        expect(validate([{ foo: 1 }])).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
       });
 
       it("should validate for an array of string or array of number", () => {
@@ -384,16 +384,16 @@ describe("createChecker", () => {
           DataType.ArrayOf(DataType.Number)
         );
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([])).toEqual(true);
-        expect(checker(["foo", "bar", "baz"])).toEqual(true);
-        expect(checker([1, 2, 3, 4])).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate(["foo", "bar", "baz"])).toEqual(true);
+        expect(validate([1, 2, 3, 4])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(["foo", 1])).toEqual(false);
-        expect(checker([1, 23, 4, 5, 6, 6, ""])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(["foo", 1])).toEqual(false);
+        expect(validate([1, 23, 4, 5, 6, 6, ""])).toEqual(false);
       });
 
       it("should validate against a union of similar records", () => {
@@ -413,30 +413,30 @@ describe("createChecker", () => {
           })
         );
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker({ id: "1", value: 1 })).toEqual(true);
-        expect(checker({ id: "2", value: "2" })).toEqual(true);
-        expect(checker({ id: "1", value: 1, otherValue: 123 })).toEqual(true);
-        expect(checker({ id: "3", value: true, otherValue: null })).toEqual(
+        expect(validate({ id: "1", value: 1 })).toEqual(true);
+        expect(validate({ id: "2", value: "2" })).toEqual(true);
+        expect(validate({ id: "1", value: 1, otherValue: 123 })).toEqual(true);
+        expect(validate({ id: "3", value: true, otherValue: null })).toEqual(
           true
         );
 
-        expect(checker({ id: "1", value: "2" })).toEqual(false);
-        expect(checker({ id: "2", value: 2 })).toEqual(false);
-        expect(checker({ id: "3", value: true })).toEqual(false);
+        expect(validate({ id: "1", value: "2" })).toEqual(false);
+        expect(validate({ id: "2", value: 2 })).toEqual(false);
+        expect(validate({ id: "3", value: true })).toEqual(false);
         expect(
-          checker({ id: "3", value: true, otherValue: undefined })
+          validate({ id: "3", value: true, otherValue: undefined })
         ).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker(Symbol())).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
     });
 
@@ -444,42 +444,42 @@ describe("createChecker", () => {
       it("should validate against any array when type is unknown", () => {
         const typeDef = DataType.ArrayOf(DataType.Unknown);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([])).toEqual(true);
-        expect(checker([1])).toEqual(true);
-        expect(checker([""])).toEqual(true);
-        expect(checker([true])).toEqual(true);
-        expect(checker([Symbol()])).toEqual(true);
-        expect(checker([{}])).toEqual(true);
-        expect(checker([[]])).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate([1])).toEqual(true);
+        expect(validate([""])).toEqual(true);
+        expect(validate([true])).toEqual(true);
+        expect(validate([Symbol()])).toEqual(true);
+        expect(validate([{}])).toEqual(true);
+        expect(validate([[]])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker("")).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
-        expect(checker({})).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate("")).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate({})).toEqual(false);
       });
 
       it("should validate against simple array of string", () => {
         const typeDef = DataType.ArrayOf(DataType.String);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([])).toEqual(true);
-        expect(checker(["foo"])).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate(["foo"])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(["bar", 1])).toEqual(false);
-        expect(checker([true])).toEqual(false);
-        expect(checker({ 0: "baz" })).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(["bar", 1])).toEqual(false);
+        expect(validate([true])).toEqual(false);
+        expect(validate({ 0: "baz" })).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
       });
 
       it("should validate against simple array of enum values", () => {
@@ -489,70 +489,70 @@ describe("createChecker", () => {
         }
         const typeDef = DataType.ArrayOf(DataType.Enum(T));
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([])).toEqual(true);
-        expect(checker([T.BAR])).toEqual(true);
-        expect(checker([T.BAR, T.FOO])).toEqual(true);
-        expect(checker([T.BAR, "FOO"])).toEqual(true);
-        expect(checker(["BAR"])).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate([T.BAR])).toEqual(true);
+        expect(validate([T.BAR, T.FOO])).toEqual(true);
+        expect(validate([T.BAR, "FOO"])).toEqual(true);
+        expect(validate(["BAR"])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(["bar", 1])).toEqual(false);
-        expect(checker([true])).toEqual(false);
-        expect(checker({ 0: "baz" })).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(["bar", 1])).toEqual(false);
+        expect(validate([true])).toEqual(false);
+        expect(validate({ 0: "baz" })).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
       });
 
       it("should validate against array of functions or booleans", () => {
         const typeDef = DataType.ArrayOf(DataType.Function, DataType.Boolean);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([true, false])).toEqual(true);
-        expect(checker([() => {}])).toEqual(true);
-        expect(checker([true, () => {}, false])).toEqual(true);
+        expect(validate([true, false])).toEqual(true);
+        expect(validate([() => {}])).toEqual(true);
+        expect(validate([true, () => {}, false])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(["bar", 1])).toEqual(false);
-        expect(checker([true, 6])).toEqual(false);
-        expect(checker([{}, false])).toEqual(false);
-        expect(checker({ 0: "baz" })).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(["bar", 1])).toEqual(false);
+        expect(validate([true, 6])).toEqual(false);
+        expect(validate([{}, false])).toEqual(false);
+        expect(validate({ 0: "baz" })).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
       });
 
       it("should validate against array of undefined or nulls", () => {
         const typeDef = DataType.ArrayOf(DataType.Null, DataType.Undefined);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([])).toEqual(true);
-        expect(checker([null])).toEqual(true);
-        expect(checker([undefined])).toEqual(true);
-        expect(checker([null, undefined, null, null])).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate([null])).toEqual(true);
+        expect(validate([undefined])).toEqual(true);
+        expect(validate([null, undefined, null, null])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker([null, null, null, {}])).toEqual(false);
-        expect(checker([() => {}])).toEqual(false);
-        expect(checker([true])).toEqual(false);
-        expect(checker([false])).toEqual(false);
-        expect(checker(["bar", 1])).toEqual(false);
-        expect(checker([true, 6])).toEqual(false);
-        expect(checker([{}, false])).toEqual(false);
-        expect(checker({ 0: "baz" })).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate([null, null, null, {}])).toEqual(false);
+        expect(validate([() => {}])).toEqual(false);
+        expect(validate([true])).toEqual(false);
+        expect(validate([false])).toEqual(false);
+        expect(validate(["bar", 1])).toEqual(false);
+        expect(validate([true, 6])).toEqual(false);
+        expect(validate([{}, false])).toEqual(false);
+        expect(validate({ 0: "baz" })).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
       });
 
       it("should validate against nested arrays", () => {
@@ -561,20 +561,20 @@ describe("createChecker", () => {
           DataType.ArrayOf(DataType.ArrayOf(DataType.String))
         );
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker([])).toEqual(true);
-        expect(checker([[], [], []])).toEqual(true);
-        expect(checker([[], [[]]])).toEqual(true);
-        expect(checker([[], [["foo"]]])).toEqual(true);
-        expect(checker([[1], [["foo"]]])).toEqual(true);
+        expect(validate([])).toEqual(true);
+        expect(validate([[], [], []])).toEqual(true);
+        expect(validate([[], [[]]])).toEqual(true);
+        expect(validate([[], [["foo"]]])).toEqual(true);
+        expect(validate([[1], [["foo"]]])).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker([[1], [[1]]])).toEqual(false);
-        expect(checker([["1"]])).toEqual(false);
-        expect(checker([[1], [[[]]]])).toEqual(false);
-        expect(checker([[[["asd"]]]])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate([[1], [[1]]])).toEqual(false);
+        expect(validate([["1"]])).toEqual(false);
+        expect(validate([[1], [[[]]]])).toEqual(false);
+        expect(validate([[[["asd"]]]])).toEqual(false);
       });
     });
 
@@ -582,12 +582,12 @@ describe("createChecker", () => {
       it("should not validate null for empty objects", () => {
         const typeDef = DataType.RecordOf({});
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker({})).toEqual(true);
+        expect(validate({})).toEqual(true);
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
       });
 
       it("should validate for optional properties", () => {
@@ -596,13 +596,13 @@ describe("createChecker", () => {
           bar: { required: false, type: DataType.Number },
         });
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker({ foo: "foo" })).toEqual(true);
-        expect(checker({ foo: "foo", bar: 1 })).toEqual(true);
+        expect(validate({ foo: "foo" })).toEqual(true);
+        expect(validate({ foo: "foo", bar: 1 })).toEqual(true);
 
-        expect(checker({ foo: "foo", bar: "1" })).toEqual(false);
-        expect(checker({ bar: 1 })).toEqual(false);
+        expect(validate({ foo: "foo", bar: "1" })).toEqual(false);
+        expect(validate({ bar: 1 })).toEqual(false);
       });
 
       it("should validate for simple records", () => {
@@ -612,24 +612,24 @@ describe("createChecker", () => {
           baz: { type: DataType.Unknown },
         });
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker({ foo: "foo", bar: 123, baz: true })).toEqual(true);
-        expect(checker({ foo: "", bar: 0, baz: [] })).toEqual(true);
-        expect(checker({ foo: "123", bar: -2, baz: () => {} })).toEqual(true);
-        expect(checker({ foo: "123", bar: -2, baz: undefined })).toEqual(true);
+        expect(validate({ foo: "foo", bar: 123, baz: true })).toEqual(true);
+        expect(validate({ foo: "", bar: 0, baz: [] })).toEqual(true);
+        expect(validate({ foo: "123", bar: -2, baz: () => {} })).toEqual(true);
+        expect(validate({ foo: "123", bar: -2, baz: undefined })).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker({ foo: "foo", bar: "123", baz: true })).toEqual(false);
-        expect(checker({ foo: "foo", bar: "123", baz: true })).toEqual(false);
-        expect(checker({ foo: false, bar: 1, baz: true })).toEqual(false);
-        expect(checker({ foo: "foo", bar: 123 })).toEqual(false);
-        expect(checker({ foo: "", baz: undefined })).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(76)).toEqual(false);
-        expect(checker({})).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate({ foo: "foo", bar: "123", baz: true })).toEqual(false);
+        expect(validate({ foo: "foo", bar: "123", baz: true })).toEqual(false);
+        expect(validate({ foo: false, bar: 1, baz: true })).toEqual(false);
+        expect(validate({ foo: "foo", bar: 123 })).toEqual(false);
+        expect(validate({ foo: "", baz: undefined })).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(76)).toEqual(false);
+        expect(validate({})).toEqual(false);
       });
 
       it("should validate for nested records", () => {
@@ -653,34 +653,34 @@ describe("createChecker", () => {
           },
         });
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
         expect(
-          checker({
+          validate({
             foo: "foo",
             bar: { baz: 1, qux: { corge: () => {} }, thud: T.BAR },
           })
         ).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
         expect(
-          checker({ foo: 0, bar: { baz: 1, qux: { corge: () => {} } } })
+          validate({ foo: 0, bar: { baz: 1, qux: { corge: () => {} } } })
         ).toEqual(false);
         expect(
-          checker({ foo: "foo", bar: { baz: 1, qux: { corge: Symbol() } } })
+          validate({ foo: "foo", bar: { baz: 1, qux: { corge: Symbol() } } })
         ).toEqual(false);
         expect(
-          checker({ foo: "foo", bar: { baz: "1", qux: { corge: () => {} } } })
+          validate({ foo: "foo", bar: { baz: "1", qux: { corge: () => {} } } })
         ).toEqual(false);
         expect(
-          checker({
+          validate({
             foo: "foo",
             bar: { baz: 1, qux: { corge: () => {} }, thud: T.FOO },
           })
         ).toEqual(false);
         expect(
-          checker({
+          validate({
             foo: "foo",
             bar: { baz: 1, qux: { corge: () => {} }, thud: 0 },
           })
@@ -693,17 +693,17 @@ describe("createChecker", () => {
           bar: { type: DataType.Null },
         });
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker({ foo: undefined, bar: null })).toEqual(true);
+        expect(validate({ foo: undefined, bar: null })).toEqual(true);
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker({ foo: undefined })).toEqual(false);
-        expect(checker({ bar: null })).toEqual(false);
-        expect(checker({ foo: "undefined", bar: "null" })).toEqual(false);
-        expect(checker({ foo: "undefined", bar: null })).toEqual(false);
-        expect(checker({ foo: undefined, bar: "null" })).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate({ foo: undefined })).toEqual(false);
+        expect(validate({ bar: null })).toEqual(false);
+        expect(validate({ foo: "undefined", bar: "null" })).toEqual(false);
+        expect(validate({ foo: "undefined", bar: null })).toEqual(false);
+        expect(validate({ foo: undefined, bar: "null" })).toEqual(false);
       });
 
       it("should correctly parse the new record syntax", () => {
@@ -716,7 +716,7 @@ describe("createChecker", () => {
           optional: { type: DataType.Number, required: false },
         });
 
-        const validate = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
         expect(validate({ foo: "foo", bar: [1], baz: { qux: true } })).toEqual(
           true
@@ -744,68 +744,68 @@ describe("createChecker", () => {
       it("should validate for set of numbers", () => {
         const typeDef = DataType.SetOf(DataType.Number);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(new Set())).toEqual(true);
-        expect(checker(new Set([1, 2, 3]))).toEqual(true);
+        expect(validate(new Set())).toEqual(true);
+        expect(validate(new Set([1, 2, 3]))).toEqual(true);
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(new Set([1, 2, 3, ""]))).toEqual(false);
-        expect(checker(new Set([true]))).toEqual(false);
-        expect(checker(new Set([Symbol()]))).toEqual(false);
-        expect(checker(new Set([{}]))).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(new Set([1, 2, 3, ""]))).toEqual(false);
+        expect(validate(new Set([true]))).toEqual(false);
+        expect(validate(new Set([Symbol()]))).toEqual(false);
+        expect(validate(new Set([{}]))).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate for set of functions", () => {
         const typeDef = DataType.SetOf(DataType.Function);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(new Set())).toEqual(true);
-        expect(checker(new Set([() => {}]))).toEqual(true);
+        expect(validate(new Set())).toEqual(true);
+        expect(validate(new Set([() => {}]))).toEqual(true);
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(new Set([() => {}, "foo"]))).toEqual(false);
-        expect(checker(new Set([true]))).toEqual(false);
-        expect(checker(new Set([Symbol()]))).toEqual(false);
-        expect(checker(new Set([{}]))).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(new Set([() => {}, "foo"]))).toEqual(false);
+        expect(validate(new Set([true]))).toEqual(false);
+        expect(validate(new Set([Symbol()]))).toEqual(false);
+        expect(validate(new Set([{}]))).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate for set of symbols or strings", () => {
         const typeDef = DataType.SetOf(DataType.Symbol, DataType.String);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(new Set())).toEqual(true);
-        expect(checker(new Set([Symbol()]))).toEqual(true);
-        expect(checker(new Set(["foo"]))).toEqual(true);
-        expect(checker(new Set(["symbol", Symbol(), "foo", Symbol()]))).toEqual(
-          true
-        );
+        expect(validate(new Set())).toEqual(true);
+        expect(validate(new Set([Symbol()]))).toEqual(true);
+        expect(validate(new Set(["foo"]))).toEqual(true);
+        expect(
+          validate(new Set(["symbol", Symbol(), "foo", Symbol()]))
+        ).toEqual(true);
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(new Set(["foo", Symbol(), () => {}]))).toEqual(false);
-        expect(checker(new Set([true]))).toEqual(false);
-        expect(checker(new Set([123]))).toEqual(false);
-        expect(checker(new Set([{}]))).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(new Set(["foo", Symbol(), () => {}]))).toEqual(false);
+        expect(validate(new Set([true]))).toEqual(false);
+        expect(validate(new Set([123]))).toEqual(false);
+        expect(validate(new Set([{}]))).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
 
       it("should validate for set of records or undefined", () => {
@@ -814,26 +814,26 @@ describe("createChecker", () => {
           DataType.RecordOf({ foo: { type: DataType.String } })
         );
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(new Set())).toEqual(true);
-        expect(checker(new Set([undefined]))).toEqual(true);
-        expect(checker(new Set([{ foo: "" }]))).toEqual(true);
-        expect(checker(new Set([undefined, { foo: "" }, undefined]))).toEqual(
+        expect(validate(new Set())).toEqual(true);
+        expect(validate(new Set([undefined]))).toEqual(true);
+        expect(validate(new Set([{ foo: "" }]))).toEqual(true);
+        expect(validate(new Set([undefined, { foo: "" }, undefined]))).toEqual(
           true
         );
 
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(new Set(["foo", Symbol(), () => {}]))).toEqual(false);
-        expect(checker(new Set([true]))).toEqual(false);
-        expect(checker(new Set([123]))).toEqual(false);
-        expect(checker(new Set([{}]))).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker("foo")).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker([])).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(new Set(["foo", Symbol(), () => {}]))).toEqual(false);
+        expect(validate(new Set([true]))).toEqual(false);
+        expect(validate(new Set([123]))).toEqual(false);
+        expect(validate(new Set([{}]))).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
       });
     });
 
@@ -847,28 +847,28 @@ describe("createChecker", () => {
 
         const typeDef = DataType.Enum(Foo);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(Foo.A)).toEqual(true);
-        expect(checker(Foo.B)).toEqual(true);
-        expect(checker(Foo.C)).toEqual(true);
-        expect(checker("A")).toEqual(true);
-        expect(checker("B")).toEqual(true);
-        expect(checker("C")).toEqual(true);
+        expect(validate(Foo.A)).toEqual(true);
+        expect(validate(Foo.B)).toEqual(true);
+        expect(validate(Foo.C)).toEqual(true);
+        expect(validate("A")).toEqual(true);
+        expect(validate("B")).toEqual(true);
+        expect(validate("C")).toEqual(true);
 
-        expect(checker(Foo)).toEqual(false);
-        expect(checker("D")).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(0)).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(2)).toEqual(false);
-        expect(checker(3)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
+        expect(validate(Foo)).toEqual(false);
+        expect(validate("D")).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(0)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(2)).toEqual(false);
+        expect(validate(3)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
       });
 
       it("should correctly check if the numeric value is assignable to the enum", () => {
@@ -880,27 +880,52 @@ describe("createChecker", () => {
 
         const typeDef = DataType.Enum(Foo);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(Foo.A)).toEqual(true);
-        expect(checker(Foo.B)).toEqual(true);
-        expect(checker(Foo.C)).toEqual(true);
-        expect(checker(0)).toEqual(true);
-        expect(checker(1)).toEqual(true);
-        expect(checker(2)).toEqual(true);
+        expect(validate(Foo.A)).toEqual(true);
+        expect(validate(Foo.B)).toEqual(true);
+        expect(validate(Foo.C)).toEqual(true);
+        expect(validate(0)).toEqual(true);
+        expect(validate(1)).toEqual(true);
+        expect(validate(2)).toEqual(true);
 
-        expect(checker(Foo)).toEqual(false);
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker("A")).toEqual(false);
-        expect(checker("B")).toEqual(false);
-        expect(checker("C")).toEqual(false);
-        expect(checker("D")).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
+        expect(validate(Foo)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("A")).toEqual(false);
+        expect(validate("B")).toEqual(false);
+        expect(validate("C")).toEqual(false);
+        expect(validate("D")).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+      });
+
+      it("should correctly parse enum inside a record", () => {
+        enum Foo {
+          A = "A",
+          B = "B",
+          C = "C",
+        }
+
+        const typeDef = DataType.RecordOf({
+          myEnum: DataType.Enum(Foo),
+        });
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ myEnum: Foo.A })).toEqual(true);
+        expect(validate({ myEnum: Foo.B })).toEqual(true);
+        expect(validate({ myEnum: Foo.C })).toEqual(true);
+        expect(validate({ myEnum: "A" })).toEqual(true);
+        expect(validate({ myEnum: "B" })).toEqual(true);
+        expect(validate({ myEnum: "C" })).toEqual(true);
+
+        expect(validate({ myEnum: "a" })).toEqual(false);
+        expect(validate({ myEnum: "1" })).toEqual(false);
+        expect(validate({ myEnum: 0 })).toEqual(false);
       });
     });
 
@@ -914,28 +939,28 @@ describe("createChecker", () => {
 
         const typeDef = DataType.EnumMember(Foo.A);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(Foo.A)).toEqual(true);
-        expect(checker("A")).toEqual(true);
+        expect(validate(Foo.A)).toEqual(true);
+        expect(validate("A")).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(Foo)).toEqual(false);
-        expect(checker(Foo.B)).toEqual(false);
-        expect(checker(Foo.C)).toEqual(false);
-        expect(checker("B")).toEqual(false);
-        expect(checker("C")).toEqual(false);
-        expect(checker("D")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(2)).toEqual(false);
-        expect(checker(3)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(Foo)).toEqual(false);
+        expect(validate(Foo.B)).toEqual(false);
+        expect(validate(Foo.C)).toEqual(false);
+        expect(validate("B")).toEqual(false);
+        expect(validate("C")).toEqual(false);
+        expect(validate("D")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(2)).toEqual(false);
+        expect(validate(3)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
       });
 
       it("should correctly check if the string value equals to the enum member", () => {
@@ -947,29 +972,29 @@ describe("createChecker", () => {
 
         const typeDef = DataType.EnumMember(Foo.A);
 
-        const checker = createChecker(typeDef);
+        const validate = createValidator(typeDef);
 
-        expect(checker(Foo.A)).toEqual(true);
-        expect(checker(0)).toEqual(true);
+        expect(validate(Foo.A)).toEqual(true);
+        expect(validate(0)).toEqual(true);
 
-        expect(checker(null)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(Foo)).toEqual(false);
-        expect(checker(Foo.B)).toEqual(false);
-        expect(checker(Foo.C)).toEqual(false);
-        expect(checker("A")).toEqual(false);
-        expect(checker("B")).toEqual(false);
-        expect(checker("C")).toEqual(false);
-        expect(checker("D")).toEqual(false);
-        expect(checker(1)).toEqual(false);
-        expect(checker(2)).toEqual(false);
-        expect(checker(3)).toEqual(false);
-        expect(checker(undefined)).toEqual(false);
-        expect(checker(() => {})).toEqual(false);
-        expect(checker([])).toEqual(false);
-        expect(checker({})).toEqual(false);
-        expect(checker(true)).toEqual(false);
-        expect(checker(false)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(Foo)).toEqual(false);
+        expect(validate(Foo.B)).toEqual(false);
+        expect(validate(Foo.C)).toEqual(false);
+        expect(validate("A")).toEqual(false);
+        expect(validate("B")).toEqual(false);
+        expect(validate("C")).toEqual(false);
+        expect(validate("D")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(2)).toEqual(false);
+        expect(validate(3)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
       });
     });
   });
