@@ -26,7 +26,34 @@ describe("createValidator", () => {
       const validate = createValidator(typeDef);
 
       expect(validate(1)).toEqual(true);
+      expect(validate(1.1805916207174113e21)).toEqual(true);
+      expect(validate(0xff)).toEqual(true);
 
+      expect(validate(null)).toEqual(false);
+      expect(validate(NaN)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a integer", () => {
+      const typeDef = DataType.Int;
+
+      const validate = createValidator(typeDef);
+
+      expect(validate(1)).toEqual(true);
+      expect(validate(543.0)).toEqual(true);
+      expect(validate(1.1805916207174113e21)).toEqual(true);
+      expect(validate(0xff)).toEqual(true);
+
+      expect(validate(1.2)).toEqual(false);
+      expect(validate(0.9)).toEqual(false);
+      expect(validate(NaN)).toEqual(false);
       expect(validate(null)).toEqual(false);
       expect(validate(undefined)).toEqual(false);
       expect(validate("foo")).toEqual(false);
@@ -126,6 +153,70 @@ describe("createValidator", () => {
       expect(validate(["foo"])).toEqual(true);
       expect(validate({ foo: "foo" })).toEqual(true);
       expect(validate(new Set(["foo"]))).toEqual(true);
+    });
+
+    it("should validate against a string numeral", () => {
+      const typeDef = DataType.StringNumeral;
+
+      const validate = createValidator(typeDef);
+
+      expect(validate("1")).toEqual(true);
+      expect(validate("6.12")).toEqual(true);
+      expect(validate(".0")).toEqual(true);
+      expect(validate(".5")).toEqual(true);
+      expect(validate("0.")).toEqual(true);
+      expect(validate("2.")).toEqual(true);
+
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a string integer", () => {
+      const typeDef = DataType.StringInt;
+
+      const validate = createValidator(typeDef);
+
+      expect(validate("1")).toEqual(true);
+      expect(validate("612")).toEqual(true);
+
+      expect(validate(".0")).toEqual(false);
+      expect(validate("8.5")).toEqual(false);
+      expect(validate("0.")).toEqual(false);
+      expect(validate("2.7")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
     });
   });
 

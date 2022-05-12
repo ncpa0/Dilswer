@@ -113,11 +113,14 @@ export type ParseBasicDataType<D extends BasicDataType> = {
   unknown: unknown;
   string: string;
   number: number;
+  integer: number;
   boolean: boolean;
   symbol: symbol;
   function: UnknownFunction;
   null: null;
   undefined: undefined;
+  stringnumeral: `${number}`;
+  stringinteger: `${number}`;
 }[D];
 
 export type ParseDataType<D> = D extends BasicDataType

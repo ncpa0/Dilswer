@@ -16,11 +16,14 @@ export const BasicDataTypes = {
   Unknown: "unknown",
   String: "string",
   Number: "number",
+  Int: "integer",
   Boolean: "boolean",
   Symbol: "symbol",
   Function: "function",
   Null: "null",
   Undefined: "undefined",
+  StringNumeral: "stringnumeral",
+  StringInt: "stringinteger",
 } as const;
 
 export const DataType = {
