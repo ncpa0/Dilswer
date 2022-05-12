@@ -5,11 +5,14 @@ export declare const BasicDataTypes: {
     readonly Unknown: "unknown";
     readonly String: "string";
     readonly Number: "number";
+    readonly Int: "integer";
     readonly Boolean: "boolean";
     readonly Symbol: "symbol";
     readonly Function: "function";
     readonly Null: "null";
     readonly Undefined: "undefined";
+    readonly StringNumeral: "stringnumeral";
+    readonly StringInt: "stringinteger";
 };
 export declare const DataType: {
     RecordOf<TS extends RecordTypeSchema>(args: TS): RecordOf<TS>;
@@ -22,9 +25,12 @@ export declare const DataType: {
     Unknown: "unknown";
     String: "string";
     Number: "number";
+    Int: "integer";
     Boolean: "boolean";
     Symbol: "symbol";
     Function: "function";
     Null: "null";
     Undefined: "undefined";
+    StringNumeral: "stringnumeral";
+    StringInt: "stringinteger";
 };

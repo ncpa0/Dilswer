@@ -6,11 +6,14 @@ exports.BasicDataTypes = {
     Unknown: "unknown",
     String: "string",
     Number: "number",
+    Int: "integer",
     Boolean: "boolean",
     Symbol: "symbol",
     Function: "function",
     Null: "null",
     Undefined: "undefined",
+    StringNumeral: "stringnumeral",
+    StringInt: "stringinteger",
 };
 exports.DataType = Object.assign(Object.assign({}, exports.BasicDataTypes), { RecordOf(args) {
         return {

@@ -37,11 +37,14 @@ export declare type ParseBasicDataType<D extends BasicDataType> = {
     unknown: unknown;
     string: string;
     number: number;
+    integer: number;
     boolean: boolean;
     symbol: symbol;
     function: UnknownFunction;
     null: null;
     undefined: undefined;
+    stringnumeral: `${number}`;
+    stringinteger: `${number}`;
 }[D];
 export declare type ParseDataType<D> = D extends BasicDataType ? ParseBasicDataType<D> : D extends ComplexDataType ? ParseComplexType<D> : never;
 export declare type ParseRecordType<S extends RecordOf> = {
