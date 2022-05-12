@@ -22,19 +22,22 @@ both the runtime validation types and the TypeScript type definitions.
 4. [Data Types](#data-types)
    1. [String](#datatypestring)
    2. [Number](#datatypenumber)
-   3. [Boolean](#datatypeboolean)
-   4. [Symbol](#datatypesymbol)
-   5. [Null](#datatypenull)
-   6. [Undefined](#datatypeundefined)
-   7. [Function](#datatypefunction)
-   8. [Unknown](#datatypeunknown)
-   9. [OneOf](#datatypeoneofdatatypes)
-   10. [ArrayOf](#datatypearrayofdatatypes)
-   11. [RecordOf](#datatyperecordofrecordstring-fielddescriptor)
-   12. [SetOf](#datatypesetofdatatypes)
-   13. [Literal](#datatypeliteralstring--number--boolean)
-   14. [Enum](#datatypeenumenum)
-   15. [EnumMember](#datatypeenummemberenum-member)
+   3. [Int](#datatypeint)
+   4. [StringNumeral](#datatypestringnumeral)
+   5. [StringInt](#datatypestringint)
+   6. [Boolean](#datatypeboolean)
+   7. [Symbol](#datatypesymbol)
+   8. [Null](#datatypenull)
+   9. [Undefined](#datatypeundefined)
+   10. [Function](#datatypefunction)
+   11. [Unknown](#datatypeunknown)
+   12. [OneOf](#datatypeoneofdatatypes)
+   13. [ArrayOf](#datatypearrayofdatatypes)
+   14. [RecordOf](#datatyperecordofrecordstring-fielddescriptor)
+   15. [SetOf](#datatypesetofdatatypes)
+   16. [Literal](#datatypeliteralstring--number--boolean)
+   17. [Enum](#datatypeenumenum)
+   18. [EnumMember](#datatypeenummemberenum-member)
 5. [Utility Functions](#utility-functions)
    1. [And](#and)
    1. [Omit](#omit)
@@ -225,6 +228,26 @@ TypeScript.
 
 will match any number values and translate to the standard `number` type in
 TypeScript.
+
+#### DataType.Int
+
+will match any integer values and translate to the standard `number` type in
+TypeScript. TypeScript does not have any way of distinguishing float and
+integers therefore both are using the same type.
+
+#### DataType.StringNumeral
+
+will match any string containing only numeric values and translate to a
+`` `${number}` `` type in TypeScript. A value successfully validated with
+`StringNumeral` is safe to convert into a number and will never produce a `NaN`
+value.
+
+#### DataType.StringInt
+
+will match any string containing only numbers and translate to a
+`` `${number}` `` type in TypeScript. Strings with floating point numbers are
+not matched by this type. A value successfully validated with `StringInt` is
+safe to convert into a number and will never produce a `NaN` value.
 
 #### DataType.Boolean
 
