@@ -1,7 +1,15 @@
 {
   "name": "dilswer",
   "version": "1.2.0",
-  "main": "./dist/index.js",
+  "main": "./dist/legacy/index.js",
+  "types": "./dist/types/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/index.d.ts",
+      "import": "./dist/esm/index.mjs",
+      "require": "./dist/cjs/index.cjs"
+    }
+  },
   "license": "MIT",
   "repository": {
     "url": "https://github.com/ncpa0cpl/Dilswer"
@@ -25,10 +33,11 @@
     "lint": "eslint ."
   },
   "devDependencies": {
-    "@ncpa0cpl/nodepack": "^1.0.0",
+    "@ncpa0cpl/nodepack": "^1.2.1",
     "@types/jest": "^27.0.2",
     "@typescript-eslint/eslint-plugin": "^5.4.0",
     "@typescript-eslint/parser": "^5.4.0",
+    "esbuild": "^0.15.5",
     "eslint": "^8.13.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",

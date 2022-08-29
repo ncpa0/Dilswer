@@ -1,5 +1,5 @@
 import { DataType } from "../../src";
-import { createValidatedFunction } from "../../src/checker-machine/create-validated-function";
+import { createValidatedFunction } from "../../src/validation-algorithms/create-validated-function";
 
 describe("createValidatedFunction", () => {
   it("should execute success function when validation is successful", () => {

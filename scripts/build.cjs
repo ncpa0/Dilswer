@@ -7,4 +7,11 @@ build({
   outDir: path.resolve(__dirname, "../dist"),
   formats: ["cjs", "esm", "legacy"],
   tsConfig: path.resolve(__dirname, "../tsconfig.json"),
+  declarations: true,
+  pathAliases: {
+    "@DataTypes/*": "./data-types/*",
+    "@Utilities/*": "./utilities/*",
+    "@Validation/*": "./validation-algorithms/*",
+    "@Intrinsic/*": "./intrinsic-type-utils/*",
+  },
 });

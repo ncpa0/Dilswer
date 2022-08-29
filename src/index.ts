@@ -1,14 +1,11 @@
-import {
-  createChecker,
-  createValidator,
-} from "./checker-machine/create-checker";
+import { DataType } from "@DataTypes/data-types";
+import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic";
 import {
   createTypeGuardedFunction,
   createValidatedFunction,
-} from "./checker-machine/create-validated-function";
-import { ensureDataType } from "./checker-machine/ensure-data-type";
-import { DataType } from "./type-def-helpers";
-import { And, Exclude, Omit, Partial, Pick, Required } from "./utilities";
+} from "@Validation/create-validated-function";
+import { createChecker, createValidator } from "@Validation/create-validator";
+import { ensureDataType } from "@Validation/ensure-data-type";
 
 export default {
   createChecker,
@@ -25,17 +22,8 @@ export default {
   DataType,
 };
 
-export {
-  createChecker,
-  createValidator,
-} from "./checker-machine/create-checker";
-export {
-  createTypeGuardedFunction,
-  createValidatedFunction,
-} from "./checker-machine/create-validated-function";
-export { ensureDataType } from "./checker-machine/ensure-data-type";
-export { DataType } from "./type-def-helpers";
-export { GetDataType } from "./type-utils";
+export { DataType } from "@DataTypes/data-types";
+export { GetDataType } from "@DataTypes/type-utils";
 export {
   AllDataTypes,
   ArrayOf,
@@ -49,5 +37,11 @@ export {
   RecordOf,
   RecordTypeSchema as TypeSchema,
   SetOf,
-} from "./types";
-export * from "./utilities";
+} from "@DataTypes/types";
+export * from "@Intrinsic/index";
+export {
+  createTypeGuardedFunction,
+  createValidatedFunction,
+} from "@Validation/create-validated-function";
+export { createChecker, createValidator } from "@Validation/create-validator";
+export { ensureDataType } from "@Validation/ensure-data-type";
