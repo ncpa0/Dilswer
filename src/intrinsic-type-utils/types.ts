@@ -1,5 +1,5 @@
 import type {
-  AllDataTypes,
+  AnyDataType,
   BasicDataType,
   FieldDescriptor,
   OneOf,
@@ -7,7 +7,7 @@ import type {
   RecordTypeSchema,
 } from "@DataTypes/types";
 
-type GetType<T extends AllDataTypes | FieldDescriptor> =
+type GetType<T extends AnyDataType | FieldDescriptor> =
   T extends FieldDescriptor ? T["type"] : T;
 
 export type RequiredRecord<R extends RecordTypeSchema> = RecordOf<{

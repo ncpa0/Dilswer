@@ -1,4 +1,4 @@
-import type { AllDataTypes } from "@DataTypes/types";
+import type { AnyDataType } from "@DataTypes/types";
 import { validateArray } from "@Validation/validators/validate-array";
 import { validateEnum } from "@Validation/validators/validate-enum";
 import { validateEnumMember } from "@Validation/validators/validate-enum-member";
@@ -10,7 +10,7 @@ import { validateSet } from "@Validation/validators/validate-set";
 
 export const validateType = (
   path: string,
-  type: AllDataTypes,
+  type: AnyDataType,
   data: unknown
 ) => {
   if (typeof type === "string") {

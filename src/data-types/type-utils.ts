@@ -1,6 +1,6 @@
 import type { dataTypeSymbol } from "@DataTypes/data-types";
 import type {
-  AllDataTypes,
+  AnyDataType,
   ArrayOf,
   BasicDataType,
   ComplexDataType,
@@ -14,10 +14,10 @@ import type {
   SetOf,
 } from "@DataTypes/types";
 
-type GetDescriptorType<T extends AllDataTypes | FieldDescriptor> =
+type GetDescriptorType<T extends AnyDataType | FieldDescriptor> =
   T extends FieldDescriptor ? T["type"] : T;
 
-type IsRequiredDescriptor<T extends AllDataTypes | FieldDescriptor> =
+type IsRequiredDescriptor<T extends AnyDataType | FieldDescriptor> =
   T extends FieldDescriptor ? T["required"] : true;
 
 export type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T>
@@ -139,4 +139,4 @@ export type ParseRecordType<S extends RecordOf> = {
   >;
 };
 
-export type GetDataType<D extends AllDataTypes> = ReWrap<ParseDataType<D>>;
+export type GetDataType<D extends AnyDataType> = ReWrap<ParseDataType<D>>;

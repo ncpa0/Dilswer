@@ -1,7 +1,7 @@
 import type { BasicDataTypes, dataTypeSymbol } from "@DataTypes/data-types";
 import type { ValueOf } from "@DataTypes/type-utils";
 
-export type ArrayOf<DT extends AllDataTypes[] = any[]> = {
+export type ArrayOf<DT extends AnyDataType[] = any[]> = {
   readonly [dataTypeSymbol]: true;
   readonly arrayOf: DT;
 };
@@ -11,12 +11,12 @@ export type RecordOf<TS extends RecordTypeSchema = RecordTypeSchema> = {
   readonly recordOf: TS;
 };
 
-export type SetOf<DT extends AllDataTypes[] = any[]> = {
+export type SetOf<DT extends AnyDataType[] = any[]> = {
   readonly [dataTypeSymbol]: true;
   readonly setOf: DT;
 };
 
-export type OneOf<DT extends AllDataTypes[] = any[]> = {
+export type OneOf<DT extends AnyDataType[] = any[]> = {
   readonly [dataTypeSymbol]: true;
   readonly oneOf: DT;
 };
@@ -49,13 +49,15 @@ export type ComplexDataType =
   | Enum
   | EnumMember;
 
-export type AllDataTypes = BasicDataType | ComplexDataType;
+export type AnyDataType = BasicDataType | ComplexDataType;
+
+export type AllDataTypes = AnyDataType;
 
 export type FieldDescriptor = {
   readonly required?: boolean;
-  readonly type: AllDataTypes;
+  readonly type: AnyDataType;
 };
 
 export interface RecordTypeSchema {
-  readonly [key: string]: FieldDescriptor | AllDataTypes;
+  readonly [key: string]: FieldDescriptor | AnyDataType;
 }

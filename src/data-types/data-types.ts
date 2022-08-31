@@ -1,5 +1,5 @@
 import type {
-  AllDataTypes,
+  AnyDataType,
   ArrayOf,
   Enum,
   EnumMember,
@@ -34,19 +34,19 @@ export const DataType = {
       recordOf: args,
     };
   },
-  ArrayOf<DT extends AllDataTypes[]>(...args: DT): ArrayOf<DT> {
+  ArrayOf<DT extends AnyDataType[]>(...args: DT): ArrayOf<DT> {
     return {
       [dataTypeSymbol]: true,
       arrayOf: args,
     };
   },
-  SetOf<DT extends AllDataTypes[]>(...args: DT): SetOf<DT> {
+  SetOf<DT extends AnyDataType[]>(...args: DT): SetOf<DT> {
     return {
       [dataTypeSymbol]: true,
       setOf: args,
     };
   },
-  OneOf<DT extends AllDataTypes[]>(...args: DT): OneOf<DT> {
+  OneOf<DT extends AnyDataType[]>(...args: DT): OneOf<DT> {
     return {
       [dataTypeSymbol]: true,
       oneOf: args,

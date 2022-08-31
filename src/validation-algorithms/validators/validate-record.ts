@@ -1,9 +1,9 @@
-import type { AllDataTypes, FieldDescriptor, RecordOf } from "@DataTypes/types";
+import type { AnyDataType, FieldDescriptor, RecordOf } from "@DataTypes/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
 
-const getType = (v: FieldDescriptor | AllDataTypes) => {
+const getType = (v: FieldDescriptor | AnyDataType) => {
   if (isFieldDescriptor(v)) return v.type;
   return v;
 };

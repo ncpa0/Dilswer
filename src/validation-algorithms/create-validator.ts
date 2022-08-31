@@ -1,5 +1,5 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
-import type { AllDataTypes } from "@DataTypes/types";
+import type { AnyDataType } from "@DataTypes/types";
 import { validateType } from "@Validation/validators/validate-type";
 
 /**
@@ -8,7 +8,7 @@ import { validateType } from "@Validation/validators/validate-type";
  * structure definition and returns a boolean indicating if the
  * check was successful.
  */
-export const createValidator = <DT extends AllDataTypes>(dataType: DT) => {
+export const createValidator = <DT extends AnyDataType>(dataType: DT) => {
   const validator = (data: unknown): data is ReWrap<ParseDataType<DT>> => {
     try {
       validateType("$", dataType, data);

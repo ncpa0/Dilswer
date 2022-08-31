@@ -23,9 +23,10 @@ export default {
 };
 
 export { DataType } from "@DataTypes/data-types";
-export { GetDataType } from "@DataTypes/type-utils";
-export {
+export type { GetDataType } from "@DataTypes/type-utils";
+export type {
   AllDataTypes,
+  AnyDataType,
   ArrayOf,
   BasicDataType,
   ComplexDataType,
@@ -38,7 +39,7 @@ export {
   RecordTypeSchema as TypeSchema,
   SetOf,
 } from "@DataTypes/types";
-export * from "@Intrinsic/index";
+export * from "@Intrinsic";
 export {
   createTypeGuardedFunction,
   createValidatedFunction,

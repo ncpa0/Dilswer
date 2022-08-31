@@ -1,5 +1,5 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
-import type { AllDataTypes } from "@DataTypes/types";
+import type { AnyDataType } from "@DataTypes/types";
 import type { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
 
@@ -12,11 +12,7 @@ import { validateType } from "@Validation/validators/validate-type";
  * invoked with the type validation error as it's argument
  * (unless the callback is not specified).
  */
-export const createTypeGuardedFunction = <
-  DT extends AllDataTypes,
-  R,
-  ER = void
->(
+export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
   dataType: DT,
   onValidationSuccess: (data: ReWrap<ParseDataType<DT>>) => R,
   onValidationError?: (error: ValidationError, passedData: unknown) => ER
