@@ -1,9 +1,8 @@
 /** @type {import("ts-jest/dist/types").InitialOptionsTsJest} */
 module.exports = {
-  preset: "ts-jest",
   testRegex: ".*__tests__/.+(\\.test\\.(ts|js|tsx|jsx))$",
   transform: {
-    "^.+\\.(ts|tsx)$": "ts-jest",
+    "^.+\\.(t|j)sx?$": ["@swc/jest"],
   },
   moduleNameMapper: {
     "^@DataTypes/(.*)": "<rootDir>/src/data-types/$1",
