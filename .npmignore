@@ -4,6 +4,7 @@ __tests__
 coverage
 node_modules
 src
+scripts
 .eslintignore
 .eslintrc.json
 .gitignore
@@ -11,3 +12,4 @@ src
 .npmrc
 .prettierrc.json
 jest.config.js
+yarn-error.log
