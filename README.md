@@ -18,7 +18,8 @@ both the runtime validation types and the TypeScript type definitions.
    2. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
    3. [createValidatedFunction()](#dilswercreatevalidatedfunction)
    4. [ensureDataType()](#dilswerensuredatatype)
-   5. [DataType](#dilswerdatatype)
+   5. [toJsonSchema()](#dilswertojsonschema)
+   6. [DataType](#dilswerdatatype)
 4. [Data Types](#data-types)
    1. [String](#datatypestring)
    2. [Number](#datatypenumber)
@@ -214,6 +215,72 @@ const ensureDataType: <DT extends AllDataTypes>(
 
 Checks the provided `data` against the `dataType` type definition and throws an
 ValidationError if the `data` does not conform to the `dataType`.
+
+#### dilswer.toJsonSchema()
+
+Translates given DataType into a JSON Schema.
+
+```ts
+const toJsonSchema = (
+  type: AnyDataType,
+  options: ParseToJsonSchemaOptions = {},
+  include$schemaProperty = true
+): JSONSchema6 | undefined
+```
+
+##### ParseToJsonSchemaOptions
+
+```ts
+type ParseToJsonSchemaOptions = {
+  /**
+   * Defines how to handle DataTypes that do not have an
+   * equivalent type in JSON Schema. (Set's, undefined, Symbols, etc.)
+   *
+   * - `throw` (default): Throw an error if an incompatible type is
+   *   encountered.
+   * - `omit`: Omits incompatible properties from the JSON Schema.
+   * - `set-as-any`: Adds the type to the schema without a "type"
+   *   property but with a name equivalent to the given DataType.
+   */
+  incompatibleTypes?: "throw" | "omit" | "set-as-any";
+  /**
+   * Determines if the schemas generated for Record's should have
+   * additional properties set to `true` or `false`.
+   */
+  additionalProperties?: boolean;
+  /**
+   * Custom Parser's are methods used to parse incompatible
+   * DataTypes to JSON Schema's.
+   *
+   * By default a strategy defined in `incompatibleTypes` is
+   * used, if a method is defined, that method will be used instead.
+   */
+  customParser?: {
+    Set?: (
+      setItemsSchemas: JSONSchema6[],
+      original: Set<AnyDataType[]>,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Custom?: (
+      validateFunction: Custom["custom"],
+      original: Custom,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Undefined?: (
+      dataType: BasicDataType,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Symbol?: (
+      dataType: BasicDataType,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Function?: (
+      dataType: BasicDataType,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+  };
+};
+```
 
 #### dilswer.DataType
 

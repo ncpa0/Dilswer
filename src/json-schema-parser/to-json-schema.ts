@@ -62,7 +62,7 @@ export type ParseToJsonSchemaOptions = {
   };
 };
 
-/** Translates given DataType into a JSON Schema */
+/** Translates given DataType into a JSON Schema. */
 export const toJsonSchema = (
   type: AnyDataType,
   options: ParseToJsonSchemaOptions = {},
