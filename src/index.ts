@@ -1,5 +1,6 @@
 import { DataType } from "@DataTypes/data-types";
 import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic";
+import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import {
   createTypeGuardedFunction,
   createValidatedFunction,
@@ -20,6 +21,7 @@ export default {
   Pick,
   Required,
   DataType,
+  toJsonSchema,
 };
 
 export { DataType } from "@DataTypes/data-types";
@@ -40,6 +42,8 @@ export type {
   SetOf,
 } from "@DataTypes/types";
 export * from "@Intrinsic";
+export { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
+export type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
 export {
   createTypeGuardedFunction,
   createValidatedFunction,

@@ -13,5 +13,6 @@ build({
     "@Utilities/*": "./utilities/*",
     "@Validation/*": "./validation-algorithms/*",
     "@Intrinsic/*": "./intrinsic-type-utils/*",
+    "@JSONSchemaParser/*": "./json-schema-parser/*",
   },
 });

@@ -8,6 +8,7 @@ module.exports = {
     "^@DataTypes/(.*)": "<rootDir>/src/data-types/$1",
     "^@Utilities/(.*)": "<rootDir>/src/utilities/$1",
     "^@Validation/(.*)": "<rootDir>/src/validation-algorithms/$1",
+    "^@JSONSchemaParser/(.*)": "<rootDir>/src/json-schema-parser/$1",
     "^@Intrinsic/(.*)": "<rootDir>/src/intrinsic-type-utils/$1",
     "^@Intrinsic": "<rootDir>/src/intrinsic-type-utils/index",
   },

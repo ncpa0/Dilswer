@@ -1,0 +1,698 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] = `
+{
+  "properties": {
+    "bMember": {
+      "enum": [
+        "B",
+      ],
+      "type": "string",
+    },
+    "bool": {
+      "type": "boolean",
+    },
+    "dict": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string",
+          },
+        ],
+      },
+      "type": "object",
+    },
+    "enum": {
+      "anyOf": [
+        {
+          "enum": [
+            "A",
+          ],
+          "title": "A",
+          "type": "string",
+        },
+        {
+          "enum": [
+            "B",
+          ],
+          "title": "B",
+          "type": "string",
+        },
+        {
+          "enum": [
+            "C",
+          ],
+          "title": "C",
+          "type": "string",
+        },
+      ],
+    },
+    "literalBoolean": {
+      "enum": [
+        true,
+      ],
+      "type": "boolean",
+    },
+    "literalNumber": {
+      "enum": [
+        1,
+      ],
+      "type": "number",
+    },
+    "literalString": {
+      "enum": [
+        "literal",
+      ],
+      "type": "string",
+    },
+    "number": {
+      "type": "number",
+    },
+    "oneof": {
+      "anyOf": [
+        {
+          "properties": {
+            "foo": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "foo",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "bar": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "bar",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "optionalSelfCopy": {
+      "properties": {
+        "bMember": {
+          "enum": [
+            "B",
+          ],
+          "type": "string",
+        },
+        "bool": {
+          "type": "boolean",
+        },
+        "dict": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+            ],
+          },
+          "type": "object",
+        },
+        "enum": {
+          "anyOf": [
+            {
+              "enum": [
+                "A",
+              ],
+              "title": "A",
+              "type": "string",
+            },
+            {
+              "enum": [
+                "B",
+              ],
+              "title": "B",
+              "type": "string",
+            },
+            {
+              "enum": [
+                "C",
+              ],
+              "title": "C",
+              "type": "string",
+            },
+          ],
+        },
+        "id": {
+          "type": "string",
+        },
+        "literalBoolean": {
+          "enum": [
+            true,
+          ],
+          "type": "boolean",
+        },
+        "literalNumber": {
+          "enum": [
+            1,
+          ],
+          "type": "number",
+        },
+        "literalString": {
+          "enum": [
+            "literal",
+          ],
+          "type": "string",
+        },
+        "number": {
+          "type": "number",
+        },
+        "oneof": {
+          "anyOf": [
+            {
+              "properties": {
+                "foo": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "foo",
+              ],
+              "type": "object",
+            },
+            {
+              "properties": {
+                "bar": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "bar",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "recordIntersection": {
+          "allOf": [
+            {
+              "properties": {
+                "a": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "a",
+              ],
+              "type": "object",
+            },
+            {
+              "properties": {
+                "b": {
+                  "type": "number",
+                },
+              },
+              "required": [
+                "b",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "stringArray": {
+          "items": [
+            {
+              "type": "string",
+            },
+          ],
+          "type": "array",
+        },
+        "unionArray": {
+          "items": [
+            {
+              "properties": {
+                "foo": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "foo",
+              ],
+              "type": "object",
+            },
+            {
+              "properties": {
+                "bar": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "bar",
+              ],
+              "type": "object",
+            },
+          ],
+          "type": "array",
+        },
+      },
+      "required": [],
+      "type": "object",
+    },
+    "recordIntersection": {
+      "allOf": [
+        {
+          "properties": {
+            "a": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "a",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "b": {
+              "type": "number",
+            },
+          },
+          "required": [
+            "b",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "stringArray": {
+      "items": [
+        {
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
+    "unionArray": {
+      "items": [
+        {
+          "properties": {
+            "foo": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "foo",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "bar": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "bar",
+          ],
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "uuid": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "uuid",
+    "number",
+    "bool",
+    "stringArray",
+    "unionArray",
+    "literalString",
+    "literalNumber",
+    "literalBoolean",
+    "enum",
+    "bMember",
+    "recordIntersection",
+    "dict",
+    "oneof",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any' 1`] = `
+{
+  "properties": {
+    "bMember": {
+      "enum": [
+        "B",
+      ],
+      "type": "string",
+    },
+    "bool": {
+      "type": "boolean",
+    },
+    "customValidator": {
+      "title": "Custom Validator (anonymous)",
+    },
+    "dict": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string",
+          },
+        ],
+      },
+      "type": "object",
+    },
+    "enum": {
+      "anyOf": [
+        {
+          "enum": [
+            "A",
+          ],
+          "title": "A",
+          "type": "string",
+        },
+        {
+          "enum": [
+            "B",
+          ],
+          "title": "B",
+          "type": "string",
+        },
+        {
+          "enum": [
+            "C",
+          ],
+          "title": "C",
+          "type": "string",
+        },
+      ],
+    },
+    "literalBoolean": {
+      "enum": [
+        true,
+      ],
+      "type": "boolean",
+    },
+    "literalNumber": {
+      "enum": [
+        1,
+      ],
+      "type": "number",
+    },
+    "literalString": {
+      "enum": [
+        "literal",
+      ],
+      "type": "string",
+    },
+    "number": {
+      "type": "number",
+    },
+    "oneof": {
+      "anyOf": [
+        {
+          "properties": {
+            "foo": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "foo",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "bar": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "bar",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "optionalSelfCopy": {
+      "properties": {
+        "bMember": {
+          "enum": [
+            "B",
+          ],
+          "type": "string",
+        },
+        "bool": {
+          "type": "boolean",
+        },
+        "dict": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+            ],
+          },
+          "type": "object",
+        },
+        "enum": {
+          "anyOf": [
+            {
+              "enum": [
+                "A",
+              ],
+              "title": "A",
+              "type": "string",
+            },
+            {
+              "enum": [
+                "B",
+              ],
+              "title": "B",
+              "type": "string",
+            },
+            {
+              "enum": [
+                "C",
+              ],
+              "title": "C",
+              "type": "string",
+            },
+          ],
+        },
+        "id": {
+          "type": "string",
+        },
+        "literalBoolean": {
+          "enum": [
+            true,
+          ],
+          "type": "boolean",
+        },
+        "literalNumber": {
+          "enum": [
+            1,
+          ],
+          "type": "number",
+        },
+        "literalString": {
+          "enum": [
+            "literal",
+          ],
+          "type": "string",
+        },
+        "number": {
+          "type": "number",
+        },
+        "oneof": {
+          "anyOf": [
+            {
+              "properties": {
+                "foo": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "foo",
+              ],
+              "type": "object",
+            },
+            {
+              "properties": {
+                "bar": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "bar",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "recordIntersection": {
+          "allOf": [
+            {
+              "properties": {
+                "a": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "a",
+              ],
+              "type": "object",
+            },
+            {
+              "properties": {
+                "b": {
+                  "type": "number",
+                },
+              },
+              "required": [
+                "b",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "stringArray": {
+          "items": [
+            {
+              "type": "string",
+            },
+          ],
+          "type": "array",
+        },
+        "stringSet": {
+          "title": "Set",
+        },
+        "unionArray": {
+          "items": [
+            {
+              "properties": {
+                "foo": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "foo",
+              ],
+              "type": "object",
+            },
+            {
+              "properties": {
+                "bar": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "bar",
+              ],
+              "type": "object",
+            },
+          ],
+          "type": "array",
+        },
+      },
+      "required": [],
+      "type": "object",
+    },
+    "recordIntersection": {
+      "allOf": [
+        {
+          "properties": {
+            "a": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "a",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "b": {
+              "type": "number",
+            },
+          },
+          "required": [
+            "b",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "stringArray": {
+      "items": [
+        {
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
+    "stringSet": {
+      "title": "Set",
+    },
+    "symbol": {
+      "title": "Symbol",
+    },
+    "undef": {
+      "title": "undefined",
+    },
+    "unionArray": {
+      "items": [
+        {
+          "properties": {
+            "foo": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "foo",
+          ],
+          "type": "object",
+        },
+        {
+          "properties": {
+            "bar": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "bar",
+          ],
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "uuid": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "uuid",
+    "number",
+    "bool",
+    "stringSet",
+    "stringArray",
+    "unionArray",
+    "literalString",
+    "literalNumber",
+    "literalBoolean",
+    "enum",
+    "bMember",
+    "recordIntersection",
+    "dict",
+    "oneof",
+    "symbol",
+    "undef",
+    "customValidator",
+  ],
+  "type": "object",
+}
+`;
