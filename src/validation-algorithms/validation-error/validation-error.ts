@@ -1,15 +1,17 @@
 import type { AnyDataType } from "@DataTypes/types";
 
+const ValidationErrorSymbol = Symbol("ValidationError");
+
 export class ValidationError extends TypeError {
   static isValidationError(e: unknown | ValidationError): e is ValidationError {
     return (
       typeof e === "object" &&
       e !== null &&
       e instanceof Error &&
-      "_validation_error" in e
+      ValidationErrorSymbol in e
     );
   }
-  private readonly _validation_error = true;
+  private readonly [ValidationErrorSymbol] = true;
 
   fieldPath: string;
   expectedValueType: AnyDataType;

@@ -11,6 +11,11 @@ export type RecordOf<TS extends RecordTypeSchema = RecordTypeSchema> = {
   readonly recordOf: TS;
 };
 
+export type Dict<DT extends AnyDataType[] = any[]> = {
+  readonly [dataTypeSymbol]: true;
+  readonly dict: DT;
+};
+
 export type SetOf<DT extends AnyDataType[] = any[]> = {
   readonly [dataTypeSymbol]: true;
   readonly setOf: DT;
@@ -19,6 +24,11 @@ export type SetOf<DT extends AnyDataType[] = any[]> = {
 export type OneOf<DT extends AnyDataType[] = any[]> = {
   readonly [dataTypeSymbol]: true;
   readonly oneOf: DT;
+};
+
+export type AllOf<DT extends AnyDataType[] = any[]> = {
+  readonly [dataTypeSymbol]: true;
+  readonly allOf: DT;
 };
 
 export type Literal<
@@ -38,16 +48,25 @@ export type EnumMember<M = any> = {
   readonly enumMember: M;
 };
 
+export type Custom<VF extends (v: any) => boolean = (v: any) => v is unknown> =
+  {
+    readonly [dataTypeSymbol]: true;
+    readonly custom: VF;
+  };
+
 export type BasicDataType = ValueOf<typeof BasicDataTypes>;
 
 export type ComplexDataType =
   | ArrayOf
   | RecordOf
+  | Dict
   | SetOf
   | OneOf
+  | AllOf
   | Literal
   | Enum
-  | EnumMember;
+  | EnumMember
+  | Custom;
 
 export type AnyDataType = BasicDataType | ComplexDataType;
 

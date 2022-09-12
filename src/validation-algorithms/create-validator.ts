@@ -1,5 +1,6 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
+import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
 
 /**
@@ -14,6 +15,7 @@ export const createValidator = <DT extends AnyDataType>(dataType: DT) => {
       validateType("$", dataType, data);
       return true;
     } catch (e) {
+      if (!ValidationError.isValidationError(e)) throw e;
       return false;
     }
   };

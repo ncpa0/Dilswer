@@ -1,9 +1,12 @@
 import type { dataTypeSymbol } from "@DataTypes/data-types";
 import type {
+  AllOf,
   AnyDataType,
   ArrayOf,
   BasicDataType,
   ComplexDataType,
+  Custom,
+  Dict,
   Enum,
   EnumMember,
   FieldDescriptor,
@@ -13,6 +16,12 @@ import type {
   RecordTypeSchema,
   SetOf,
 } from "@DataTypes/types";
+
+type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
+  k: infer I
+) => void
+  ? I
+  : never;
 
 type GetDescriptorType<T extends AnyDataType | FieldDescriptor> =
   T extends FieldDescriptor ? T["type"] : T;
@@ -59,11 +68,14 @@ export type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<
 export type EnsureIsKey<K> = K extends
   | "arrayOf"
   | "recordOf"
+  | "dict"
   | "setOf"
   | "oneOf"
+  | "allOf"
   | "literal"
   | "enumInstance"
   | "enumMember"
+  | "custom"
   ? K
   : "invalid";
 
@@ -79,7 +91,17 @@ export type GetFieldDescriptorsFromSetOf<D extends ComplexDataType> =
 export type GetTypeFromRecordOf<D extends ComplexDataType> =
   D extends RecordOf<any> ? D : never;
 
+export type GetTypeFromDict<D extends ComplexDataType> = D extends Dict<infer T>
+  ? T[number]
+  : never;
+
 export type GetTypeFromOneOf<D extends ComplexDataType> = D extends OneOf<
+  infer T
+>
+  ? T[number]
+  : never;
+
+export type GetTypeFromAllOf<D extends ComplexDataType> = D extends AllOf<
   infer T
 >
   ? T[number]
@@ -95,17 +117,28 @@ export type GetTypeFromEnum<D extends ComplexDataType> = D extends Enum<infer T>
   ? T
   : never;
 
+export type GetTypeFromCustom<D extends ComplexDataType> = D extends Custom<
+  infer F
+>
+  ? F extends (v: any) => v is infer R
+    ? R
+    : unknown
+  : never;
+
 export type GetTypeFromEnumMember<D extends ComplexDataType> =
   D extends EnumMember<infer T> ? T : never;
 
 export type ParseComplexType<D extends ComplexDataType> = {
   arrayOf: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
   recordOf: ParseRecordType<GetTypeFromRecordOf<D>>;
+  dict: Record<string | number, ParseDataType<GetTypeFromDict<D>>>;
   setOf: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;
   oneOf: ParseDataType<GetTypeFromOneOf<D>>;
+  allOf: UnionToIntersection<ParseDataType<GetTypeFromAllOf<D>>>;
   literal: GetTypeFromLiteral<D>;
   enumInstance: GetTypeFromEnum<D>;
   enumMember: GetTypeFromEnumMember<D>;
+  custom: GetTypeFromCustom<D>;
   invalid: never;
 }[EnsureIsKey<Exclude<keyof D, typeof dataTypeSymbol>>];
 

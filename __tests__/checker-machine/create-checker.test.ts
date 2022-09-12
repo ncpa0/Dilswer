@@ -531,6 +531,144 @@ describe("createValidator", () => {
       });
     });
 
+    describe("for intersections", () => {
+      it("should validate intersection of string and string literal", () => {
+        const typeDef = DataType.AllOf(
+          DataType.String,
+          DataType.Literal("foo")
+        );
+
+        const validate = createValidator(typeDef);
+
+        expect(validate("foo")).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("bar")).toEqual(false);
+        expect(validate("")).toEqual(false);
+      });
+
+      it("should validate intersection of string and string numerals", () => {
+        const typeDef = DataType.AllOf(DataType.String, DataType.StringNumeral);
+
+        const validate = createValidator(typeDef);
+
+        expect(validate("1")).toEqual(true);
+        expect(validate("123")).toEqual(true);
+        expect(validate("123.123")).toEqual(true);
+
+        expect(validate("123.123.123")).toEqual(false);
+        expect(validate("a")).toEqual(false);
+        expect(validate("1a")).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("bar")).toEqual(false);
+        expect(validate("")).toEqual(false);
+      });
+
+      it("should validate intersection of records", () => {
+        const typeDef = DataType.AllOf(
+          DataType.RecordOf({
+            foo: { type: DataType.String },
+          }),
+          DataType.RecordOf({
+            bar: { type: DataType.Number },
+          })
+        );
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ foo: "foo", bar: 123 })).toEqual(true);
+
+        expect(validate({ foo: "foo" })).toEqual(false);
+        expect(validate({ bar: 123 })).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("bar")).toEqual(false);
+        expect(validate("")).toEqual(false);
+      });
+
+      it("should validate intersection of records with optional properties", () => {
+        const typeDef = DataType.AllOf(
+          DataType.RecordOf({
+            foo: { type: DataType.String },
+          }),
+          DataType.RecordOf({
+            bar: { type: DataType.Number, required: false },
+          }),
+          DataType.RecordOf({
+            baz: DataType.Int,
+            qux: { type: DataType.Literal("qux"), required: false },
+          })
+        );
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ foo: "foo", baz: 1 })).toEqual(true);
+        expect(validate({ foo: "foo", baz: 0, bar: 1.1 })).toEqual(true);
+        expect(validate({ foo: "foo", baz: 0, bar: 1.1, qux: "qux" })).toEqual(
+          true
+        );
+        expect(
+          validate({
+            foo: "foo",
+            baz: 0,
+            bar: 1.1,
+            qux: "qux",
+            randomProp: () => {},
+          })
+        ).toEqual(true);
+
+        expect(
+          validate({ foo: "foo", baz: false, bar: 1.1, qux: "qux" })
+        ).toEqual(false);
+        expect(
+          validate({ foo: "foo", baz: 1.02, bar: 1.1, qux: "qux" })
+        ).toEqual(false);
+        expect(validate({ foo: 1, baz: 0, bar: 1.1, qux: "qux" })).toEqual(
+          false
+        );
+        expect(validate({ foo: "foo", baz: 0, bar: 1.1, qux: "quxx" })).toEqual(
+          false
+        );
+        expect(validate({ baz: 0, bar: 1.1, qux: "qux" })).toEqual(false);
+        expect(validate({ foo: "foo", bar: 1.1, qux: "qux" })).toEqual(false);
+        expect(validate({ bar: 123 })).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("bar")).toEqual(false);
+        expect(validate("")).toEqual(false);
+      });
+    });
+
     describe("for arrays", () => {
       it("should validate against any array when type is unknown", () => {
         const typeDef = DataType.ArrayOf(DataType.Unknown);
@@ -831,6 +969,120 @@ describe("createValidator", () => {
       });
     });
 
+    describe("for dictionaries", () => {
+      it("should not validate null for empty objects", () => {
+        const typeDef = DataType.Dict(DataType.Unknown);
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({})).toEqual(true);
+
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+      });
+
+      it("should validate for simple dictionaries", () => {
+        const typeDef = DataType.Dict(DataType.String, DataType.Number);
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ foo: "foo", bar: 123 })).toEqual(true);
+        expect(validate({ foo: "", bar: "0", baz: "" })).toEqual(true);
+        expect(validate({ foo: 123, bar: -2 })).toEqual(true);
+        expect(validate({ foo: "123", bar: -2, baz: "undefined" })).toEqual(
+          true
+        );
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate({ foo: "foo", bar: "123", baz: true })).toEqual(false);
+        expect(validate({ foo: "foo", bar: "123", baz: true })).toEqual(false);
+        expect(validate({ foo: 1, bar: 1, baz: () => 1 })).toEqual(false);
+        expect(validate({ foo: "foo", bar: Symbol("1") })).toEqual(false);
+        expect(validate({ foo: "", baz: {} })).toEqual(false);
+        expect(validate({ foo: "", baz: [] })).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(76)).toEqual(false);
+      });
+
+      it("should validate for nested dictionaries", () => {
+        enum T {
+          FOO = "FOO",
+          BAR = "BAR",
+        }
+
+        const typeDef = DataType.Dict(
+          DataType.String,
+          DataType.RecordOf({
+            foo: DataType.Dict(DataType.Dict(DataType.EnumMember(T.BAR))),
+          })
+        );
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ bar: "bar" })).toEqual(true);
+        expect(validate({ bar: { foo: {} } })).toEqual(true);
+        expect(validate({ bar: { foo: { dict1: {} } } })).toEqual(true);
+        expect(validate({ bar: { foo: { dict1: {} } } })).toEqual(true);
+        expect(validate({ bar: { foo: { dict1: { enum: T.BAR } } } })).toEqual(
+          true
+        );
+
+        expect(
+          validate({
+            foo: "foo",
+            bar: {
+              foo: {
+                dict1: { enum: T.BAR },
+                dict2: { tbar: T.BAR },
+                dict3: { a: T.BAR, b: T.BAR, c: T.BAR },
+              },
+            },
+          })
+        ).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate("undefined")).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({ bar: 1 })).toEqual(false);
+        expect(validate({ bar: null })).toEqual(false);
+        expect(validate({ bar: undefined })).toEqual(false);
+        expect(validate({ bar: Symbol() })).toEqual(false);
+        expect(validate({ bar: () => {} })).toEqual(false);
+        expect(validate({ bar: { foo: { a: 1 } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: "1" } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: null } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: undefined } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: Symbol() } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: () => {} } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: { b: 1 } } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: { b: "1" } } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: { b: null } } } })).toEqual(false);
+        expect(validate({ bar: { foo: { a: { b: undefined } } } })).toEqual(
+          false
+        );
+        expect(validate({ bar: { foo: { a: { b: Symbol() } } } })).toEqual(
+          false
+        );
+        expect(validate({ bar: { foo: { a: { b: () => {} } } } })).toEqual(
+          false
+        );
+        expect(validate({ bar: { foo: { dict1: { enum: T.FOO } } } })).toEqual(
+          false
+        );
+
+        expect(
+          validate({
+            foo: "foo",
+            bar: { foo: { dict1: { enum: 1 } } },
+          })
+        ).toEqual(false);
+      });
+    });
+
     describe("for sets", () => {
       it("should validate for set of numbers", () => {
         const typeDef = DataType.SetOf(DataType.Number);
@@ -1086,6 +1338,55 @@ describe("createValidator", () => {
         expect(validate({})).toEqual(false);
         expect(validate(true)).toEqual(false);
         expect(validate(false)).toEqual(false);
+      });
+    });
+
+    describe("for custom validators", () => {
+      it("should validate the value against the custom validator", () => {
+        const customValidator = (value: unknown): value is string => {
+          return typeof value === "string";
+        };
+
+        const typeDef = DataType.RecordOf({
+          foo: DataType.Custom(customValidator),
+        });
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ foo: "bar" })).toEqual(true);
+
+        expect(validate({ foo: 1 })).toEqual(false);
+        expect(validate({ foo: null })).toEqual(false);
+        expect(validate({ foo: undefined })).toEqual(false);
+        expect(validate({ foo: true })).toEqual(false);
+        expect(validate({ foo: false })).toEqual(false);
+        expect(validate({ foo: Symbol() })).toEqual(false);
+        expect(validate({ foo: () => {} })).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate("bar")).toEqual(false);
+        expect(validate("")).toEqual(false);
+      });
+
+      it("should propagate errors thrown within the custom validator", () => {
+        const customValidator = (value: unknown): value is string => {
+          throw new Error("foo");
+        };
+
+        const typeDef = DataType.RecordOf({
+          foo: DataType.Custom(customValidator),
+        });
+
+        const validate = createValidator(typeDef);
+
+        expect(() => validate({ foo: "bar" })).toThrowError("foo");
       });
     });
   });

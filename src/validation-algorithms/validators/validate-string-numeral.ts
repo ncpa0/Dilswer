@@ -33,5 +33,10 @@ export const validateStringNumeral = (
   )
     throwError();
 
+  // if data contains more than one dot
+  if ((data as string).split(".").length > 2) throwError();
+
+  if ((data as string).length === 0) throwError();
+
   return;
 };

@@ -1,5 +1,8 @@
 import type { AnyDataType } from "@DataTypes/types";
+import { validateAllOf } from "@Validation/validators/validate-all-of";
 import { validateArray } from "@Validation/validators/validate-array";
+import { validateCustom } from "@Validation/validators/validate-custom";
+import { validateDict } from "@Validation/validators/validate-dict";
 import { validateEnum } from "@Validation/validators/validate-enum";
 import { validateEnumMember } from "@Validation/validators/validate-enum-member";
 import { validateLiteral } from "@Validation/validators/validate-literal";
@@ -21,6 +24,10 @@ export const validateType = (
     return validateRecord(path, type, data);
   }
 
+  if ("dict" in type) {
+    return validateDict(path, type, data);
+  }
+
   if ("arrayOf" in type) {
     return validateArray(path, type, data);
   }
@@ -33,6 +40,10 @@ export const validateType = (
     return validateOneOf(path, type, data);
   }
 
+  if ("allOf" in type) {
+    return validateAllOf(path, type, data);
+  }
+
   if ("literal" in type) {
     return validateLiteral(path, type, data);
   }
@@ -43,5 +54,9 @@ export const validateType = (
 
   if ("enumInstance" in type) {
     return validateEnum(path, type, data);
+  }
+
+  if ("custom" in type) {
+    return validateCustom(path, type, data);
   }
 };

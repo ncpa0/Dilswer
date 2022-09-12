@@ -9,7 +9,7 @@ const getType = (v: FieldDescriptor | AnyDataType) => {
 };
 
 export const validateRecord = (path: string, type: RecordOf, data: unknown) => {
-  if (typeof data !== "object" || data === null)
+  if (typeof data !== "object" || data === null || Array.isArray(data))
     throw new ValidationError(path, type, data);
 
   for (const [key, fieldDescriptor] of Object.entries(type.recordOf)) {

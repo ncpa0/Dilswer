@@ -32,5 +32,7 @@ export const validateStringInteger = (
   )
     throwError();
 
+  if ((data as string).length === 0) throwError();
+
   return;
 };

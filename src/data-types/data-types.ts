@@ -1,6 +1,9 @@
 import type {
+  AllOf,
   AnyDataType,
   ArrayOf,
+  Custom,
+  Dict,
   Enum,
   EnumMember,
   Literal,
@@ -34,6 +37,12 @@ export const DataType = {
       recordOf: args,
     };
   },
+  Dict<DT extends AnyDataType[]>(...args: DT): Dict<DT> {
+    return {
+      [dataTypeSymbol]: true,
+      dict: args,
+    };
+  },
   ArrayOf<DT extends AnyDataType[]>(...args: DT): ArrayOf<DT> {
     return {
       [dataTypeSymbol]: true,
@@ -50,6 +59,12 @@ export const DataType = {
     return {
       [dataTypeSymbol]: true,
       oneOf: args,
+    };
+  },
+  AllOf<DT extends AnyDataType[]>(...args: DT): AllOf<DT> {
+    return {
+      [dataTypeSymbol]: true,
+      allOf: args,
     };
   },
   Literal<V extends string | number | boolean>(value: V): Literal<V> {
@@ -71,6 +86,12 @@ export const DataType = {
       [dataTypeSymbol]: true,
       // @ts-expect-error
       enumInstance,
+    };
+  },
+  Custom<VF extends (v: any) => boolean>(validateFunction: VF): Custom<VF> {
+    return {
+      [dataTypeSymbol]: true,
+      custom: validateFunction,
     };
   },
 };
