@@ -1,4 +1,4 @@
-import type { AnyDataType } from "@DataTypes/types";
+import type { AnyDataType, BasicDataType, Custom } from "@DataTypes/types";
 import { parseAllOf } from "@JSONSchemaParser/parse-all-of";
 import { parseArrayOf } from "@JSONSchemaParser/parse-array-of";
 import { parseCustom } from "@JSONSchemaParser/parse-custom";
@@ -13,14 +13,60 @@ import { parseSetOf } from "@JSONSchemaParser/parse-set-of";
 import type { JSONSchema6 } from "json-schema";
 
 export type ParseToJsonSchemaOptions = {
+  /**
+   * Defines how to handle DataTypes that do not have an
+   * equivalent type in JSON Schema. (Set's, undefined, Symbols, etc.)
+   *
+   * - `throw` (default): Throw an error if an incompatible type is
+   *   encountered.
+   * - `omit`: Omits incompatible properties from the JSON Schema.
+   * - `set-as-any`: Adds the type to the schema without a "type"
+   *   property but with a name equivalent to the given DataType.
+   */
   incompatibleTypes?: "throw" | "omit" | "set-as-any";
+  /**
+   * Determines if the schemas generated for Record's should have
+   * additional properties set to `true` or `false`.
+   */
+  additionalProperties?: boolean;
+  /**
+   * Custom Parser's are methods used to parse incompatible
+   * DataTypes to JSON Schema's.
+   *
+   * By default a strategy defined in `incompatibleTypes` is
+   * used, if a method is defined, that method will be used instead.
+   */
+  customParser?: {
+    Set?: (
+      setItemsSchemas: JSONSchema6[],
+      original: Set<AnyDataType[]>,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Custom?: (
+      validateFunction: Custom["custom"],
+      original: Custom,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Undefined?: (
+      dataType: BasicDataType,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Symbol?: (
+      dataType: BasicDataType,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+    Function?: (
+      dataType: BasicDataType,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
+  };
 };
 
 /** Translates given DataType into a JSON Schema */
 export const toJsonSchema = (
   type: AnyDataType,
   options: ParseToJsonSchemaOptions = {},
-  _includeSchema = true
+  include$schemaProperty = true
 ): JSONSchema6 | undefined => {
   let schema: JSONSchema6 | undefined;
 
@@ -48,7 +94,7 @@ export const toJsonSchema = (
     schema = parseCustom(type, options);
   }
 
-  if (_includeSchema && schema) {
+  if (include$schemaProperty && schema) {
     schema.$schema = "http://json-schema.org/draft-06/schema#";
   }
 

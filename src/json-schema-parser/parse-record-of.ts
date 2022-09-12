@@ -36,5 +36,9 @@ export const parseRecordOf = (
     }
   }
 
+  if (typeof options.additionalProperties === "boolean") {
+    recordSchema.additionalProperties = options.additionalProperties;
+  }
+
   return recordSchema;
 };

@@ -6,7 +6,7 @@ export const parsePrimitive = (
   type: BasicDataType,
   options: ParseToJsonSchemaOptions
 ): JSONSchema6 | undefined => {
-  const { incompatibleTypes = "throw" } = options;
+  const { incompatibleTypes = "throw", customParser = {} } = options;
 
   const throwIncompatibleTypeError = (): never => {
     throw new Error(
@@ -32,18 +32,21 @@ export const parsePrimitive = (
     case "unknown":
       return {};
     case "function":
+      if (customParser.Function) return customParser.Function(type, options);
       if (incompatibleTypes === "throw") throwIncompatibleTypeError();
       if (incompatibleTypes === "omit") return undefined;
       return {
         title: "Function",
       };
     case "symbol":
+      if (customParser.Symbol) return customParser.Symbol(type, options);
       if (incompatibleTypes === "throw") throwIncompatibleTypeError();
       if (incompatibleTypes === "omit") return undefined;
       return {
         title: "Symbol",
       };
     case "undefined":
+      if (customParser.Undefined) return customParser.Undefined(type, options);
       if (incompatibleTypes === "throw") throwIncompatibleTypeError();
       if (incompatibleTypes === "omit") return undefined;
       return {

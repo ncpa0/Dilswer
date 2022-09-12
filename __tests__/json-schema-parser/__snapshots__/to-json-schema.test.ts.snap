@@ -696,3 +696,386 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
   "type": "object",
 }
 `;
+
+exports[`toJsonSchema should set the specified additionalProperty 1`] = `
+{
+  "additionalProperties": false,
+  "properties": {
+    "bMember": {
+      "enum": [
+        "B",
+      ],
+      "type": "string",
+    },
+    "bool": {
+      "type": "boolean",
+    },
+    "dict": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "string",
+          },
+        ],
+      },
+      "type": "object",
+    },
+    "enum": {
+      "anyOf": [
+        {
+          "enum": [
+            "A",
+          ],
+          "title": "A",
+          "type": "string",
+        },
+        {
+          "enum": [
+            "B",
+          ],
+          "title": "B",
+          "type": "string",
+        },
+        {
+          "enum": [
+            "C",
+          ],
+          "title": "C",
+          "type": "string",
+        },
+      ],
+    },
+    "literalBoolean": {
+      "enum": [
+        true,
+      ],
+      "type": "boolean",
+    },
+    "literalNumber": {
+      "enum": [
+        1,
+      ],
+      "type": "number",
+    },
+    "literalString": {
+      "enum": [
+        "literal",
+      ],
+      "type": "string",
+    },
+    "number": {
+      "type": "number",
+    },
+    "oneof": {
+      "anyOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "foo": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "foo",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "bar": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "bar",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "optionalSelfCopy": {
+      "additionalProperties": false,
+      "properties": {
+        "bMember": {
+          "enum": [
+            "B",
+          ],
+          "type": "string",
+        },
+        "bool": {
+          "type": "boolean",
+        },
+        "dict": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string",
+              },
+            ],
+          },
+          "type": "object",
+        },
+        "enum": {
+          "anyOf": [
+            {
+              "enum": [
+                "A",
+              ],
+              "title": "A",
+              "type": "string",
+            },
+            {
+              "enum": [
+                "B",
+              ],
+              "title": "B",
+              "type": "string",
+            },
+            {
+              "enum": [
+                "C",
+              ],
+              "title": "C",
+              "type": "string",
+            },
+          ],
+        },
+        "id": {
+          "type": "string",
+        },
+        "literalBoolean": {
+          "enum": [
+            true,
+          ],
+          "type": "boolean",
+        },
+        "literalNumber": {
+          "enum": [
+            1,
+          ],
+          "type": "number",
+        },
+        "literalString": {
+          "enum": [
+            "literal",
+          ],
+          "type": "string",
+        },
+        "number": {
+          "type": "number",
+        },
+        "oneof": {
+          "anyOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "foo": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "foo",
+              ],
+              "type": "object",
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bar": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "bar",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "recordIntersection": {
+          "allOf": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "a": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "a",
+              ],
+              "type": "object",
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "b": {
+                  "type": "number",
+                },
+              },
+              "required": [
+                "b",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "stringArray": {
+          "items": [
+            {
+              "type": "string",
+            },
+          ],
+          "type": "array",
+        },
+        "unionArray": {
+          "items": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "foo": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "foo",
+              ],
+              "type": "object",
+            },
+            {
+              "additionalProperties": false,
+              "properties": {
+                "bar": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "bar",
+              ],
+              "type": "object",
+            },
+          ],
+          "type": "array",
+        },
+      },
+      "required": [],
+      "type": "object",
+    },
+    "recordIntersection": {
+      "allOf": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "a": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "a",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "b": {
+              "type": "number",
+            },
+          },
+          "required": [
+            "b",
+          ],
+          "type": "object",
+        },
+      ],
+    },
+    "stringArray": {
+      "items": [
+        {
+          "type": "string",
+        },
+      ],
+      "type": "array",
+    },
+    "unionArray": {
+      "items": [
+        {
+          "additionalProperties": false,
+          "properties": {
+            "foo": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "foo",
+          ],
+          "type": "object",
+        },
+        {
+          "additionalProperties": false,
+          "properties": {
+            "bar": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "bar",
+          ],
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "uuid": {
+      "type": "string",
+    },
+  },
+  "required": [
+    "uuid",
+    "number",
+    "bool",
+    "stringArray",
+    "unionArray",
+    "literalString",
+    "literalNumber",
+    "literalBoolean",
+    "enum",
+    "bMember",
+    "recordIntersection",
+    "dict",
+    "oneof",
+  ],
+  "type": "object",
+}
+`;
+
+exports[`toJsonSchema should use the custom parsers 1`] = `
+{
+  "properties": {
+    "custom": {
+      "title": "Custom parser schema for validateFunction",
+    },
+    "function": {
+      "title": "Custom parser schema for Function DataType",
+    },
+    "set": {
+      "title": "Custom parser schema for Set DataType",
+    },
+    "symbol": {
+      "title": "Custom parser schema for Symbol DataType",
+    },
+    "undefined": {
+      "title": "Custom parser schema for Undefined DataType",
+    },
+  },
+  "required": [
+    "custom",
+    "function",
+    "set",
+    "symbol",
+    "undefined",
+  ],
+  "type": "object",
+}
+`;

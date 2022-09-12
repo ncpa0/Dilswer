@@ -6,7 +6,10 @@ export const parseCustom = (
   type: Custom,
   options: ParseToJsonSchemaOptions
 ): JSONSchema6 | undefined => {
-  const { incompatibleTypes = "throw" } = options;
+  const { incompatibleTypes = "throw", customParser = {} } = options;
+
+  if (customParser.Custom)
+    return customParser.Custom(type.custom, type, options);
 
   const throwIncompatibleTypeError = (): never => {
     throw new Error(

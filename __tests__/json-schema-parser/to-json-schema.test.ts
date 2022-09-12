@@ -113,4 +113,70 @@ describe("toJsonSchema", () => {
       toJsonSchema(testDt, { incompatibleTypes: "throw" })
     ).toThrow();
   });
+
+  it("should set the specified additionalProperty", () => {
+    const schema = toJsonSchema(
+      testDt,
+      { incompatibleTypes: "omit", additionalProperties: false },
+      false
+    );
+
+    expect(schema).toMatchSnapshot();
+    expect(schema).toBeDefined();
+
+    const isValid = new Ajv().validateSchema(schema!);
+
+    expect(isValid).toEqual(true);
+  });
+
+  it("should use the custom parsers", () => {
+    const dt = DataType.RecordOf({
+      custom: DataType.Custom((value: any): value is any => true),
+      function: DataType.Function,
+      set: DataType.SetOf(DataType.String),
+      symbol: DataType.Symbol,
+      undefined: DataType.Undefined,
+    });
+
+    const schema = toJsonSchema(
+      dt,
+      {
+        customParser: {
+          Custom(validateFunction, original, options) {
+            return {
+              title: "Custom parser schema for validateFunction",
+            };
+          },
+          Function(dataType, options) {
+            return {
+              title: "Custom parser schema for Function DataType",
+            };
+          },
+          Set(setItemsSchemas, original, options) {
+            return {
+              title: "Custom parser schema for Set DataType",
+            };
+          },
+          Symbol(dataType, options) {
+            return {
+              title: "Custom parser schema for Symbol DataType",
+            };
+          },
+          Undefined(dataType, options) {
+            return {
+              title: "Custom parser schema for Undefined DataType",
+            };
+          },
+        },
+      },
+      false
+    );
+
+    expect(schema).toMatchSnapshot();
+    expect(schema).toBeDefined();
+
+    const isValid = new Ajv().validateSchema(schema!);
+
+    expect(isValid).toEqual(true);
+  });
 });
