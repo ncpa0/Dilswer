@@ -1,4 +1,5 @@
 __tests__
+.github
 .husky
 .vscode
 coverage
