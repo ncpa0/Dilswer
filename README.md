@@ -32,12 +32,15 @@ both the runtime validation types and the TypeScript type definitions.
    10. [Function](#datatypefunction)
    11. [Unknown](#datatypeunknown)
    12. [OneOf](#datatypeoneofdatatypes)
-   13. [ArrayOf](#datatypearrayofdatatypes)
-   14. [RecordOf](#datatyperecordofrecordstring-fielddescriptor)
-   15. [SetOf](#datatypesetofdatatypes)
-   16. [Literal](#datatypeliteralstring--number--boolean)
-   17. [Enum](#datatypeenumenum)
-   18. [EnumMember](#datatypeenummemberenum-member)
+   13. [AllOf](#datatypeallofdatatypes)
+   14. [ArrayOf](#datatypearrayofdatatypes)
+   15. [RecordOf](#datatyperecordofrecordstring-fielddescriptor)
+   16. [Dict](#datatypedictdatatypes)
+   17. [SetOf](#datatypesetofdatatypes)
+   18. [Literal](#datatypeliteralstring--number--boolean)
+   19. [Enum](#datatypeenumenum)
+   20. [EnumMember](#datatypeenummemberenum-member)
+   21. [Custom](#datatypecustomfunction)
 5. [Utility Functions](#utility-functions)
    1. [And](#and)
    1. [Omit](#omit)
@@ -289,6 +292,24 @@ const foo = DataType.OneOf(DataType.String, DataType.Number);
 type T = GetDataType<typeof foo>; // type T = (string | number)
 ```
 
+#### DataType.AllOf(...DataType's)
+
+will match values matching every DataType provided and translate to a TypeScript
+intersection of all those DataType's.
+
+Mostly useful to intersect multiple RecordOf's.
+
+Example
+
+```ts
+const foo = DataType.RecordOf({ foo: string });
+const bar = DataType.RecordOf({ bar: string });
+
+const combined = DataType.AllOf(foo, bar);
+
+type T = GetDataType<typeof combined>; // type T = { foo: string; bar: string; }
+```
+
 #### DataType.ArrayOf(...DataType's)
 
 will match any array which contains only values matching any of the DataType's
@@ -317,6 +338,19 @@ const foo = DataType.RecordOf({
 });
 
 type T = GetDataType<typeof foo>; // type T = {foo: boolean, bar: string, baz?: number | undefined}
+```
+
+#### DataType.Dict(...DataType's)
+
+will match any object which properties match against the provided DataTypes's,
+and translates to a Record type in TypeScript.
+
+Example
+
+```ts
+const dictOfFunctions = DataType.Dict(DataType.Function);
+
+type T = GetDataType<typeof dictOfFunctions>; // type T = Record<string | number, Function>
 ```
 
 #### DataType.SetOf(...DataType's)
@@ -399,6 +433,24 @@ const validate = createValidator(foo);
 validate("VALUE_A"); // => true
 validate(MyEnum.A); // => true
 validate(MyEnum.B); // => false
+```
+
+#### DataType.Custom(Function)
+
+will test the data with the provided function, provided function should return a
+boolean indicating if the tested value passed the validation, passed function
+should also have a type definition that looks like this: `(v: any) => v is T`,
+where T is any valid TS type.
+
+Example
+
+```ts
+const isNonEmptyString = (v: any): v is string =>
+  typeof v === "string" && v.length > 0;
+
+const nonEmptyTypeDef = DataType.Custom(isNonEmptyString);
+
+type T = GetDataType<typeof nonEmptyTypeDef>; // type T = string
 ```
 
 ### Utility Functions
