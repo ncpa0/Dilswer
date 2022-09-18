@@ -20,6 +20,6 @@ export const validateSet = (
   if (!isSet(data)) throw new ValidationError(path, type, data);
 
   for (const elem of data) {
-    validateOneOf(`${path}.SET`, DataType.OneOf(...type.setOf), elem);
+    validateOneOf(`${path}<entry>`, DataType.OneOf(...type.setOf), elem);
   }
 };

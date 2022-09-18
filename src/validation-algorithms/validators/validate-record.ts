@@ -1,4 +1,5 @@
 import type { AnyDataType, FieldDescriptor, RecordOf } from "@DataTypes/types";
+import { concatObjectPath } from "@Utilities/concat-object-path";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
@@ -31,6 +32,6 @@ export const validateRecord = (path: string, type: RecordOf, data: unknown) => {
     // @ts-expect-error
     const value: unknown = data[key];
 
-    validateType(`${path}.${key}`, getType(fieldDescriptor), value);
+    validateType(concatObjectPath(path, key), getType(fieldDescriptor), value);
   }
 };

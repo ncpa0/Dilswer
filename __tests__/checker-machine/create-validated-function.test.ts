@@ -71,9 +71,9 @@ describe("createValidatedFunction", () => {
         qux: new Set([() => {}]),
       })
     ).toMatchObject({
-      fieldPath: "$.baz.2",
+      fieldPath: "$.baz[2]",
       receivedValue: 0,
-      expectedValueType: DataType.OneOf(DataType.String),
+      expectedValueType: DataType.String,
     });
 
     expect(
@@ -92,6 +92,51 @@ describe("createValidatedFunction", () => {
       fieldPath: "$",
       receivedValue: "abcde",
       expectedValueType: validator,
+    });
+  });
+
+  it("should correctly generate paths for arrays and records with special characters", () => {
+    const dt = DataType.RecordOf({
+      "./a": { type: DataType.String },
+      list: DataType.ArrayOf(DataType.Dict(DataType.String)),
+    });
+
+    const validate = createValidatedFunction(
+      dt,
+      (d) => d,
+      (e) => e
+    );
+
+    expect(
+      validate({
+        "./a": "foo",
+        list: [{ "a/b": "bar" }],
+      })
+    ).toEqual({
+      "./a": "foo",
+      list: [{ "a/b": "bar" }],
+    });
+
+    expect(
+      validate({
+        "./a": "foo",
+        list: [{ "a/b": 1 }],
+      })
+    ).toMatchObject({
+      fieldPath: '$.list[0]["a/b"]',
+      receivedValue: 1,
+      expectedValueType: DataType.String,
+    });
+
+    expect(
+      validate({
+        "./a": 1,
+        list: [{ "a/b": "bar" }],
+      })
+    ).toMatchObject({
+      fieldPath: '$["./a"]',
+      receivedValue: 1,
+      expectedValueType: DataType.String,
     });
   });
 });

@@ -15,6 +15,7 @@ export const validateOneOf = (
       passed = true;
       break;
     } catch (e) {
+      if (type.oneOf.length === 1) throw e;
       continue;
     }
   }
