@@ -1,4 +1,4 @@
-import { createValidator, DataType } from "../../src";
+import { createValidator, DataType, OptionalField } from "../../src";
 
 describe("createValidator", () => {
   describe("for primitives", () => {
@@ -823,6 +823,21 @@ describe("createValidator", () => {
         const typeDef = DataType.RecordOf({
           foo: { required: true, type: DataType.String },
           bar: { required: false, type: DataType.Number },
+        });
+
+        const validate = createValidator(typeDef);
+
+        expect(validate({ foo: "foo" })).toEqual(true);
+        expect(validate({ foo: "foo", bar: 1 })).toEqual(true);
+
+        expect(validate({ foo: "foo", bar: "1" })).toEqual(false);
+        expect(validate({ bar: 1 })).toEqual(false);
+      });
+
+      it("should validate for optional properties defined with OptionalField", () => {
+        const typeDef = DataType.RecordOf({
+          foo: DataType.String,
+          bar: OptionalField(DataType.Number),
         });
 
         const validate = createValidator(typeDef);
