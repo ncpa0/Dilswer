@@ -717,7 +717,7 @@
   resolved "https://registry.yarnpkg.com/@swc/core-win32-x64-msvc/-/core-win32-x64-msvc-1.3.14.tgz#5d1dba5203030538d2c0161630068a17b5b4fd88"
   integrity sha512-/D1lhWF/DQi2M7b6jWL35NmTY0mRJ5mwTXdmjqNNWOZ8h8TXQo1A3/FDFnfIIcRUeSNdF7IeB3xInT3BI34E1w==
 
-"@swc/core@^1.2.245":
+"@swc/core@^1.3.14":
   version "1.3.14"
   resolved "https://registry.yarnpkg.com/@swc/core/-/core-1.3.14.tgz#596a0ba34ffd63eb87778eeffe9e97916a87af7d"
   integrity sha512-LpTTrXOGS7vnbR/rHrAux7GykUWbyVmI5NbICl9iF9yeqFdGm6JjaGBhbanmG8zrQL5aFx2kMxxb92V9D1KUiw==
@@ -733,7 +733,7 @@
     "@swc/core-win32-ia32-msvc" "1.3.14"
     "@swc/core-win32-x64-msvc" "1.3.14"
 
-"@swc/jest@^0.2.22":
+"@swc/jest@^0.2.23":
   version "0.2.23"
   resolved "https://registry.yarnpkg.com/@swc/jest/-/jest-0.2.23.tgz#0b7499d5927faaa090c5b7a4a0e35122968fef30"
   integrity sha512-ZLj17XjHbPtNsgqjm83qizENw05emLkKGu3WuPUttcy9hkngl0/kcc7fDbcSBpADS0GUtsO+iKPjZFWVAtJSlA==
@@ -829,7 +829,7 @@
   dependencies:
     "@types/istanbul-lib-report" "*"
 
-"@types/jest@^29.0.0":
+"@types/jest@^29.2.1":
   version "29.2.1"
   resolved "https://registry.yarnpkg.com/@types/jest/-/jest-29.2.1.tgz#31fda30bdf2861706abc5f1730be78bed54f83ee"
   integrity sha512-nKixEdnGDqFOZkMTF74avFNr3yRqB1ZJ6sRZv5/28D5x2oLN14KApv7F9mfDT/vUic0L3tRCsh3XWpWjtJisUQ==
@@ -912,7 +912,7 @@
   dependencies:
     "@types/yargs-parser" "*"
 
-"@typescript-eslint/eslint-plugin@^5.36.1":
+"@typescript-eslint/eslint-plugin@^5.42.0":
   version "5.42.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/eslint-plugin/-/eslint-plugin-5.42.0.tgz#36a8c0c379870127059889a9cc7e05c260d2aaa5"
   integrity sha512-5TJh2AgL6+wpL8H/GTSjNb4WrjKoR2rqvFxR/DDTqYNk6uXn8BJMEcncLSpMbf/XV1aS0jAjYwn98uvVCiAywQ==
@@ -927,7 +927,7 @@
     semver "^7.3.7"
     tsutils "^3.21.0"
 
-"@typescript-eslint/parser@^5.36.1":
+"@typescript-eslint/parser@^5.42.0":
   version "5.42.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.42.0.tgz#be0ffbe279e1320e3d15e2ef0ad19262f59e9240"
   integrity sha512-Ixh9qrOTDRctFg3yIwrLkgf33AHyEIn6lhyf5cCfwwiGtkWhNpVKlEZApi3inGQR/barWnY7qY8FbGKBO7p3JA==
@@ -1756,7 +1756,7 @@ esbuild-windows-arm64@0.15.13:
   resolved "https://registry.yarnpkg.com/esbuild-windows-arm64/-/esbuild-windows-arm64-0.15.13.tgz#4ffd01b6b2888603f1584a2fe96b1f6a6f2b3dd8"
   integrity sha512-3bv7tqntThQC9SWLRouMDmZnlOukBhOCTlkzNqzGCmrkCJI7io5LLjwJBOVY6kOUlIvdxbooNZwjtBvj+7uuVg==
 
-esbuild@^0.15.6:
+esbuild@^0.15.13:
   version "0.15.13"
   resolved "https://registry.yarnpkg.com/esbuild/-/esbuild-0.15.13.tgz#7293480038feb2bafa91d3f6a20edab3ba6c108a"
   integrity sha512-Cu3SC84oyzzhrK/YyN4iEVy2jZu5t2fz66HEOShHURcjSkOSAVL8C/gfUT+lDJxkVHpg8GZ10DD0rMHRPqMFaQ==
@@ -1861,7 +1861,7 @@ eslint-visitor-keys@^3.3.0:
   resolved "https://registry.yarnpkg.com/eslint-visitor-keys/-/eslint-visitor-keys-3.3.0.tgz#f6480fa6b1f30efe2d1968aa8ac745b862469826"
   integrity sha512-mQ+suqKJVyeuwGYHAdjMFqjCyfl8+Ldnxuyp3ldiMBFKkvytrXUZWaiPCEav8qDHKty44bD+qV1IP4T+w+xXRA==
 
-eslint@^8.23.0:
+eslint@^8.26.0:
   version "8.26.0"
   resolved "https://registry.yarnpkg.com/eslint/-/eslint-8.26.0.tgz#2bcc8836e6c424c4ac26a5674a70d44d84f2181d"
   integrity sha512-kzJkpaw1Bfwheq4VXUezFriD1GxszX6dUekM7Z3aC2o4hju+tsR/XyTC3RcoSD7jmy9VkPU3+N6YjVU2e96Oyg==
@@ -2297,10 +2297,10 @@ human-signals@^2.1.0:
   resolved "https://registry.yarnpkg.com/human-signals/-/human-signals-2.1.0.tgz#dc91fcba42e4d06e4abaed33b3e7a3c02f514ea0"
   integrity sha512-B4FFZ6q/T2jhhksgkbEW3HBvWIfDW85snkQgawt07S7J5QXTk6BkNV+0yAeZrM5QpMAdYlocGoljn0sJ/WQkFw==
 
-husky@^7.0.4:
-  version "7.0.4"
-  resolved "https://registry.yarnpkg.com/husky/-/husky-7.0.4.tgz#242048245dc49c8fb1bf0cc7cfb98dd722531535"
-  integrity sha512-vbaCKN2QLtP/vD4yvs6iz6hBEo6wkSzs8HpRah1Z6aGmF2KW5PdYuAd7uX5a+OyBZHBhd+TFLqgjUgytQr4RvQ==
+husky@^8.0.1:
+  version "8.0.1"
+  resolved "https://registry.yarnpkg.com/husky/-/husky-8.0.1.tgz#511cb3e57de3e3190514ae49ed50f6bc3f50b3e9"
+  integrity sha512-xs7/chUH/CKdOCs7Zy0Aev9e/dKOMZf3K1Az1nar3tzlv0jfqnYtu235bstsWTmXOR0EfINrPa97yy4Lz6RiKw==
 
 iconv-lite@0.6.3:
   version "0.6.3"
@@ -2640,7 +2640,7 @@ jest-each@^29.2.1:
     jest-util "^29.2.1"
     pretty-format "^29.2.1"
 
-jest-environment-jsdom@^29.0.1:
+jest-environment-jsdom@^29.2.2:
   version "29.2.2"
   resolved "https://registry.yarnpkg.com/jest-environment-jsdom/-/jest-environment-jsdom-29.2.2.tgz#1e2d9f1f017fbaa7362a83e670b569158b4b8527"
   integrity sha512-5mNtTcky1+RYv9kxkwMwt7fkzyX4EJUarV7iI+NQLigpV4Hz4sgfOdP4kOpCHXbkRWErV7tgXoXLm2CKtucr+A==
@@ -2898,7 +2898,7 @@ jest-worker@^29.2.1:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jest@^29.0.1:
+jest@^29.2.2:
   version "29.2.2"
   resolved "https://registry.yarnpkg.com/jest/-/jest-29.2.2.tgz#24da83cbbce514718acd698926b7679109630476"
   integrity sha512-r+0zCN9kUqoON6IjDdjbrsWobXM/09Nd45kIPRD8kloaRh1z5ZCMdVsgLXGxmlL7UpAJsvCYOQNO+NjvG/gqiQ==
@@ -3643,10 +3643,10 @@ prettier-linter-helpers@^1.0.0:
   dependencies:
     fast-diff "^1.1.2"
 
-prettier-plugin-jsdoc@^0.3.30:
-  version "0.3.38"
-  resolved "https://registry.yarnpkg.com/prettier-plugin-jsdoc/-/prettier-plugin-jsdoc-0.3.38.tgz#b8adbe9efc1dc11f3cc5ff0b07e0233a0fdf533d"
-  integrity sha512-h81ZV/nFk5gr3fzWMWzWoz/M/8FneAZxscT7DVSy+5jMIuWYnBFZfSswVKYZyTaZ5r6+6k4hpFTDWhRp85C1tg==
+prettier-plugin-jsdoc@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/prettier-plugin-jsdoc/-/prettier-plugin-jsdoc-0.4.2.tgz#c5668fc622ed10b87d988279476f96af96b058b7"
+  integrity sha512-w2jnAQm3z0GAG0bhzVJeehzDtrhGMSxJjit5ApCc2oxWfc7+jmLAkbtdOXaSpfwZz3IWkk+PiQPeRrLNpbM+Mw==
   dependencies:
     binary-searching "^2.0.5"
     comment-parser "^1.3.1"
@@ -4119,7 +4119,7 @@ type-fest@^0.21.3:
   resolved "https://registry.yarnpkg.com/type-fest/-/type-fest-0.21.3.tgz#d260a24b0198436e133fa26a524a6d65fa3b2e37"
   integrity sha512-t0rzBq87m3fVcduHDUFhKmyyX+9eo6WQjZvf51Ea/M0Q7+T374Jp1aUiyUl0GKxp8M/OETVHSDvmkyPgvX+X2w==
 
-typescript@^4.8.2:
+typescript@^4.8.4:
   version "4.8.4"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-4.8.4.tgz#c464abca159669597be5f96b8943500b238e60e6"
   integrity sha512-QCh+85mCy+h0IGff8r5XWzOVSbBO+KfeYrMQh7NJ58QujwcE22u+NUSmUxqF+un70P9GXKxa2HCNiTTMJknyjQ==
