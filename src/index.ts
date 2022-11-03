@@ -8,19 +8,22 @@ import {
 import { createChecker, createValidator } from "@Validation/create-validator";
 import { ensureDataType } from "@Validation/ensure-data-type";
 
+export const assertDataType = ensureDataType;
+
 export default {
+  And,
+  assertDataType,
   createChecker,
-  createValidator,
   createTypeGuardedFunction,
   createValidatedFunction,
+  createValidator,
+  DataType,
   ensureDataType,
-  And,
   Exclude,
   Omit,
   Partial,
   Pick,
   Required,
-  DataType,
   toJsonSchema,
 };
 

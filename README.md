@@ -14,10 +14,10 @@ both the runtime validation types and the TypeScript type definitions.
    4. [Create a function with a validated input](#create-a-function-with-a-validated-input)
 2. [Motivation](#motivation)
 3. [Main exported functions](#main-exported-functions)
-   1. [createValidator()](#dilswercreatevalidator)
-   2. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
-   3. [createValidatedFunction()](#dilswercreatevalidatedfunction)
-   4. [ensureDataType()](#dilswerensuredatatype)
+   1. [assertDataType()](#dilswerassertdatatype)
+   2. [createValidator()](#dilswercreatevalidator)
+   3. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
+   4. [createValidatedFunction()](#dilswercreatevalidatedfunction)
    5. [toJsonSchema()](#dilswertojsonschema)
    6. [DataType](#dilswerdatatype)
 4. [Data Types](#data-types)
@@ -204,13 +204,15 @@ specified).
 
 Alias for the `createTypeGuardedFunction()`.
 
-#### dilswer.ensureDataType()
+#### dilswer.assertDataType()
+
+_Also available under an alias `dilswer.ensureDataType()`_
 
 ```ts
-const ensureDataType: <DT extends AllDataTypes>(
+const assertDataType: <DT extends AllDataTypes>(
   dataType: DT,
   data: unknown
-) => void;
+) => asserts data is ParseDataType<DT>;
 ```
 
 Checks the provided `data` against the `dataType` type definition and throws an
