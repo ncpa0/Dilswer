@@ -1,6 +1,7 @@
-import { dataTypeSymbol } from "@DataTypes/data-types";
-import type { RecordOf, RecordTypeSchema } from "@DataTypes/types";
+import type { RecordTypeSchema } from "@DataTypes/types";
+import { RecordOf } from "@DataTypes/types";
 import type { OmitRecord } from "@Intrinsic/types";
+import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 
 /**
  * Removes specified entries from the RecordOf Data Type. Similar
@@ -10,15 +11,14 @@ export const Omit = <R extends RecordTypeSchema, K extends keyof R>(
   recordDataType: RecordOf<R>,
   ...omitKeys: ReadonlyArray<K>
 ): OmitRecord<R, K> => {
-  return {
-    [dataTypeSymbol]: true,
-    recordOf: Object.fromEntries(
+  return new RecordOf(
+    Object.fromEntries(
       Object.entries(recordDataType.recordOf)
         .filter(([key]) => !omitKeys.includes(key as K))
         .map(([key, desc]) => [
           key,
-          typeof desc === "object" && desc !== null ? { ...desc } : desc,
+          isFieldDescriptor(desc) ? desc : desc["copy"](),
         ])
-    ) as any,
-  };
+    ) as any
+  );
 };

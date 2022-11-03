@@ -1,4 +1,4 @@
-import { dataTypeSymbol } from "@DataTypes/data-types";
+import { DataTypeSymbol } from "@DataTypes/data-types";
 import type { AnyDataType, FieldDescriptor } from "@DataTypes/types";
 
 export const isFieldDescriptor = (
@@ -7,7 +7,7 @@ export const isFieldDescriptor = (
   const isObject = typeof v === "object";
 
   if (isObject) {
-    const hasSymbol = dataTypeSymbol in v;
+    const hasSymbol = DataTypeSymbol in v;
 
     if (!hasSymbol) return true;
   }

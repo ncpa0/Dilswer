@@ -1,4 +1,4 @@
-import type { dataTypeSymbol } from "@DataTypes/data-types";
+import type { DataTypeSymbol } from "@DataTypes/data-types";
 import type {
   AllOf,
   AnyDataType,
@@ -140,7 +140,7 @@ export type ParseComplexType<D extends ComplexDataType> = {
   enumMember: GetTypeFromEnumMember<D>;
   custom: GetTypeFromCustom<D>;
   invalid: never;
-}[EnsureIsKey<Exclude<keyof D, typeof dataTypeSymbol>>];
+}[EnsureIsKey<Exclude<keyof D, typeof DataTypeSymbol>>];
 
 export type ParseBasicDataType<D extends BasicDataType> = {
   unknown: unknown;
