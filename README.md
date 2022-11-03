@@ -43,11 +43,15 @@ both the runtime validation types and the TypeScript type definitions.
    21. [Custom](#datatypecustomfunction)
 4. [Utility Functions](#utility-functions)
    1. [And](#and)
-   1. [Omit](#omit)
-   1. [Pick](#pick)
-   1. [Partial](#partial)
-   1. [Required](#required)
-   1. [Exclude](#exclude)
+   2. [Omit](#omit)
+   3. [Pick](#pick)
+   4. [Partial](#partial)
+   5. [Required](#required)
+   6. [Exclude](#exclude)
+5. [Metadata](#metadata)
+   1. [Assign Metadata](#assign-metadata)
+   2. [Read Metadata](#read-metadata)
+   3. [Metadata in JSON Schema](#metadata-in-json-schema)
 
 ## Quick Start
 
@@ -636,4 +640,102 @@ const typeDefOne = DataType.OneOf(
 
 const typeDefExcluded = Exclude(typeDefOne, DataType.Number);
 // typeDefExcluded = string | boolean;
+```
+
+## Metadata
+
+Each DataType can have metadata attached to it, this metadata can be used to
+provide additional information about the data type, for example, you can attach
+a description to a data type, or a title, or format.
+
+**Metadata is completely ignored by the validation process**
+
+### Assign Metadata
+
+```ts
+import { DataType } from "dilswer";
+
+const UserNameDT =
+  DataType.String.setTitle("User Name").setDescription("The user's name.");
+
+const User = DataType.RecordOf({
+  name: UserNameDT,
+  id: DataType.String.setTitle("User ID").setFormat("uuid"),
+  friends: DataType.ArrayOf(DataType.String).setDescription(
+    "A list of the user's friends names."
+  ),
+})
+  .setTitle("User")
+  .setDescription(
+    "A user object. Contains the user's name, id and friends list."
+  );
+```
+
+### Read Metadata
+
+```ts
+import { DataType, getMetadata } from "dilswer";
+
+const userNameMetadata = getMetadata(UserNameDT);
+
+// userNameMetadata = {
+//   title: "User Name",
+//   description: "The user's name.",
+// }
+
+const userMetadata = getMetadata(User);
+
+// userMetadata = {
+//  title: "User",
+//  description: "A user object. Contains the user's name, id and friends list.",
+// }
+```
+
+### Metadata in JSON Schema
+
+Metadata is also used when generating JSON Schema, if a DataType has a title,
+description or format, it will be included in the generated JSON Schema.
+
+```ts
+import { DataType, toJsonSchema } from "dilswer";
+
+const UserDT = DataType.RecordOf({
+  name: DataType.String.setTitle("User Name").setDescription(
+    "The user's name."
+  ),
+  id: DataType.String.setTitle("User ID").setFormat("uuid"),
+  friends: DataType.ArrayOf(DataType.String).setDescription(
+    "A list of the user's friends names."
+  ),
+})
+  .setTitle("User")
+  .setDescription(
+    "A user object. Contains the user's name, id and friends list."
+  );
+
+const jsonSchema = toJsonSchema(UserDT);
+
+//  jsonSchema = {
+//    title: "User",
+//    description: "A user object. Contains the user's name, id and friends list.",
+//    properties: {
+//      name: {
+//        type: "string",
+//        title: "User Name",
+//        description: "The user's name.",
+//      },
+//      id: {
+//        type: "string",
+//        title: "User ID",
+//        format: "uuid",
+//      },
+//      friends: {
+//        type: "array",
+//        items: {
+//          type: "string",
+//        },
+//      },
+//    },
+//    required: ["name", "id", "friends"],
+// }
 ```
