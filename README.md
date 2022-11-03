@@ -1,5 +1,7 @@
 # Dilswer
 
+![build](https://github.com/ncpa0cpl/dilswer/actions/workflows/test.yml/badge.svg)
+
 Small and lightweight data validation library with TypeScript integration.
 
 Keep your type definitions in one place, and have but one source of truth for

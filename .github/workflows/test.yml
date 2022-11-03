@@ -1,0 +1,28 @@
+name: Build Test
+
+on:
+  push:
+    branches: ["master"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 14
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: install
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: tsc
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: test
+      - uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: lint
