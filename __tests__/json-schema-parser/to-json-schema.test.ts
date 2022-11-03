@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import { DataType, toJsonSchema } from "../../src";
+import { DataType, OptionalField, toJsonSchema } from "../../src";
 
 enum Enum {
   A = "A",
@@ -178,5 +178,29 @@ describe("toJsonSchema", () => {
     const isValid = new Ajv().validateSchema(schema!);
 
     expect(isValid).toEqual(true);
+  });
+
+  it("should copy the properties from metadata", () => {
+    const dt = DataType.RecordOf({
+      date: DataType.String.setFormat("date-time"),
+      timestamp:
+        DataType.Int.setDescription("UNIX timestamp.").setTitle(
+          "Creation Timestamp"
+        ),
+      list: DataType.ArrayOf(DataType.String),
+      dictionary: OptionalField(
+        DataType.RecordOf({ foo: DataType.Unknown }).setDescription(
+          "This field is optional."
+        )
+      ),
+    }).setTitle("Top Record");
+
+    dt.recordOf.list
+      .setTitle("List of strings")
+      .setDescription("This is a list of strings");
+
+    const schema = toJsonSchema(dt, { incompatibleTypes: "set-as-any" });
+
+    expect(schema).toMatchSnapshot();
   });
 });

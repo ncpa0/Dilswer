@@ -1,3 +1,4 @@
+import { BaseDataType } from "@DataTypes/data-types";
 import type { FieldDescriptor, RecordOf } from "@DataTypes/types";
 import type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
@@ -19,26 +20,32 @@ export const parseRecordOf = (
     return [key, descriptor as Required<FieldDescriptor>] as const;
   });
 
-  const recordSchema: JSONSchema6 = {
+  const schema: JSONSchema6 = {
     type: "object",
     properties: {},
     required: [],
   };
 
+  const meta = BaseDataType.getOriginalMetadata(type);
+
+  if (meta.title) schema.title = meta.title;
+  if (meta.description) schema.description = meta.description;
+  if (meta.format) schema.format = meta.format;
+
   for (const [key, descriptor] of entries) {
     const fieldSchema = toJsonSchema(descriptor.type, options, false);
     if (fieldSchema === undefined) continue;
 
-    Object.assign(recordSchema.properties!, { [key]: fieldSchema });
+    Object.assign(schema.properties!, { [key]: fieldSchema });
 
     if (descriptor.required) {
-      recordSchema.required!.push(key);
+      schema.required!.push(key);
     }
   }
 
   if (typeof options.additionalProperties === "boolean") {
-    recordSchema.additionalProperties = options.additionalProperties;
+    schema.additionalProperties = options.additionalProperties;
   }
 
-  return recordSchema;
+  return schema;
 };

@@ -1,3 +1,4 @@
+import { BaseDataType } from "@DataTypes/data-types";
 import type { AnyDataType, SetOf } from "@DataTypes/types";
 import { isDefined } from "@JSONSchemaParser/is-defined";
 import type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
@@ -25,7 +26,15 @@ export const parseSetOf = (
 
   if (incompatibleTypes === "throw") throwIncompatibleTypeError();
   if (incompatibleTypes === "omit") return undefined;
-  return {
+  const schema: JSONSchema6 = {
     title: "Set",
   };
+
+  const meta = BaseDataType.getOriginalMetadata(type);
+
+  if (meta.title) schema.title = meta.title;
+  if (meta.description) schema.description = meta.description;
+  if (meta.format) schema.format = meta.format;
+
+  return schema;
 };

@@ -22,12 +22,16 @@ export const BasicDataTypes = {
   StringInt: "stringinteger",
 } as const;
 
-class BaseDataType {
+export class BaseDataType {
+  /** Will return a copy. */
   static getMetadata(dt: BaseDataType): TypeMetadata {
     return {
       ...dt[MetadataSymbol],
-      examples: dt[MetadataSymbol].examples?.slice(),
     };
+  }
+
+  static getOriginalMetadata(dt: BaseDataType): TypeMetadata {
+    return dt[MetadataSymbol];
   }
 
   protected [MetadataSymbol]: TypeMetadata = {};
@@ -39,26 +43,35 @@ class BaseDataType {
     Object.assign(copy, this);
     copy[MetadataSymbol] = {
       ...this[MetadataSymbol],
-      examples: this[MetadataSymbol].examples?.slice(),
     };
     return copy;
   }
 
+  /**
+   * Sets a metadata `description` property. This property can be
+   * later read by `getMetadata` and is also used by
+   * `toJsonSchema` to generate a JSON Schema.
+   */
   setDescription<T extends BaseDataType>(this: T, description: string): T {
     this[MetadataSymbol].description = description;
     return this;
   }
 
+  /**
+   * Sets a metadata `title` property. This property can be later
+   * read by `getMetadata` and is also used by `toJsonSchema` to
+   * generate a JSON Schema.
+   */
   setTitle<T extends BaseDataType>(this: T, name: string): T {
     this[MetadataSymbol].title = name;
     return this;
   }
 
-  setExamples<T extends BaseDataType>(this: T, examples: string | string[]): T {
-    this[MetadataSymbol].examples = examples;
-    return this;
-  }
-
+  /**
+   * Sets a metadata `format` property. This property can be
+   * later read by `getMetadata` and is also used by
+   * `toJsonSchema` to generate a JSON Schema.
+   */
   setFormat<T extends BaseDataType>(this: T, format: string): T {
     this[MetadataSymbol].format = format;
     return this;
@@ -210,3 +223,12 @@ export const DataType = {
     return new Custom(validateFunction);
   },
 };
+
+/**
+ * Retrieves the metadata of a DataType, like title, description
+ * or examples.
+ *
+ * Metadata must be explicitly set on the DataType, otherwise it
+ * will be an empty object.
+ */
+export const getMetadata = (dt: AnyDataType) => BaseDataType.getMetadata(dt);

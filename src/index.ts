@@ -1,5 +1,13 @@
-import { DataType } from "@DataTypes/data-types";
-import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic";
+import { DataType, getMetadata } from "@DataTypes/data-types";
+import {
+  And,
+  Exclude,
+  Omit,
+  OptionalField,
+  Partial,
+  Pick,
+  Required,
+} from "@Intrinsic";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import {
   createTypeGuardedFunction,
@@ -20,29 +28,36 @@ export default {
   DataType,
   ensureDataType,
   Exclude,
+  getMetadata,
   Omit,
+  OptionalField,
   Partial,
   Pick,
   Required,
   toJsonSchema,
 };
 
-export { DataType } from "@DataTypes/data-types";
+export { DataType, getMetadata } from "@DataTypes/data-types";
 export type { GetDataType } from "@DataTypes/type-utils";
 export type {
   AllDataTypes,
+  AllOf,
   AnyDataType,
   ArrayOf,
   BasicDataType,
+  BasicTypeNames,
   ComplexDataType,
+  Custom,
+  Dict,
   Enum,
   EnumMember,
   FieldDescriptor,
   Literal,
   OneOf,
   RecordOf,
-  RecordTypeSchema as TypeSchema,
+  RecordTypeSchema,
   SetOf,
+  TypeMetadata,
 } from "@DataTypes/types";
 export * from "@Intrinsic";
 export { toJsonSchema } from "@JSONSchemaParser/to-json-schema";

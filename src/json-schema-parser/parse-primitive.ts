@@ -1,3 +1,4 @@
+import { BaseDataType } from "@DataTypes/data-types";
 import type { BasicDataType } from "@DataTypes/types";
 import type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
 import type { JSONSchema6 } from "json-schema";
@@ -14,43 +15,57 @@ export const parsePrimitive = (
     );
   };
 
+  const schema: JSONSchema6 = {};
+
+  const meta = BaseDataType.getOriginalMetadata(type);
+
+  if (meta.title) schema.title = meta.title;
+  if (meta.description) schema.description = meta.description;
+  if (meta.format) schema.format = meta.format;
+
   switch (type.simpleType) {
     case "boolean":
-      return { type: "boolean" };
+      schema.type = "boolean";
+      return schema;
     case "integer":
-      return { type: "integer" };
+      schema.type = "integer";
+      return schema;
     case "null":
-      return { type: "null" };
+      schema.type = "null";
+      return schema;
     case "number":
-      return { type: "number" };
+      schema.type = "number";
+      return schema;
     case "string":
-      return { type: "string" };
+      schema.type = "string";
+      return schema;
     case "stringinteger":
-      return { type: "string", pattern: "^[0-9]+$" };
+      schema.type = "string";
+      schema.pattern = "^-?[0-9]+$";
+      return schema;
     case "stringnumeral":
-      return { type: "string", pattern: "^[0-9]+(\\.[0-9]+)?$" };
+      schema.type = "string";
+      schema.pattern = "^-?[0-9]+(\\.[0-9]+)?$";
+      return schema;
     case "unknown":
-      return {};
+      return schema;
     case "function":
       if (customParser.Function) return customParser.Function(type, options);
       if (incompatibleTypes === "throw") throwIncompatibleTypeError();
       if (incompatibleTypes === "omit") return undefined;
-      return {
-        title: "Function",
-      };
+      schema.title ??= "Function";
+      return schema;
     case "symbol":
       if (customParser.Symbol) return customParser.Symbol(type, options);
       if (incompatibleTypes === "throw") throwIncompatibleTypeError();
       if (incompatibleTypes === "omit") return undefined;
-      return {
-        title: "Symbol",
-      };
+      schema.title ??= "Symbol";
+      return schema;
     case "undefined":
       if (customParser.Undefined) return customParser.Undefined(type, options);
       if (incompatibleTypes === "throw") throwIncompatibleTypeError();
       if (incompatibleTypes === "omit") return undefined;
-      return {
-        title: "undefined",
-      };
+      schema.title ??= "undefined";
+      return schema;
   }
 };

@@ -1,3 +1,4 @@
+import { BaseDataType } from "@DataTypes/data-types";
 import type { AnyDataType, Dict } from "@DataTypes/types";
 import { isDefined } from "@JSONSchemaParser/is-defined";
 import type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
@@ -10,7 +11,7 @@ export const parseDict = (
 ): JSONSchema6 | undefined => {
   const union = type.dict as AnyDataType[];
 
-  return {
+  const schema: JSONSchema6 = {
     type: "object",
     additionalProperties: {
       anyOf: union
@@ -18,4 +19,12 @@ export const parseDict = (
         .filter(isDefined),
     },
   };
+
+  const meta = BaseDataType.getOriginalMetadata(type);
+
+  if (meta.title) schema.title = meta.title;
+  if (meta.description) schema.description = meta.description;
+  if (meta.format) schema.format = meta.format;
+
+  return schema;
 };

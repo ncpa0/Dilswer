@@ -1,19 +1,26 @@
+import { BaseDataType } from "@DataTypes/data-types";
 import type { EnumMember } from "@DataTypes/types";
 import type { JSONSchema6 } from "json-schema";
 
 export const parseEnumMember = (type: EnumMember): JSONSchema6 => {
+  const schema: JSONSchema6 = {};
+
+  const meta = BaseDataType.getOriginalMetadata(type);
+
+  if (meta.title) schema.title = meta.title;
+  if (meta.description) schema.description = meta.description;
+  if (meta.format) schema.format = meta.format;
+
   if (typeof type.enumMember === "string") {
-    return {
-      type: "string",
-      enum: [type.enumMember],
-    };
+    schema.type = "string";
+    schema.enum = [type.enumMember];
+    return schema;
   }
 
   if (typeof type.enumMember === "number") {
-    return {
-      type: "number",
-      enum: [type.enumMember],
-    };
+    schema.type = "number";
+    schema.enum = [type.enumMember];
+    return schema;
   }
 
   throw new Error(

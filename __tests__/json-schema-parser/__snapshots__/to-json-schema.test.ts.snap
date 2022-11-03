@@ -1,5 +1,49 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`toJsonSchema should copy the properties from metadata 1`] = `
+{
+  "$schema": "http://json-schema.org/draft-06/schema#",
+  "properties": {
+    "date": {
+      "format": "date-time",
+      "type": "string",
+    },
+    "dictionary": {
+      "description": "This field is optional.",
+      "properties": {
+        "foo": {},
+      },
+      "required": [
+        "foo",
+      ],
+      "type": "object",
+    },
+    "list": {
+      "description": "This is a list of strings",
+      "items": [
+        {
+          "type": "string",
+        },
+      ],
+      "title": "List of strings",
+      "type": "array",
+    },
+    "timestamp": {
+      "description": "UNIX timestamp.",
+      "title": "Creation Timestamp",
+      "type": "integer",
+    },
+  },
+  "required": [
+    "date",
+    "timestamp",
+    "list",
+  ],
+  "title": "Top Record",
+  "type": "object",
+}
+`;
+
 exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] = `
 {
   "properties": {
