@@ -154,7 +154,7 @@ export type ParseBasicDataType<D extends BasicDataType> = {
   undefined: undefined;
   stringnumeral: `${number}`;
   stringinteger: `${number}`;
-}[D];
+}[D["simpleType"]];
 
 export type ParseDataType<D> = D extends BasicDataType
   ? ParseBasicDataType<D>

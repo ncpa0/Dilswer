@@ -61,7 +61,7 @@ describe("createValidatedFunction", () => {
     ).toMatchObject({
       fieldPath: "$.foo.bar",
       receivedValue: "1",
-      expectedValueType: DataType.Number,
+      expectedValueType: "number",
     });
 
     expect(
@@ -73,7 +73,7 @@ describe("createValidatedFunction", () => {
     ).toMatchObject({
       fieldPath: "$.baz[2]",
       receivedValue: 0,
-      expectedValueType: DataType.String,
+      expectedValueType: "string",
     });
 
     expect(
@@ -125,7 +125,7 @@ describe("createValidatedFunction", () => {
     ).toMatchObject({
       fieldPath: '$.list[0]["a/b"]',
       receivedValue: 1,
-      expectedValueType: DataType.String,
+      expectedValueType: "string",
     });
 
     expect(
@@ -136,7 +136,7 @@ describe("createValidatedFunction", () => {
     ).toMatchObject({
       fieldPath: '$["./a"]',
       receivedValue: 1,
-      expectedValueType: DataType.String,
+      expectedValueType: "string",
     });
   });
 });

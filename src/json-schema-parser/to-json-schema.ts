@@ -70,7 +70,7 @@ export const toJsonSchema = (
 ): JSONSchema6 | undefined => {
   let schema: JSONSchema6 | undefined;
 
-  if (typeof type === "string") {
+  if ("simpleType" in type) {
     schema = parsePrimitive(type, options);
   } else if ("recordOf" in type) {
     schema = parseRecordOf(type, options);

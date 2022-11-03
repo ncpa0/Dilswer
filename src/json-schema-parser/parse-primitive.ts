@@ -10,11 +10,11 @@ export const parsePrimitive = (
 
   const throwIncompatibleTypeError = (): never => {
     throw new Error(
-      `Cannot parse type "${type}" to JSON Schema. Incompatible types.`
+      `Cannot parse type "${type.simpleType}" to JSON Schema. Incompatible types.`
     );
   };
 
-  switch (type) {
+  switch (type.simpleType) {
     case "boolean":
       return { type: "boolean" };
     case "integer":

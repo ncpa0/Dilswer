@@ -1,5 +1,5 @@
 import { dataTypeSymbol } from "@DataTypes/data-types";
-import type { BasicDataType, OneOf } from "@DataTypes/types";
+import type { AnyDataType, BasicDataType, OneOf } from "@DataTypes/types";
 import type { ExcludeOneOf } from "@Intrinsic/types";
 
 /**
@@ -12,6 +12,10 @@ export const Exclude = <U extends OneOf, E extends BasicDataType>(
 ): ExcludeOneOf<U, E> => {
   return {
     [dataTypeSymbol]: true,
-    oneOf: union.oneOf.filter((t) => !excludeTypes.includes(t)),
+    oneOf: union.oneOf.filter(
+      (t: AnyDataType) =>
+        !("simpleType" in t) ||
+        !excludeTypes.some((exc) => exc.simpleType === t.simpleType)
+    ),
   };
 };

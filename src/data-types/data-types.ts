@@ -16,21 +16,53 @@ import type {
 export const dataTypeSymbol: unique symbol = Symbol();
 
 export const BasicDataTypes = {
-  Unknown: "unknown",
-  String: "string",
-  Number: "number",
-  Int: "integer",
-  Boolean: "boolean",
-  Symbol: "symbol",
-  Function: "function",
-  Null: "null",
-  Undefined: "undefined",
-  StringNumeral: "stringnumeral",
-  StringInt: "stringinteger",
+  Unknown: { simpleType: "unknown" },
+  String: { simpleType: "string" },
+  Number: { simpleType: "number" },
+  Int: { simpleType: "integer" },
+  Boolean: { simpleType: "boolean" },
+  Symbol: { simpleType: "symbol" },
+  Function: { simpleType: "function" },
+  Null: { simpleType: "null" },
+  Undefined: { simpleType: "undefined" },
+  StringNumeral: { simpleType: "stringnumeral" },
+  StringInt: { simpleType: "stringinteger" },
 } as const;
 
 export const DataType = {
-  ...BasicDataTypes,
+  get Unknown() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Unknown } as const;
+  },
+  get String() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.String } as const;
+  },
+  get Number() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Number } as const;
+  },
+  get Int() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Int } as const;
+  },
+  get Boolean() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Boolean } as const;
+  },
+  get Symbol() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Symbol } as const;
+  },
+  get Function() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Function } as const;
+  },
+  get Null() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Null } as const;
+  },
+  get Undefined() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.Undefined } as const;
+  },
+  get StringNumeral() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.StringNumeral } as const;
+  },
+  get StringInt() {
+    return { [dataTypeSymbol]: true, ...BasicDataTypes.StringInt } as const;
+  },
   RecordOf<TS extends RecordTypeSchema>(args: TS): RecordOf<TS> {
     return {
       [dataTypeSymbol]: true,

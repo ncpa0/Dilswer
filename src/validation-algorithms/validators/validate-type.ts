@@ -16,7 +16,7 @@ export const validateType = (
   type: AnyDataType,
   data: unknown
 ) => {
-  if (typeof type === "string") {
+  if ("simpleType" in type) {
     return validatePrimitive(path, type, data);
   }
 

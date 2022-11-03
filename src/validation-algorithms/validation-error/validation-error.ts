@@ -15,10 +15,10 @@ export class ValidationError extends TypeError {
   private readonly [ValidationErrorSymbol] = true;
 
   fieldPath: string;
-  expectedValueType: AnyDataType;
+  expectedValueType: AnyDataType | string;
   receivedValue: unknown;
 
-  constructor(path: string[], expected: AnyDataType, value: unknown) {
+  constructor(path: string[], expected: AnyDataType | string, value: unknown) {
     super("Value does not conform the data type structure definition.");
     this.expectedValueType = expected;
     this.fieldPath = concatPath(path);
