@@ -23,6 +23,13 @@ export const BasicDataTypes = {
 } as const;
 
 class BaseDataType {
+  static getMetadata(dt: BaseDataType): TypeMetadata {
+    return {
+      ...dt[MetadataSymbol],
+      examples: dt[MetadataSymbol].examples?.slice(),
+    };
+  }
+
   protected [MetadataSymbol]: TypeMetadata = {};
   protected [DataTypeSymbol] = true;
 
@@ -30,8 +37,31 @@ class BaseDataType {
     const proto = Object.getPrototypeOf(this);
     const copy = Object.create(proto);
     Object.assign(copy, this);
-    copy[MetadataSymbol] = { ...this[MetadataSymbol] };
+    copy[MetadataSymbol] = {
+      ...this[MetadataSymbol],
+      examples: this[MetadataSymbol].examples?.slice(),
+    };
     return copy;
+  }
+
+  setDescription<T extends BaseDataType>(this: T, description: string): T {
+    this[MetadataSymbol].description = description;
+    return this;
+  }
+
+  setTitle<T extends BaseDataType>(this: T, name: string): T {
+    this[MetadataSymbol].title = name;
+    return this;
+  }
+
+  setExamples<T extends BaseDataType>(this: T, examples: string | string[]): T {
+    this[MetadataSymbol].examples = examples;
+    return this;
+  }
+
+  setFormat<T extends BaseDataType>(this: T, format: string): T {
+    this[MetadataSymbol].format = format;
+    return this;
   }
 }
 
@@ -88,17 +118,14 @@ export class Literal<
 }
 
 export class Enum<
-  T extends string = string,
   TEnumValue extends string | number = any
 > extends BaseDataType {
   enumInstance: TEnumValue;
 
-  constructor(enumInstance: {
-    [key in T]: TEnumValue;
-  }) {
+  constructor(enumInstance: any) {
     super();
 
-    this.enumInstance = enumInstance as any;
+    this.enumInstance = enumInstance;
   }
 }
 
@@ -177,7 +204,7 @@ export const DataType = {
   Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
     [key in T]: TEnumValue;
   }) {
-    return new Enum(enumInstance);
+    return new Enum<TEnumValue>(enumInstance);
   },
   Custom<VF extends (v: any) => boolean>(validateFunction: VF) {
     return new Custom(validateFunction);

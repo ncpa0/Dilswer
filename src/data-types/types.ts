@@ -67,5 +67,7 @@ export interface RecordTypeSchema {
 
 export type TypeMetadata = {
   description?: string;
-  name?: string;
+  title?: string;
+  examples?: string | string[];
+  format?: string;
 };
