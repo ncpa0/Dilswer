@@ -12,15 +12,14 @@ both the runtime validation types and the TypeScript type definitions.
    2. [Create a TypeScript type from a Dilswer definition](#create-a-typescript-type-from-a-dilswer-definition)
    3. [Create a validation function](#create-a-validation-function)
    4. [Create a function with a validated input](#create-a-function-with-a-validated-input)
-2. [Motivation](#motivation)
-3. [Main exported functions](#main-exported-functions)
+2. [Main exported functions](#main-exported-functions)
    1. [assertDataType()](#dilswerassertdatatype)
    2. [createValidator()](#dilswercreatevalidator)
    3. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
    4. [createValidatedFunction()](#dilswercreatevalidatedfunction)
    5. [toJsonSchema()](#dilswertojsonschema)
    6. [DataType](#dilswerdatatype)
-4. [Data Types](#data-types)
+3. [Data Types](#data-types)
    1. [String](#datatypestring)
    2. [Number](#datatypenumber)
    3. [Int](#datatypeint)
@@ -42,7 +41,7 @@ both the runtime validation types and the TypeScript type definitions.
    19. [Enum](#datatypeenumenum)
    20. [EnumMember](#datatypeenummemberenum-member)
    21. [Custom](#datatypecustomfunction)
-5. [Utility Functions](#utility-functions)
+4. [Utility Functions](#utility-functions)
    1. [And](#and)
    1. [Omit](#omit)
    1. [Pick](#pick)
@@ -56,20 +55,33 @@ both the runtime validation types and the TypeScript type definitions.
 
 ```ts
 // person-type.ts
-import { DataType } from "dilswer";
+import { DataType, OptionalField } from "dilswer";
 
-export const PersonDataType = DataType.RecordOf({
-  id: { type: DataType.String, required: true },
-  name: { type: DataType.String },
+// Record property types can be defined in a few different ways:
+const PersonDataType = DataType.RecordOf({
+  id: DataType.String,
+  name: DataType.String,
   age: { type: DataType.Number },
+  email: OptionalField(DataType.String),
   friends: { type: DataType.ArrayOf(DataType.String), required: false },
 });
+
+// A TypeScript equivalent type of the above would be:
+// type Person = {
+//   id: string;
+//   name: string;
+//   age: number;
+//   email?: string;
+//   friends?: string[];
+// };
 ```
 
 **NOTE:** the `required` attribute in a RecordOf fields is set to `true` by
 default.
 
 #### Create a TypeScript type from a Dilswer definition
+
+It is possible to infer a TypeScript type from a Dilswer definition:
 
 ```ts
 import { GetDataType } from "dilswer";
@@ -78,11 +90,12 @@ import { PersonDataType } from "./person-type.ts";
 type Person = GetDataType<typeof PersonDataType>;
 
 // Result:
-// type Person = {
-//     friends?: string[];
-//     id: string;
-//     name: string;
-//     age: number;
+// type Person: {
+//   id: string;
+//   name: string;
+//   age: number;
+//   email?: string;
+//   friends?: string[];
 // }
 ```
 
@@ -151,23 +164,6 @@ const person = await axios
 
 const result = processPerson(person); // => "Success!" or "Failure"
 ```
-
-## Motivation
-
-Whenever you use some kind of a type validation library in a TypeScript project
-you will have to define those types twice: once as a TS `type` or `interface`
-and once in a format that's understood by the data validation library which will
-check the data types on runtime. This is a inconvenience and can sometimes lead
-to bugs (when you change one of the definitions but forget to do the same with
-the other).
-
-This is the problem that **Dilswer** is trying to solve. To have one source of
-truth for your type definitions. One that can be understood by both the
-TypeScript engine and the data validation library.
-
-**Dilswer** gives you a tool that you can use to define any kind of type, and
-then validate data at runtime with against it or infer a TypeScript type
-directly from it.
 
 ## Main exported functions
 
@@ -305,7 +301,7 @@ TypeScript.
 
 will match any integer values and translate to the standard `number` type in
 TypeScript. TypeScript does not have any way of distinguishing float and
-integers therefore both are using the same type.
+integers therefore both are assigned the same TypeScript type.
 
 #### DataType.StringNumeral
 
