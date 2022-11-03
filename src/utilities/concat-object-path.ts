@@ -6,7 +6,7 @@ export const concatObjectPath = (path: string, key: string | number) => {
   }
 
   if (/[^a-zA-Z0-9]/.test(key)) {
-    return `${path}["${key.replace('"', '\\"')}"]`;
+    return `${path}["${key.replace(/"/g, '\\"')}"]`;
   }
 
   return `${path}.${key}`;
