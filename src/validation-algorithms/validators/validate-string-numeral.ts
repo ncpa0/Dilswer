@@ -16,7 +16,7 @@ const STRING_NUMERAL_ALLOWED_CHARS = [
 ];
 
 export const validateStringNumeral = (
-  path: string,
+  path: string[],
   type: BasicDataType,
   data: unknown
 ) => {

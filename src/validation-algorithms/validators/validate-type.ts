@@ -12,7 +12,7 @@ import { validateRecord } from "@Validation/validators/validate-record";
 import { validateSet } from "@Validation/validators/validate-set";
 
 export const validateType = (
-  path: string,
+  path: string[],
   type: AnyDataType,
   data: unknown
 ) => {

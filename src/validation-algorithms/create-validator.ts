@@ -12,7 +12,7 @@ import { validateType } from "@Validation/validators/validate-type";
 export const createValidator = <DT extends AnyDataType>(dataType: DT) => {
   const validator = (data: unknown): data is ReWrap<ParseDataType<DT>> => {
     try {
-      validateType("$", dataType, data);
+      validateType(["$"], dataType, data);
       return true;
     } catch (e) {
       if (!ValidationError.isValidationError(e)) throw e;

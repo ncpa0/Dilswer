@@ -3,7 +3,7 @@ import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
 
 export const validateOneOf = (
-  path: string,
+  path: string[],
   type: OneOf<AnyDataType[]>,
   data: unknown
 ) => {

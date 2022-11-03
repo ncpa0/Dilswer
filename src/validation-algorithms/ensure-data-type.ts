@@ -13,4 +13,4 @@ export const ensureDataType: <DT extends AnyDataType>(
 ) => asserts data is ReWrap<ParseDataType<DT>> = (
   dataType: AnyDataType,
   data: unknown
-) => validateType("$", dataType, data);
+) => validateType(["$"], dataType, data);

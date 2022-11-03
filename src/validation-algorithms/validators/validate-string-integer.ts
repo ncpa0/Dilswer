@@ -15,7 +15,7 @@ const STRING_INTEGER_ALLOWED_CHARS = [
 ];
 
 export const validateStringInteger = (
-  path: string,
+  path: string[],
   type: BasicDataType,
   data: unknown
 ) => {

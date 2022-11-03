@@ -19,7 +19,7 @@ export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
 ) => {
   const caller = (data: unknown): R | ER => {
     try {
-      validateType("$", dataType, data);
+      validateType(["$"], dataType, data);
       // @ts-expect-error
       return onValidationSuccess(data);
     } catch (e) {

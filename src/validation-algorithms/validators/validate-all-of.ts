@@ -2,7 +2,7 @@ import type { AllOf, AnyDataType } from "@DataTypes/types";
 import { validateType } from "@Validation/validators/validate-type";
 
 export const validateAllOf = (
-  path: string,
+  path: string[],
   type: AllOf<AnyDataType[]>,
   data: unknown
 ) => {

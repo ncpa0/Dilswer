@@ -13,13 +13,13 @@ const isSet = (data: unknown): data is Set<unknown> => {
 };
 
 export const validateSet = (
-  path: string,
+  path: string[],
   type: SetOf<AnyDataType[]>,
   data: unknown
 ) => {
   if (!isSet(data)) throw new ValidationError(path, type, data);
 
   for (const elem of data) {
-    validateOneOf(`${path}<entry>`, DataType.OneOf(...type.setOf), elem);
+    validateOneOf([...path, "SET_ELEM"], DataType.OneOf(...type.setOf), elem);
   }
 };

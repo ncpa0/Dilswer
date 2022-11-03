@@ -4,7 +4,7 @@ import { validateStringInteger } from "@Validation/validators/validate-string-in
 import { validateStringNumeral } from "@Validation/validators/validate-string-numeral";
 
 export const validatePrimitive = (
-  path: string,
+  path: string[],
   type: BasicDataType,
   data: unknown
 ) => {

@@ -2,7 +2,7 @@ import type { EnumMember } from "@DataTypes/types";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
 export const validateEnumMember = (
-  path: string,
+  path: string[],
   type: EnumMember<any>,
   data: unknown
 ) => {

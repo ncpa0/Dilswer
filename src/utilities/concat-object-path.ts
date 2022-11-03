@@ -1,4 +1,4 @@
-export const concatObjectPath = (path: string, key: string | number) => {
+export const concatPathSegments = (path: string, key: string) => {
   key = key.toString();
 
   if (/^[0-9]+$/.test(key)) {
@@ -10,4 +10,8 @@ export const concatObjectPath = (path: string, key: string | number) => {
   }
 
   return `${path}.${key}`;
+};
+
+export const concatPath = (segments: string[]) => {
+  return segments.slice(1).reduce(concatPathSegments, segments[0] ?? "");
 };

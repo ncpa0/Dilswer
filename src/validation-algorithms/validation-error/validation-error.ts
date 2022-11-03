@@ -1,4 +1,5 @@
 import type { AnyDataType } from "@DataTypes/types";
+import { concatPath } from "@Utilities/concat-object-path";
 
 const ValidationErrorSymbol = Symbol("ValidationError");
 
@@ -17,10 +18,10 @@ export class ValidationError extends TypeError {
   expectedValueType: AnyDataType;
   receivedValue: unknown;
 
-  constructor(path: string, expected: AnyDataType, value: unknown) {
+  constructor(path: string[], expected: AnyDataType, value: unknown) {
     super("Value does not conform the data type structure definition.");
     this.expectedValueType = expected;
-    this.fieldPath = path;
+    this.fieldPath = concatPath(path);
     this.receivedValue = value;
   }
 }
