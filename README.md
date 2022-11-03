@@ -1,6 +1,10 @@
 # Dilswer
 
-![build](https://github.com/ncpa0cpl/Dilswer/actions/workflows/test.yml/badge.svg)
+![GitHub](https://img.shields.io/github/license/ncpa0cpl/Dilswer?style=for-the-badge)
+![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ncpa0cpl/Dilswer/Build%20Test?label=Build&style=for-the-badge)
+[![npm](https://img.shields.io/npm/v/dilswer?style=for-the-badge)](https://www.npmjs.com/package/dilswer)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/Dilswer?style=for-the-badge)
+![GitHub last commit](https://img.shields.io/github/last-commit/ncpa0cpl/Dilswer?style=for-the-badge)
 
 Small and lightweight data validation library with TypeScript integration.
 
