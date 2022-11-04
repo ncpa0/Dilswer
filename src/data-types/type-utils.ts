@@ -17,11 +17,12 @@ import type {
   SetOf,
 } from "@DataTypes/types";
 
-type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
-  k: infer I
-) => void
-  ? I
-  : never;
+type ParseDataTypeIntersectionTuple<
+  T extends any[],
+  U = ParseDataType<T[0]>
+> = T extends [infer A, ...infer B]
+  ? ParseDataTypeIntersectionTuple<B, U & ParseDataType<A>>
+  : U;
 
 type GetDescriptorType<T extends AnyDataType | FieldDescriptor> =
   T extends FieldDescriptor ? T["type"] : T;
@@ -104,7 +105,7 @@ export type GetTypeFromOneOf<D extends ComplexDataType> = D extends OneOf<
 export type GetTypeFromAllOf<D extends ComplexDataType> = D extends AllOf<
   infer T
 >
-  ? T[number]
+  ? ParseDataTypeIntersectionTuple<T>
   : never;
 
 export type GetTypeFromLiteral<D extends ComplexDataType> = D extends Literal<
@@ -134,7 +135,7 @@ export type ParseComplexType<D extends ComplexDataType> = {
   dict: Record<string | number, ParseDataType<GetTypeFromDict<D>>>;
   setOf: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;
   oneOf: ParseDataType<GetTypeFromOneOf<D>>;
-  allOf: UnionToIntersection<ParseDataType<GetTypeFromAllOf<D>>>;
+  allOf: GetTypeFromAllOf<D>;
   literal: GetTypeFromLiteral<D>;
   enumInstance: GetTypeFromEnum<D>;
   enumMember: GetTypeFromEnumMember<D>;
