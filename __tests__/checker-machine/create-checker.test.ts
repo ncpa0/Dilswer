@@ -1,11 +1,58 @@
-import { createValidator, DataType, OptionalField } from "../../src";
+import { ParseDataType, UnknownFunction } from "@DataTypes/type-utils";
+import {
+  AnyDataType,
+  createValidator,
+  DataType,
+  OptionalField,
+} from "../../src";
+
+const TRUE_SYM = Symbol("true");
+type True = typeof TRUE_SYM;
+
+const ASSERTION_FAILED_SYM = Symbol("Type assertion failed.");
+type AssertionFailed = typeof ASSERTION_FAILED_SYM;
+
+type IsFailed<T> = AssertionFailed extends T ? true : false;
+
+type AssertEqual<T, U> = [T] extends [U]
+  ? [U] extends [T]
+    ? T extends object
+      ? AssertEqual<keyof T, keyof U>
+      : True
+    : AssertionFailed
+  : AssertionFailed;
+
+type AssertNotFailed<T> = IsFailed<T> extends true ? AssertionFailed : T;
+
+type AssertType<T, U extends AnyDataType> = AssertNotFailed<
+  AssertEqual<T, ParseDataType<U>>
+>;
+
+type AssertValidator<T, V extends (data: unknown) => boolean> = V extends (
+  data: unknown
+) => data is infer R
+  ? AssertNotFailed<AssertEqual<T, R>>
+  : AssertionFailed;
+
+/**
+ * A dummy function for asserting the type T provided is equal to
+ * `true`
+ */
+const assert = <V extends True>() => {};
 
 describe("createValidator", () => {
   describe("for primitives", () => {
     it("should validate against a string", () => {
       const typeDef = DataType.String;
 
+      type ExpectedType = string;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      assert<AssertValidator<string, typeof validate>>();
 
       expect(validate("foo")).toEqual(true);
 
@@ -23,7 +70,12 @@ describe("createValidator", () => {
     it("should validate against a number", () => {
       const typeDef = DataType.Number;
 
+      type ExpectedType = number;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(1)).toEqual(true);
       expect(validate(1.1805916207174113e21)).toEqual(true);
@@ -44,7 +96,12 @@ describe("createValidator", () => {
     it("should validate against a integer", () => {
       const typeDef = DataType.Int;
 
+      type ExpectedType = number;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(1)).toEqual(true);
       expect(validate(543.0)).toEqual(true);
@@ -68,7 +125,12 @@ describe("createValidator", () => {
     it("should validate against a boolean", () => {
       const typeDef = DataType.Boolean;
 
+      type ExpectedType = boolean;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(false)).toEqual(true);
       expect(validate(true)).toEqual(true);
@@ -87,7 +149,12 @@ describe("createValidator", () => {
     it("should validate against a symbol", () => {
       const typeDef = DataType.Symbol;
 
+      type ExpectedType = symbol;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(Symbol())).toEqual(true);
 
@@ -105,7 +172,12 @@ describe("createValidator", () => {
     it("should validate against a null", () => {
       const typeDef = DataType.Null;
 
+      type ExpectedType = null;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(null)).toEqual(true);
 
@@ -123,7 +195,12 @@ describe("createValidator", () => {
     it("should validate against a undefined", () => {
       const typeDef = DataType.Undefined;
 
+      type ExpectedType = undefined;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(undefined)).toEqual(true);
 
@@ -141,7 +218,12 @@ describe("createValidator", () => {
     it("should validate against unknown", () => {
       const typeDef = DataType.Unknown;
 
+      type ExpectedType = unknown;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate(null)).toEqual(true);
       expect(validate(undefined)).toEqual(true);
@@ -158,7 +240,12 @@ describe("createValidator", () => {
     it("should validate against a string numeral", () => {
       const typeDef = DataType.StringNumeral;
 
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate("1")).toEqual(true);
       expect(validate("6.12")).toEqual(true);
@@ -190,7 +277,12 @@ describe("createValidator", () => {
     it("should validate against a string integer", () => {
       const typeDef = DataType.StringInt;
 
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
       const validate = createValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate("1")).toEqual(true);
       expect(validate("612")).toEqual(true);
@@ -225,7 +317,12 @@ describe("createValidator", () => {
       it("should validate against a string literal", () => {
         const typeDef = DataType.Literal("foo");
 
+        type ExpectedType = "foo";
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("foo")).toEqual(true);
 
@@ -246,7 +343,12 @@ describe("createValidator", () => {
       it("should validate against a numeric literal", () => {
         const typeDef = DataType.Literal(69);
 
+        type ExpectedType = 69;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(69)).toEqual(true);
 
@@ -268,7 +370,12 @@ describe("createValidator", () => {
       it("should validate against a boolean literal", () => {
         const typeDef = DataType.Literal(false);
 
+        type ExpectedType = false;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(false)).toEqual(true);
 
@@ -287,7 +394,12 @@ describe("createValidator", () => {
       it("should validate a union of string type", () => {
         const typeDef = DataType.OneOf(DataType.String);
 
+        type ExpectedType = string;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("foobarbaz")).toEqual(true);
 
@@ -305,7 +417,12 @@ describe("createValidator", () => {
       it("should validate a union of number type", () => {
         const typeDef = DataType.OneOf(DataType.Number);
 
+        type ExpectedType = number;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(1)).toEqual(true);
 
@@ -323,7 +440,12 @@ describe("createValidator", () => {
       it("should validate a union of boolean type", () => {
         const typeDef = DataType.OneOf(DataType.Boolean);
 
+        type ExpectedType = boolean;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(true)).toEqual(true);
         expect(validate(false)).toEqual(true);
@@ -342,7 +464,12 @@ describe("createValidator", () => {
       it("should validate a union of string and numbers", () => {
         const typeDef = DataType.OneOf(DataType.String, DataType.Number);
 
+        type ExpectedType = string | number;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("foo")).toEqual(true);
         expect(validate(123)).toEqual(true);
@@ -360,7 +487,12 @@ describe("createValidator", () => {
       it("should validate a union of boolean and null", () => {
         const typeDef = DataType.OneOf(DataType.Boolean, DataType.Null);
 
+        type ExpectedType = boolean | null;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(null)).toEqual(true);
         expect(validate(true)).toEqual(true);
@@ -377,7 +509,12 @@ describe("createValidator", () => {
       it("should validate a union of booleans and symbols", () => {
         const typeDef = DataType.OneOf(DataType.Boolean, DataType.Symbol);
 
+        type ExpectedType = boolean | symbol;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(false)).toEqual(true);
         expect(validate(true)).toEqual(true);
@@ -400,7 +537,12 @@ describe("createValidator", () => {
 
         const typeDef = DataType.OneOf(DataType.Enum(T), DataType.Symbol);
 
+        type ExpectedType = T | symbol;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(T.FOO)).toEqual(true);
         expect(validate(T.BAR)).toEqual(true);
@@ -424,7 +566,12 @@ describe("createValidator", () => {
           DataType.Number
         );
 
+        type ExpectedType = UnknownFunction | string | number;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("foo")).toEqual(true);
         expect(validate(123)).toEqual(true);
@@ -450,7 +597,12 @@ describe("createValidator", () => {
           )
         );
 
+        type ExpectedType = UnknownFunction | string | { foo: string }[];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("foo")).toEqual(true);
         expect(validate(() => {})).toEqual(true);
@@ -475,7 +627,12 @@ describe("createValidator", () => {
           DataType.ArrayOf(DataType.Number)
         );
 
+        type ExpectedType = string[] | number[];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([])).toEqual(true);
         expect(validate(["foo", "bar", "baz"])).toEqual(true);
@@ -504,7 +661,15 @@ describe("createValidator", () => {
           })
         );
 
+        type ExpectedType =
+          | { id: "1"; value: number }
+          | { id: "2"; value: string }
+          | { id: "3"; value: boolean; otherValue: null };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ id: "1", value: 1 })).toEqual(true);
         expect(validate({ id: "2", value: "2" })).toEqual(true);
@@ -538,7 +703,12 @@ describe("createValidator", () => {
           DataType.Literal("foo")
         );
 
+        type ExpectedType = string & "foo";
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("foo")).toEqual(true);
 
@@ -558,7 +728,12 @@ describe("createValidator", () => {
       it("should validate intersection of string and string numerals", () => {
         const typeDef = DataType.AllOf(DataType.String, DataType.StringNumeral);
 
+        type ExpectedType = string & `${number}`;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate("1")).toEqual(true);
         expect(validate("123")).toEqual(true);
@@ -590,7 +765,12 @@ describe("createValidator", () => {
           })
         );
 
+        type ExpectedType = { foo: string } & { bar: number };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo", bar: 123 })).toEqual(true);
 
@@ -623,7 +803,15 @@ describe("createValidator", () => {
           })
         );
 
+        type ExpectedType = { foo: string } & { bar?: number } & {
+          baz: number;
+          qux?: "qux";
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo", baz: 1 })).toEqual(true);
         expect(validate({ foo: "foo", baz: 0, bar: 1.1 })).toEqual(true);
@@ -673,7 +861,12 @@ describe("createValidator", () => {
       it("should validate against any array when type is unknown", () => {
         const typeDef = DataType.ArrayOf(DataType.Unknown);
 
+        type ExpectedType = unknown[];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([])).toEqual(true);
         expect(validate([1])).toEqual(true);
@@ -695,7 +888,12 @@ describe("createValidator", () => {
       it("should validate against simple array of string", () => {
         const typeDef = DataType.ArrayOf(DataType.String);
 
+        type ExpectedType = string[];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([])).toEqual(true);
         expect(validate(["foo"])).toEqual(true);
@@ -718,7 +916,12 @@ describe("createValidator", () => {
         }
         const typeDef = DataType.ArrayOf(DataType.Enum(T));
 
+        type ExpectedType = T[];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([])).toEqual(true);
         expect(validate([T.BAR])).toEqual(true);
@@ -740,7 +943,12 @@ describe("createValidator", () => {
       it("should validate against array of functions or booleans", () => {
         const typeDef = DataType.ArrayOf(DataType.Function, DataType.Boolean);
 
+        type ExpectedType = Array<UnknownFunction | boolean>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([true, false])).toEqual(true);
         expect(validate([() => {}])).toEqual(true);
@@ -761,7 +969,12 @@ describe("createValidator", () => {
       it("should validate against array of undefined or nulls", () => {
         const typeDef = DataType.ArrayOf(DataType.Null, DataType.Undefined);
 
+        type ExpectedType = Array<null | undefined>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([])).toEqual(true);
         expect(validate([null])).toEqual(true);
@@ -790,7 +1003,12 @@ describe("createValidator", () => {
           DataType.ArrayOf(DataType.ArrayOf(DataType.String))
         );
 
+        type ExpectedType = Array<Array<number> | Array<Array<string>>>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate([])).toEqual(true);
         expect(validate([[], [], []])).toEqual(true);
@@ -811,7 +1029,12 @@ describe("createValidator", () => {
       it("should not validate null for empty objects", () => {
         const typeDef = DataType.RecordOf({});
 
+        type ExpectedType = Record<string, never>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({})).toEqual(true);
 
@@ -825,7 +1048,15 @@ describe("createValidator", () => {
           bar: { required: false, type: DataType.Number },
         });
 
+        type ExpectedType = {
+          foo: string;
+          bar?: number;
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo" })).toEqual(true);
         expect(validate({ foo: "foo", bar: 1 })).toEqual(true);
@@ -840,7 +1071,15 @@ describe("createValidator", () => {
           bar: OptionalField(DataType.Number),
         });
 
+        type ExpectedType = {
+          foo: string;
+          bar?: number;
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo" })).toEqual(true);
         expect(validate({ foo: "foo", bar: 1 })).toEqual(true);
@@ -856,7 +1095,16 @@ describe("createValidator", () => {
           baz: { type: DataType.Unknown },
         });
 
+        type ExpectedType = {
+          foo: string;
+          bar: number;
+          baz: unknown;
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo", bar: 123, baz: true })).toEqual(true);
         expect(validate({ foo: "", bar: 0, baz: [] })).toEqual(true);
@@ -897,7 +1145,21 @@ describe("createValidator", () => {
           },
         });
 
+        type ExpectedType = {
+          foo: string;
+          bar: {
+            baz: number;
+            qux: {
+              corge: UnknownFunction;
+            };
+            thud?: T.BAR;
+          };
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(
           validate({
@@ -937,7 +1199,15 @@ describe("createValidator", () => {
           bar: { type: DataType.Null },
         });
 
+        type ExpectedType = {
+          foo: undefined;
+          bar: null;
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: undefined, bar: null })).toEqual(true);
 
@@ -960,7 +1230,19 @@ describe("createValidator", () => {
           optional: { type: DataType.Number, required: false },
         });
 
+        type ExpectedType = {
+          foo: string;
+          bar: (string | number)[];
+          baz: {
+            qux: boolean;
+          };
+          optional?: number;
+        };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo", bar: [1], baz: { qux: true } })).toEqual(
           true
@@ -988,7 +1270,12 @@ describe("createValidator", () => {
       it("should not validate null for empty objects", () => {
         const typeDef = DataType.Dict(DataType.Unknown);
 
+        type ExpectedType = Record<string | number, unknown>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({})).toEqual(true);
 
@@ -999,7 +1286,12 @@ describe("createValidator", () => {
       it("should validate for simple dictionaries", () => {
         const typeDef = DataType.Dict(DataType.String, DataType.Number);
 
+        type ExpectedType = Record<string | number, string | number>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo", bar: 123 })).toEqual(true);
         expect(validate({ foo: "", bar: "0", baz: "" })).toEqual(true);
@@ -1034,7 +1326,18 @@ describe("createValidator", () => {
           })
         );
 
+        type ExpectedType = Record<
+          string | number,
+          | string
+          | {
+              foo: Record<string | number, Record<string | number, T.BAR>>;
+            }
+        >;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ bar: "bar" })).toEqual(true);
         expect(validate({ bar: { foo: {} } })).toEqual(true);
@@ -1102,7 +1405,12 @@ describe("createValidator", () => {
       it("should validate for set of numbers", () => {
         const typeDef = DataType.SetOf(DataType.Number);
 
+        type ExpectedType = Set<number>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(new Set())).toEqual(true);
         expect(validate(new Set([1, 2, 3]))).toEqual(true);
@@ -1123,7 +1431,12 @@ describe("createValidator", () => {
       it("should validate for set of functions", () => {
         const typeDef = DataType.SetOf(DataType.Function);
 
+        type ExpectedType = Set<UnknownFunction>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(new Set())).toEqual(true);
         expect(validate(new Set([() => {}]))).toEqual(true);
@@ -1144,7 +1457,11 @@ describe("createValidator", () => {
       it("should validate for set of symbols or strings", () => {
         const typeDef = DataType.SetOf(DataType.Symbol, DataType.String);
 
+        type ExpectedType = Set<symbol | string>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(new Set())).toEqual(true);
         expect(validate(new Set([Symbol()]))).toEqual(true);
@@ -1172,7 +1489,12 @@ describe("createValidator", () => {
           DataType.RecordOf({ foo: { type: DataType.String } })
         );
 
+        type ExpectedType = Set<undefined | { foo: string }>;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(new Set())).toEqual(true);
         expect(validate(new Set([undefined]))).toEqual(true);
@@ -1205,7 +1527,12 @@ describe("createValidator", () => {
 
         const typeDef = DataType.Enum(Foo);
 
+        type ExpectedType = Foo;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(Foo.A)).toEqual(true);
         expect(validate(Foo.B)).toEqual(true);
@@ -1238,7 +1565,12 @@ describe("createValidator", () => {
 
         const typeDef = DataType.Enum(Foo);
 
+        type ExpectedType = Foo;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(Foo.A)).toEqual(true);
         expect(validate(Foo.B)).toEqual(true);
@@ -1272,7 +1604,12 @@ describe("createValidator", () => {
           myEnum: DataType.Enum(Foo),
         });
 
+        type ExpectedType = { myEnum: Foo };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ myEnum: Foo.A })).toEqual(true);
         expect(validate({ myEnum: Foo.B })).toEqual(true);
@@ -1297,7 +1634,12 @@ describe("createValidator", () => {
 
         const typeDef = DataType.EnumMember(Foo.A);
 
+        type ExpectedType = Foo.A;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(Foo.A)).toEqual(true);
         expect(validate("A")).toEqual(true);
@@ -1330,7 +1672,12 @@ describe("createValidator", () => {
 
         const typeDef = DataType.EnumMember(Foo.A);
 
+        type ExpectedType = Foo.A;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(Foo.A)).toEqual(true);
         expect(validate(0)).toEqual(true);
@@ -1366,7 +1713,12 @@ describe("createValidator", () => {
           foo: DataType.Custom(customValidator),
         });
 
+        type ExpectedType = { foo: string };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "bar" })).toEqual(true);
 
@@ -1399,7 +1751,12 @@ describe("createValidator", () => {
           foo: DataType.Custom(customValidator),
         });
 
+        type ExpectedType = { foo: string };
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
         const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(() => validate({ foo: "bar" })).toThrowError("foo");
       });
