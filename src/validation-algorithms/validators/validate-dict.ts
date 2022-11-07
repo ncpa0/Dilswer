@@ -7,11 +7,14 @@ export const validateDict = (path: string[], type: Dict, data: unknown) => {
   if (typeof data !== "object" || data === null || Array.isArray(data))
     throw new ValidationError(path, type, data);
 
-  for (const [key, value] of Object.entries(data)) {
+  const keys = Object.keys(data);
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
     validateType(
       [...path, key.toString()],
       DataType.OneOf(...type.dict),
-      value
+      (data as Record<string, unknown>)[key]
     );
   }
 };

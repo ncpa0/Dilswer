@@ -1,12 +1,7 @@
-import type { AnyDataType, FieldDescriptor, RecordOf } from "@DataTypes/types";
+import type { RecordOf } from "@DataTypes/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
-
-const getType = (v: FieldDescriptor | AnyDataType) => {
-  if (isFieldDescriptor(v)) return v.type;
-  return v;
-};
 
 export const validateRecord = (
   path: string[],
@@ -16,16 +11,21 @@ export const validateRecord = (
   if (typeof data !== "object" || data === null || Array.isArray(data))
     throw new ValidationError(path, type, data);
 
-  for (const [key, fieldDescriptor] of Object.entries(type.recordOf)) {
+  const keys = Object.keys(type.recordOf);
+
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const fieldDescriptor = type.recordOf[key];
+
+    const isADescriptor = isFieldDescriptor(fieldDescriptor);
+    const fieldType = isADescriptor ? fieldDescriptor.type : fieldDescriptor;
+
     if (!(key in data)) {
-      if (isFieldDescriptor(fieldDescriptor)) {
-        if (
-          fieldDescriptor.required === true ||
-          fieldDescriptor.required === undefined
-        ) {
-          throw new ValidationError(path, type, data);
-        } else {
+      if (isADescriptor) {
+        if (fieldDescriptor.required === false) {
           continue;
+        } else {
+          throw new ValidationError(path, type, data);
         }
       } else {
         throw new ValidationError(path, type, data);
@@ -35,6 +35,6 @@ export const validateRecord = (
     // @ts-expect-error
     const value: unknown = data[key];
 
-    validateType([...path, key.toString()], getType(fieldDescriptor), value);
+    validateType([...path, key], fieldType, value);
   }
 };

@@ -6,7 +6,8 @@ export const validateAllOf = (
   type: AllOf<AnyDataType[]>,
   data: unknown
 ) => {
-  for (const dataType of type.allOf) {
+  for (let i = 0; i < type.allOf.length; i++) {
+    const dataType = type.allOf[i];
     validateType(path, dataType, data);
   }
 };

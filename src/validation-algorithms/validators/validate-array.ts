@@ -10,11 +10,11 @@ export const validateArray = (
 ) => {
   if (!Array.isArray(data)) throw new ValidationError(path, type, data);
 
-  for (const [index, elem] of data.entries()) {
+  for (let index = 0; index < data.length; index++) {
     validateOneOf(
       [...path, index.toString()],
       DataType.OneOf(...type.arrayOf),
-      elem
+      data[index]
     );
   }
 };

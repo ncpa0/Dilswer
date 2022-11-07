@@ -6,21 +6,17 @@ export const validateOneOf = (
   path: string[],
   type: OneOf<AnyDataType[]>,
   data: unknown
-) => {
-  let passed = false;
+): void => {
+  if (type.oneOf.length === 1) return validateType(path, type.oneOf[0], data);
 
-  for (const dataType of type.oneOf) {
+  for (let i = 0; i < type.oneOf.length; i++) {
     try {
-      validateType(path, dataType, data);
-      passed = true;
-      break;
-    } catch (e) {
-      if (type.oneOf.length === 1) throw e;
+      validateType(path, type.oneOf[i], data);
+      return;
+    } catch (error) {
       continue;
     }
   }
-
-  if (passed) return;
 
   throw new ValidationError(path, type, data);
 };
