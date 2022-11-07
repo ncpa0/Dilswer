@@ -17,6 +17,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 14
+          cache: yarn
       - uses: borales/actions-yarn@v3.0.0
         with:
           cmd: install
