@@ -107,6 +107,8 @@ export const toJsonSchema = (
     case "custom":
       schema = parseCustom(type, options);
       break;
+    default:
+      throw new Error("Not a valid DataType!");
   }
 
   if (include$schemaProperty && schema) {

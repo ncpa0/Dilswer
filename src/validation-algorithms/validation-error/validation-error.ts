@@ -18,8 +18,16 @@ export class ValidationError extends TypeError {
   expectedValueType: AnyDataType | string;
   receivedValue: unknown;
 
-  constructor(path: string[], expected: AnyDataType | string, value: unknown) {
-    super("Value does not conform the data type structure definition.");
+  constructor(
+    path: string[],
+    expected: AnyDataType | string,
+    value: unknown,
+    customMessage?: string
+  ) {
+    super(
+      customMessage ??
+        "Value does not conform the data type structure definition."
+    );
     this.expectedValueType = expected;
     this.fieldPath = concatPath(path);
     this.receivedValue = value;

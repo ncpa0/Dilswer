@@ -1,4 +1,5 @@
 import type { AnyDataType } from "@DataTypes/types";
+import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateAllOf } from "@Validation/validators/validate-all-of";
 import { validateArray } from "@Validation/validators/validate-array";
 import { validateCustom } from "@Validation/validators/validate-custom";
@@ -39,5 +40,7 @@ export const validateType = (
       return validateEnumMember(path, type, data);
     case "custom":
       return validateCustom(path, type, data);
+    default:
+      throw new ValidationError(path, type, data, "Not a valid DataType!");
   }
 };
