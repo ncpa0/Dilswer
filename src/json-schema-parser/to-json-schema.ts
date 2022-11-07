@@ -15,13 +15,15 @@ import type { JSONSchema6 } from "json-schema";
 export type ParseToJsonSchemaOptions = {
   /**
    * Defines how to handle DataTypes that do not have an
-   * equivalent type in JSON Schema. (Set's, undefined, Symbols, etc.)
+   * equivalent type in JSON Schema. (Set's, undefined, Symbols,
+   * etc.)
    *
    * - `throw` (default): Throw an error if an incompatible type is
    *   encountered.
    * - `omit`: Omits incompatible properties from the JSON Schema.
    * - `set-as-any`: Adds the type to the schema without a "type"
-   *   property but with a name equivalent to the given DataType.
+   *   property but with a name equivalent to the given
+   *   DataType.
    */
   incompatibleTypes?: "throw" | "omit" | "set-as-any";
   /**
@@ -34,7 +36,8 @@ export type ParseToJsonSchemaOptions = {
    * DataTypes to JSON Schema's.
    *
    * By default a strategy defined in `incompatibleTypes` is
-   * used, if a method is defined, that method will be used instead.
+   * used, if a method is defined, that method will be used
+   * instead.
    */
   customParser?: {
     Set?: (
@@ -70,28 +73,40 @@ export const toJsonSchema = (
 ): JSONSchema6 | undefined => {
   let schema: JSONSchema6 | undefined;
 
-  if ("simpleType" in type) {
-    schema = parsePrimitive(type, options);
-  } else if ("recordOf" in type) {
-    schema = parseRecordOf(type, options);
-  } else if ("dict" in type) {
-    schema = parseDict(type, options);
-  } else if ("arrayOf" in type) {
-    schema = parseArrayOf(type, options);
-  } else if ("setOf" in type) {
-    schema = parseSetOf(type, options);
-  } else if ("oneOf" in type) {
-    schema = parseOneOf(type, options);
-  } else if ("allOf" in type) {
-    schema = parseAllOf(type, options);
-  } else if ("literal" in type) {
-    schema = parseLiteral(type);
-  } else if ("enumMember" in type) {
-    schema = parseEnumMember(type);
-  } else if ("enumInstance" in type) {
-    schema = parseEnum(type);
-  } else if ("custom" in type) {
-    schema = parseCustom(type, options);
+  switch (type.kind) {
+    case "simple":
+      schema = parsePrimitive(type, options);
+      break;
+    case "array":
+      schema = parseArrayOf(type, options);
+      break;
+    case "record":
+      schema = parseRecordOf(type, options);
+      break;
+    case "dictionary":
+      schema = parseDict(type, options);
+      break;
+    case "set":
+      schema = parseSetOf(type, options);
+      break;
+    case "union":
+      schema = parseOneOf(type, options);
+      break;
+    case "intersection":
+      schema = parseAllOf(type, options);
+      break;
+    case "literal":
+      schema = parseLiteral(type);
+      break;
+    case "enumUnion":
+      schema = parseEnum(type);
+      break;
+    case "enumMember":
+      schema = parseEnumMember(type);
+      break;
+    case "custom":
+      schema = parseCustom(type, options);
+      break;
   }
 
   if (include$schemaProperty && schema) {

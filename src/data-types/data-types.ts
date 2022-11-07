@@ -1,6 +1,7 @@
 import type {
   AnyDataType,
   BasicTypeNames,
+  DataTypeKind,
   RecordTypeSchema,
   TypeMetadata,
 } from "@DataTypes/types";
@@ -36,6 +37,7 @@ export class BaseDataType {
 
   protected [MetadataSymbol]: TypeMetadata = {};
   protected [DataTypeSymbol] = true;
+  readonly kind!: DataTypeKind;
 
   protected copy<T extends BaseDataType>(this: T): T {
     const proto = Object.getPrototypeOf(this);
@@ -79,6 +81,7 @@ export class BaseDataType {
 }
 
 export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
+  readonly kind = "simple";
   constructor(public simpleType: DT) {
     super();
   }
@@ -87,36 +90,42 @@ export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
 export class RecordOf<
   TS extends RecordTypeSchema = RecordTypeSchema
 > extends BaseDataType {
+  readonly kind = "record";
   constructor(public recordOf: TS) {
     super();
   }
 }
 
 export class ArrayOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
+  readonly kind = "array";
   constructor(public arrayOf: DT) {
     super();
   }
 }
 
 export class Dict<DT extends AnyDataType[] = any[]> extends BaseDataType {
+  readonly kind = "dictionary";
   constructor(public dict: DT) {
     super();
   }
 }
 
 export class SetOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
+  readonly kind = "set";
   constructor(public setOf: DT) {
     super();
   }
 }
 
 export class OneOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
+  readonly kind = "union";
   constructor(public oneOf: DT) {
     super();
   }
 }
 
 export class AllOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
+  readonly kind = "intersection";
   constructor(public allOf: DT) {
     super();
   }
@@ -125,6 +134,7 @@ export class AllOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
 export class Literal<
   DT extends string | number | boolean = string | number | boolean
 > extends BaseDataType {
+  readonly kind = "literal";
   constructor(public literal: DT) {
     super();
   }
@@ -133,6 +143,7 @@ export class Literal<
 export class Enum<
   TEnumValue extends string | number = any
 > extends BaseDataType {
+  readonly kind = "enumUnion";
   enumInstance: TEnumValue;
 
   constructor(enumInstance: any) {
@@ -143,6 +154,7 @@ export class Enum<
 }
 
 export class EnumMember<DT = any> extends BaseDataType {
+  readonly kind = "enumMember";
   constructor(public enumMember: DT) {
     super();
   }
@@ -151,6 +163,7 @@ export class EnumMember<DT = any> extends BaseDataType {
 export class Custom<
   VF extends (v: any) => boolean = (v: any) => v is unknown
 > extends BaseDataType {
+  readonly kind = "custom";
   constructor(public custom: VF) {
     super();
   }

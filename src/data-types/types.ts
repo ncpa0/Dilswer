@@ -52,6 +52,19 @@ export type ComplexDataType =
   | EnumMember
   | Custom;
 
+export type DataTypeKind =
+  | "simple"
+  | "array"
+  | "record"
+  | "dictionary"
+  | "set"
+  | "union"
+  | "intersection"
+  | "literal"
+  | "enumUnion"
+  | "enumMember"
+  | "custom";
+
 export type AnyDataType = BasicDataType | ComplexDataType;
 
 export type AllDataTypes = AnyDataType;

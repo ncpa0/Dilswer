@@ -16,47 +16,28 @@ export const validateType = (
   type: AnyDataType,
   data: unknown
 ) => {
-  if ("simpleType" in type) {
-    return validatePrimitive(path, type, data);
-  }
-
-  if ("recordOf" in type) {
-    return validateRecord(path, type, data);
-  }
-
-  if ("dict" in type) {
-    return validateDict(path, type, data);
-  }
-
-  if ("arrayOf" in type) {
-    return validateArray(path, type, data);
-  }
-
-  if ("setOf" in type) {
-    return validateSet(path, type, data);
-  }
-
-  if ("oneOf" in type) {
-    return validateOneOf(path, type, data);
-  }
-
-  if ("allOf" in type) {
-    return validateAllOf(path, type, data);
-  }
-
-  if ("literal" in type) {
-    return validateLiteral(path, type, data);
-  }
-
-  if ("enumMember" in type) {
-    return validateEnumMember(path, type, data);
-  }
-
-  if ("enumInstance" in type) {
-    return validateEnum(path, type, data);
-  }
-
-  if ("custom" in type) {
-    return validateCustom(path, type, data);
+  switch (type.kind) {
+    case "simple":
+      return validatePrimitive(path, type, data);
+    case "array":
+      return validateArray(path, type, data);
+    case "record":
+      return validateRecord(path, type, data);
+    case "dictionary":
+      return validateDict(path, type, data);
+    case "set":
+      return validateSet(path, type, data);
+    case "union":
+      return validateOneOf(path, type, data);
+    case "intersection":
+      return validateAllOf(path, type, data);
+    case "literal":
+      return validateLiteral(path, type, data);
+    case "enumUnion":
+      return validateEnum(path, type, data);
+    case "enumMember":
+      return validateEnumMember(path, type, data);
+    case "custom":
+      return validateCustom(path, type, data);
   }
 };
