@@ -2,9 +2,10 @@ import { DataType } from "@DataTypes/data-types";
 import type { AnyDataType, SetOf } from "@DataTypes/types";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateOneOf } from "@Validation/validators/validate-one-of";
+import type { Path } from "../path";
 
 export const validateSet = (
-  path: string[],
+  path: Path,
   type: SetOf<AnyDataType[]>,
   data: unknown
 ) => {
@@ -20,7 +21,7 @@ export const validateSet = (
 
   for (const elem of data as Set<unknown>) {
     validateOneOf(
-      [...path, "SET_ELEMENT"],
+      path.concat("SET_ELEMENT"),
       DataType.OneOf(...type.setOf),
       elem
     );

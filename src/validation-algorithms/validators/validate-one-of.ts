@@ -1,9 +1,10 @@
 import type { AnyDataType, OneOf } from "@DataTypes/types";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
+import type { Path } from "../path";
 
 export const validateOneOf = (
-  path: string[],
+  path: Path,
   type: OneOf<AnyDataType[]>,
   data: unknown
 ): void => {

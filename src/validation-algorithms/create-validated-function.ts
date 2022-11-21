@@ -2,6 +2,7 @@ import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
 import type { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateType } from "@Validation/validators/validate-type";
+import { Path } from "./path";
 
 /**
  * Higher order function that generates a new function which will
@@ -19,7 +20,7 @@ export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
 ) => {
   const caller = (data: unknown): R | ER => {
     try {
-      validateType(["$"], dataType, data);
+      validateType(Path.init("$"), dataType, data);
       // @ts-expect-error
       return onValidationSuccess(data);
     } catch (e) {

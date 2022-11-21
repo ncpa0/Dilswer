@@ -1,4 +1,5 @@
 import { ValidationError } from "@Validation/validation-error/validation-error";
+import type { Path } from "../path";
 
 const STRING_NUMERAL_ALLOWED_CHARS = [
   "0",
@@ -14,7 +15,7 @@ const STRING_NUMERAL_ALLOWED_CHARS = [
   ".",
 ];
 
-export const validateStringNumeral = (path: string[], data: unknown) => {
+export const validateStringNumeral = (path: Path, data: unknown) => {
   const throwError = () => {
     throw new ValidationError(path, "stringnumeral", data);
   };

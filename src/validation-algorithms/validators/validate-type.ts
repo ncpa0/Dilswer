@@ -1,5 +1,4 @@
 import type { AnyDataType, DataTypeKind } from "@DataTypes/types";
-import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateAllOf } from "@Validation/validators/validate-all-of";
 import { validateArray } from "@Validation/validators/validate-array";
 import { validateCustom } from "@Validation/validators/validate-custom";
@@ -11,10 +10,11 @@ import { validateOneOf } from "@Validation/validators/validate-one-of";
 import { validatePrimitive } from "@Validation/validators/validate-primitive";
 import { validateRecord } from "@Validation/validators/validate-record";
 import { validateSet } from "@Validation/validators/validate-set";
+import type { Path } from "../path";
 
 const validatorsLookupMap = new Map<
   DataTypeKind,
-  (path: string[], type: any, data: unknown) => void
+  (path: Path, type: any, data: unknown) => void
 >([
   ["array", validateArray],
   ["custom", validateCustom],
@@ -29,16 +29,8 @@ const validatorsLookupMap = new Map<
   ["union", validateOneOf],
 ]);
 
-export const validateType = (
-  path: string[],
-  type: AnyDataType,
-  data: unknown
-) => {
+export const validateType = (path: Path, type: AnyDataType, data: unknown) => {
   const validator = validatorsLookupMap.get(type.kind);
 
-  if (validator) {
-    return validator(path, type, data);
-  }
-
-  throw new ValidationError(path, type, data, "Not a valid DataType!");
+  return validator!(path, type, data);
 };
