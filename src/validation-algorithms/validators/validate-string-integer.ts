@@ -1,4 +1,3 @@
-import type { BasicDataType } from "@DataTypes/types";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
 const STRING_INTEGER_ALLOWED_CHARS = [
@@ -14,13 +13,9 @@ const STRING_INTEGER_ALLOWED_CHARS = [
   "9",
 ];
 
-export const validateStringInteger = (
-  path: string[],
-  type: BasicDataType,
-  data: unknown
-) => {
+export const validateStringInteger = (path: string[], data: unknown) => {
   const throwError = () => {
-    throw new ValidationError(path, type, data);
+    throw new ValidationError(path, "stringinteger", data);
   };
 
   if (typeof data !== "string") throwError();

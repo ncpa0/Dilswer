@@ -1,4 +1,4 @@
-import type { AnyDataType } from "@DataTypes/types";
+import type { AnyDataType, DataTypeKind } from "@DataTypes/types";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateAllOf } from "@Validation/validators/validate-all-of";
 import { validateArray } from "@Validation/validators/validate-array";
@@ -12,35 +12,33 @@ import { validatePrimitive } from "@Validation/validators/validate-primitive";
 import { validateRecord } from "@Validation/validators/validate-record";
 import { validateSet } from "@Validation/validators/validate-set";
 
+const validatorsLookupMap = new Map<
+  DataTypeKind,
+  (path: string[], type: any, data: unknown) => void
+>([
+  ["array", validateArray],
+  ["custom", validateCustom],
+  ["dictionary", validateDict],
+  ["enumMember", validateEnumMember],
+  ["enumUnion", validateEnum],
+  ["intersection", validateAllOf],
+  ["literal", validateLiteral],
+  ["record", validateRecord],
+  ["set", validateSet],
+  ["simple", validatePrimitive],
+  ["union", validateOneOf],
+]);
+
 export const validateType = (
   path: string[],
   type: AnyDataType,
   data: unknown
 ) => {
-  switch (type.kind) {
-    case "simple":
-      return validatePrimitive(path, type, data);
-    case "array":
-      return validateArray(path, type, data);
-    case "record":
-      return validateRecord(path, type, data);
-    case "dictionary":
-      return validateDict(path, type, data);
-    case "set":
-      return validateSet(path, type, data);
-    case "union":
-      return validateOneOf(path, type, data);
-    case "intersection":
-      return validateAllOf(path, type, data);
-    case "literal":
-      return validateLiteral(path, type, data);
-    case "enumUnion":
-      return validateEnum(path, type, data);
-    case "enumMember":
-      return validateEnumMember(path, type, data);
-    case "custom":
-      return validateCustom(path, type, data);
-    default:
-      throw new ValidationError(path, type, data, "Not a valid DataType!");
+  const validator = validatorsLookupMap.get(type.kind);
+
+  if (validator) {
+    return validator(path, type, data);
   }
+
+  throw new ValidationError(path, type, data, "Not a valid DataType!");
 };
