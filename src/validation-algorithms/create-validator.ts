@@ -1,8 +1,10 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { validateType } from "@Validation/validators/validate-type";
 import { Path } from "./path";
+import { validatorsLookupMap } from "./validators/validate-type";
+
+const DEFAULT_ROOT = Path.init("$");
 
 /**
  * Higher order function that generates a validator which will
@@ -15,7 +17,7 @@ export const createValidator = <DT extends AnyDataType>(
 ): ((data: unknown) => data is ReWrap<ParseDataType<DT>>) => {
   const validator = (data: unknown): data is ReWrap<ParseDataType<DT>> => {
     try {
-      validateType(Path.init("$"), dataType, data);
+      validatorsLookupMap.get(dataType.kind)!(DEFAULT_ROOT, dataType, data);
       return true;
     } catch (e) {
       if (!ValidationError.isValidationError(e)) throw e;

@@ -1,5 +1,5 @@
 import type { AllOf, AnyDataType } from "@DataTypes/types";
-import { validateType } from "@Validation/validators/validate-type";
+import { validatorsLookupMap } from "@Validation/validators/validate-type";
 import type { Path } from "../path";
 
 export const validateAllOf = (
@@ -9,6 +9,6 @@ export const validateAllOf = (
 ) => {
   for (let i = 0; i < type.allOf.length; i++) {
     const dataType = type.allOf[i];
-    validateType(path, dataType, data);
+    validatorsLookupMap.get(dataType.kind)!(path, dataType, data);
   }
 };

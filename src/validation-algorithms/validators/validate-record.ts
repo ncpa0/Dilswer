@@ -1,8 +1,8 @@
 import type { RecordOf } from "@DataTypes/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { validateType } from "@Validation/validators/validate-type";
 import type { Path } from "../path";
+import { validatorsLookupMap } from "./validate-type";
 
 export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
   if (typeof data !== "object" || data === null || Array.isArray(data))
@@ -32,6 +32,10 @@ export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
     // @ts-expect-error
     const value: unknown = data[key];
 
-    validateType(path.concat(key), fieldType, value);
+    validatorsLookupMap.get(fieldType.kind)!(
+      path.concat(key),
+      fieldType,
+      value
+    );
   }
 };

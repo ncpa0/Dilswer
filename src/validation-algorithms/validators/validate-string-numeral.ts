@@ -1,7 +1,7 @@
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { Path } from "../path";
 
-const STRING_NUMERAL_ALLOWED_CHARS = [
+const AllowedChars = new Set([
   "0",
   "1",
   "2",
@@ -13,21 +13,20 @@ const STRING_NUMERAL_ALLOWED_CHARS = [
   "8",
   "9",
   ".",
-];
+]);
 
 export const validateStringNumeral = (path: Path, data: unknown) => {
-  const throwError = () => {
+  const throwError = (): never => {
     throw new ValidationError(path, "stringnumeral", data);
   };
 
   if (typeof data !== "string") throwError();
 
-  if (
-    (data as string)
-      .split("")
-      .some((char) => !STRING_NUMERAL_ALLOWED_CHARS.includes(char))
-  )
-    throwError();
+  for (let i = 0; i < (data as string).length; i++) {
+    if (!AllowedChars.has((data as string)[i])) {
+      throwError();
+    }
+  }
 
   // if data contains more than one dot
   if ((data as string).split(".").length > 2) throwError();

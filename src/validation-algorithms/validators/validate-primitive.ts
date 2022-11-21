@@ -9,34 +9,36 @@ export const validatePrimitive = (
   type: BasicDataType,
   data: unknown
 ) => {
+  const typeName = type.simpleType;
+
   const throwError = (): never => {
-    throw new ValidationError(path, type.simpleType, data);
+    throw new ValidationError(path, typeName, data);
   };
 
-  if (type.simpleType === "number") {
+  if (typeName === "number") {
     if (typeof data !== "number" || Number.isNaN(data)) return throwError();
     return;
   }
 
-  if (type.simpleType === "integer") {
+  if (typeName === "integer") {
     if (typeof data !== "number" || !Number.isInteger(data))
       return throwError();
     return;
   }
 
-  if (typeof data === type.simpleType) return;
+  if (typeof data === typeName) return;
 
-  if (type.simpleType === "stringnumeral") {
+  if (typeName === "stringnumeral") {
     return validateStringNumeral(path, data);
   }
 
-  if (type.simpleType === "stringinteger") {
+  if (typeName === "stringinteger") {
     return validateStringInteger(path, data);
   }
 
-  if (type.simpleType === "unknown") return;
+  if (typeName === "unknown") return;
 
-  if (type.simpleType === "null" && data === null) return;
+  if (typeName === "null" && data === null) return;
 
   throwError();
 };

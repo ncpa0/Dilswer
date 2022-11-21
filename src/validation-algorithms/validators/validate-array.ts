@@ -11,11 +11,9 @@ export const validateArray = (
 ) => {
   if (!Array.isArray(data)) throw new ValidationError(path, type, data);
 
+  const elemType = DataType.OneOf(...type.arrayOf);
+
   for (let index = 0; index < data.length; index++) {
-    validateOneOf(
-      path.concat(index.toString()),
-      DataType.OneOf(...type.arrayOf),
-      data[index]
-    );
+    validateOneOf(path.concat(index), elemType, data[index]);
   }
 };

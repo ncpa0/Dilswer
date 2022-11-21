@@ -1,8 +1,10 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
 import type { ValidationError } from "@Validation/validation-error/validation-error";
-import { validateType } from "@Validation/validators/validate-type";
 import { Path } from "./path";
+import { validatorsLookupMap } from "./validators/validate-type";
+
+const DEFAULT_ROOT = Path.init("$");
 
 /**
  * Higher order function that generates a new function which will
@@ -20,7 +22,7 @@ export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
 ) => {
   const caller = (data: unknown): R | ER => {
     try {
-      validateType(Path.init("$"), dataType, data);
+      validatorsLookupMap.get(dataType.kind)!(DEFAULT_ROOT, dataType, data);
       // @ts-expect-error
       return onValidationSuccess(data);
     } catch (e) {

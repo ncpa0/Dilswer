@@ -1,4 +1,4 @@
-import type { AnyDataType, DataTypeKind } from "@DataTypes/types";
+import type { DataTypeKind } from "@DataTypes/types";
 import { validateAllOf } from "@Validation/validators/validate-all-of";
 import { validateArray } from "@Validation/validators/validate-array";
 import { validateCustom } from "@Validation/validators/validate-custom";
@@ -12,25 +12,19 @@ import { validateRecord } from "@Validation/validators/validate-record";
 import { validateSet } from "@Validation/validators/validate-set";
 import type { Path } from "../path";
 
-const validatorsLookupMap = new Map<
+export const validatorsLookupMap = new Map<
   DataTypeKind,
   (path: Path, type: any, data: unknown) => void
 >([
+  ["simple", validatePrimitive],
   ["array", validateArray],
-  ["custom", validateCustom],
+  ["record", validateRecord],
   ["dictionary", validateDict],
-  ["enumMember", validateEnumMember],
-  ["enumUnion", validateEnum],
+  ["union", validateOneOf],
   ["intersection", validateAllOf],
   ["literal", validateLiteral],
-  ["record", validateRecord],
+  ["enumMember", validateEnumMember],
+  ["enumUnion", validateEnum],
   ["set", validateSet],
-  ["simple", validatePrimitive],
-  ["union", validateOneOf],
+  ["custom", validateCustom],
 ]);
-
-export const validateType = (path: Path, type: AnyDataType, data: unknown) => {
-  const validator = validatorsLookupMap.get(type.kind);
-
-  return validator!(path, type, data);
-};

@@ -1,7 +1,9 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
-import { validateType } from "@Validation/validators/validate-type";
 import { Path } from "./path";
+import { validatorsLookupMap } from "./validators/validate-type";
+
+const DEFAULT_ROOT = Path.init("$");
 
 /**
  * Checks the provided `data` against the `dataType` type
@@ -14,4 +16,4 @@ export const ensureDataType: <DT extends AnyDataType>(
 ) => asserts data is ReWrap<ParseDataType<DT>> = (
   dataType: AnyDataType,
   data: unknown
-) => validateType(Path.init("$"), dataType, data);
+) => validatorsLookupMap.get(dataType.kind)!(DEFAULT_ROOT, dataType, data);

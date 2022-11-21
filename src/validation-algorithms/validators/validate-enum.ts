@@ -3,11 +3,16 @@ import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { Path } from "../path";
 
 export const validateEnum = (path: Path, type: Enum<any>, data: unknown) => {
-  const isDataEqualToAnyMember = Object.entries(type.enumInstance).some(
-    ([key, member]) => isNaN(Number(key)) && member === data
-  );
+  const enumKeys = Object.keys(type.enumInstance);
 
-  if (!isDataEqualToAnyMember) {
-    throw new ValidationError(path, type, data);
+  for (let i = 0; i < enumKeys.length; i++) {
+    const key = enumKeys[i];
+    const member = type.enumInstance[key];
+
+    if (Number.isNaN(Number(key)) && member === data) {
+      return;
+    }
   }
+
+  throw new ValidationError(path, type, data);
 };

@@ -19,11 +19,9 @@ export const validateSet = (
   )
     throw new ValidationError(path, type, data);
 
+  const elemType = DataType.OneOf(...type.setOf);
+
   for (const elem of data as Set<unknown>) {
-    validateOneOf(
-      path.concat("SET_ELEMENT"),
-      DataType.OneOf(...type.setOf),
-      elem
-    );
+    validateOneOf(path.concat("SET_ELEMENT"), elemType, elem);
   }
 };

@@ -6,11 +6,9 @@ export class Path {
   }
 
   private previous?: Path;
-  private part!: string;
+  private part!: string | number;
 
-  constructor() {}
-
-  concat(nextPart: string) {
+  concat(nextPart: string | number) {
     const next = new Path();
     next.previous = this;
     next.part = nextPart;
@@ -21,7 +19,7 @@ export class Path {
     const parts: string[] = [];
     let current: Path | undefined = this;
     while (current) {
-      parts.push(current.part);
+      parts.push(current.part.toString());
       current = current.previous;
     }
     return parts.reverse();
