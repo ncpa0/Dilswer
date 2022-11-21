@@ -53,5 +53,6 @@
   },
   "dependencies": {
     "@types/json-schema": "^7.0.11"
-  }
+  },
+  "packageManager": "yarn@1.22.19"
 }
