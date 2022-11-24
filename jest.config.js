@@ -11,6 +11,8 @@ module.exports = {
     "^@JSONSchemaParser/(.*)": "<rootDir>/src/json-schema-parser/$1",
     "^@Intrinsic/(.*)": "<rootDir>/src/intrinsic-type-utils/$1",
     "^@Intrinsic": "<rootDir>/src/intrinsic-type-utils/index",
+    "^@TsTypeGenerator/(.*)": "<rootDir>/src/ts-type-generator/$1",
+    "^@TsTypeGenerator": "<rootDir>/src/ts-type-generator/index",
   },
   testEnvironment: "jsdom",
   roots: ["<rootDir>"],

@@ -1,0 +1,26 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TsRecordBuilder should correctly generate a simple record type 1`] = `
+"export type Record1 = {
+  foo: string;
+  bar?: number;
+};
+"
+`;
+
+exports[`TsRecordBuilder should correctly generate a simple record type with title and description 1`] = `
+"/**
+ * My record's description
+ */
+export type MyRec = {
+  /**
+   * The foo field
+   */
+  foo: string;
+  /**
+   * The bar field
+   */
+  bar?: number;
+};
+"
+`;
