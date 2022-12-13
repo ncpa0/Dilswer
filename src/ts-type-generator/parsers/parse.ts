@@ -15,7 +15,34 @@ import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
 
 export type TsParsingMode = "compact" | "fully-expanded" | "named-expanded";
 export type TsParsingOptions = {
+  /**
+   * Defines how to parse the type.
+   *
+   * - `compact` - the type will be parsed into a single type
+   *   definition
+   * - `fully-expanded` - the type will be split into multiple type
+   *   definitions, and the main DataType type definition will
+   *   reference them.
+   * - `named-expanded` - similar to `fully-expanded`, but only the
+   *   types that have titles assigned will be split into
+   *   separate type definitions.
+   */
   mode: TsParsingMode;
+  /**
+   * Defines how to export the generated types.
+   *
+   * - `main` - only the main DataType type will be exported
+   * - `all` - all types generated will be exported
+   * - `none` - nothing will be exported
+   */
+  exports: "main" | "all" | "none";
+  /**
+   * Defines how to handle duplicate names.
+   *
+   * - `error` - will throw an error if a duplicate name is
+   *   encountered
+   * - `rename` - will rename the duplicate type
+   */
   onDuplicateName: "error" | "rename";
 };
 

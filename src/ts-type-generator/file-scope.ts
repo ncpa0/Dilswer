@@ -10,6 +10,15 @@ export class TsFileScope {
 
   constructor(private options: TsParsingOptions) {}
 
+  appendDef(name: string, code: string) {
+    if (this.options.exports === "none" || this.options.exports === "main") {
+      code = code.replace(/^export /, "");
+    }
+
+    this.definedTypes.add(name);
+    this.typeDefinitions.push(code);
+  }
+
   addType(builder: TsBuilder & TsBaseBuilder) {
     let def = builder.buildExport();
     let name = builder.getName();
@@ -32,8 +41,7 @@ export class TsFileScope {
       }
     }
 
-    this.definedTypes.add(name);
-    this.typeDefinitions.push(def);
+    this.appendDef(name, def);
     builder.isAddedToScope = true;
 
     return new TsTypeReference(builder, name);
@@ -43,7 +51,11 @@ export class TsFileScope {
     if (!builder.isAddedToScope) {
       builder = TsTypeReference.resolveReference(builder);
 
-      const def = builder.buildExport();
+      let def = builder.buildExport();
+
+      if (this.options.exports === "none") {
+        def = def.replace(/^export /, "");
+      }
 
       this.typeDefinitions.push(def);
     }
