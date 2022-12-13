@@ -31,6 +31,7 @@ export class BaseDataType {
     };
   }
 
+  /** @internal */
   static getOriginalMetadata(dt: BaseDataType): TypeMetadata {
     return dt[MetadataSymbol];
   }
@@ -143,6 +144,13 @@ export class Literal<
 export class Enum<
   TEnumValue extends string | number = any
 > extends BaseDataType {
+  /** @internal */
+  static getOriginalMetadata(dt: Enum): TypeMetadata & { enumName?: string } {
+    return dt[MetadataSymbol];
+  }
+
+  protected [MetadataSymbol]: TypeMetadata & { enumName?: string } = {};
+
   readonly kind = "enumUnion";
   enumInstance: TEnumValue;
 
@@ -151,12 +159,36 @@ export class Enum<
 
     this.enumInstance = enumInstance;
   }
+
+  setEnumName<T extends Enum>(this: T, name: string): T {
+    this[MetadataSymbol].enumName = name;
+    return this;
+  }
 }
 
 export class EnumMember<DT = any> extends BaseDataType {
+  /** @internal */
+  static getOriginalMetadata(
+    dt: EnumMember
+  ): TypeMetadata & { enumMemberName?: `${string}.${string}` } {
+    return dt[MetadataSymbol];
+  }
+
+  protected [MetadataSymbol]: TypeMetadata & {
+    enumMemberName?: `${string}.${string}`;
+  } = {};
+
   readonly kind = "enumMember";
   constructor(public enumMember: DT) {
     super();
+  }
+
+  setEnumMemberName<T extends EnumMember>(
+    this: T,
+    name: `${string}.${string}`
+  ): T {
+    this[MetadataSymbol].enumMemberName = name;
+    return this;
   }
 }
 

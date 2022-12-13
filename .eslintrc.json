@@ -57,12 +57,19 @@
     "no-constant-condition": 0,
     "no-prototype-builtins": 0,
     "no-control-regex": 0,
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [".*"]
+      }
+    ],
     "@typescript-eslint/ban-types": [
       "error",
       {
         "types": {
           "object": false,
-          "Function": false
+          "Function": false,
+          "{}": false
         },
         "extendDefaults": true
       }

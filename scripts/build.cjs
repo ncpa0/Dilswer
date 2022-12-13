@@ -16,6 +16,7 @@ async function main() {
         "@Validation/*": "./validation-algorithms/*",
         "@Intrinsic/*": "./intrinsic-type-utils/*",
         "@JSONSchemaParser/*": "./json-schema-parser/*",
+        "@TsTypeGenerator/*": "./ts-type-generator/*",
       },
     });
   } catch (e) {

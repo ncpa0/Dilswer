@@ -70,13 +70,15 @@
     /* Advanced Options */
     "skipLibCheck": true /* Skip type checking of declaration files. */,
     "forceConsistentCasingInFileNames": true /* Disallow inconsistently-cased references to the same file. */,
+    "baseUrl": "./src",
     "paths": {
-      "@DataTypes/*": ["./src/data-types/*"],
-      "@Utilities/*": ["./src/utilities/*"],
-      "@Validation/*": ["./src/validation-algorithms/*"],
-      "@JSONSchemaParser/*": ["./src/json-schema-parser/*"],
-      "@Intrinsic/*": ["./src/intrinsic-type-utils/*"],
-      "@Intrinsic": ["./src/intrinsic-type-utils"]
+      "@DataTypes/*": ["./data-types/*"],
+      "@Utilities/*": ["./utilities/*"],
+      "@Validation/*": ["./validation-algorithms/*"],
+      "@JSONSchemaParser/*": ["./json-schema-parser/*"],
+      "@Intrinsic/*": ["./intrinsic-type-utils/*"],
+      "@Intrinsic": ["./intrinsic-type-utils"],
+      "@TsTypeGenerator/*": ["./ts-type-generator/*"]
     }
   },
   "exclude": ["./dist"]

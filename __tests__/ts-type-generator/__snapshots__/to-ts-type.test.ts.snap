@@ -1,0 +1,313 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`toTsType should correctly generate a complex type with 'compact' mode 1`] = `
+"export type TestRecord = {
+  /**
+   * User unique identifier
+   */
+  uuid: string;
+  number: number;
+  bool: boolean;
+  stringSet: Array<string>;
+  stringArray: Array<string>;
+  /**
+   * Array of two possible record types
+   */
+  unionArray: Array<{
+    foo: string;
+  } | {
+    bar: string;
+  }>;
+  literalString: "literal";
+  literalNumber: 1;
+  literalBoolean: true;
+  enum: Enum;
+  bMember: Enum.B;
+  recordIntersection: {
+    a: string;
+  } & {
+    b: number;
+  };
+  dict: Record<string | number, string>;
+  oneof: {
+    foo: string;
+  } | {
+    bar: string;
+  };
+  symbol: symbol;
+  undef: undefined;
+  customValidator: unknown;
+  /**
+   * A record identical to the parent record, but with all fields optional
+   */
+  optionalSelfCopy?: {
+    id?: string;
+    number?: number;
+    bool?: boolean;
+    stringSet?: Array<string>;
+    stringArray?: Array<string>;
+    unionArray?: Array<{
+      foo: string;
+    } | {
+      bar: string;
+    }>;
+    literalString?: "literal";
+    literalNumber?: 1;
+    literalBoolean?: true;
+    enum?: Enum;
+    bMember?: Enum.B;
+    recordIntersection?: {
+      a: string;
+    } & {
+      b: number;
+    };
+    dict?: Record<string | number, string>;
+    oneof?: {
+      foo: string;
+    } | {
+      bar: string;
+    };
+  };
+};
+"
+`;
+
+exports[`toTsType should correctly generate a complex type with 'fully-expanded' mode 1`] = `
+"export type Array1 = Array<string>;
+
+
+export type Array2 = Array<string>;
+
+
+export type Record1 = {
+  foo: string;
+};
+
+
+export type Record2 = {
+  bar: string;
+};
+
+/**
+ * Array of two possible record types
+ */
+export type Array3 = Array<Record1 | Record2>;
+
+
+export type Record3 = {
+  a: string;
+};
+
+
+export type Record4 = {
+  b: number;
+};
+
+
+export type Intersection1 = Record3 & Record4;
+
+
+export type Dict1 = Record<string | number, string>
+
+
+export type FooContainer = {
+  foo: string;
+};
+
+
+export type BarContainer = {
+  bar: string;
+};
+
+
+  export type Union1 = FooContainer | BarContainer;
+
+
+export type Array4 = Array<string>;
+
+
+export type Array5 = Array<string>;
+
+
+export type FooContainer1 = {
+  foo: string;
+};
+
+
+export type Record5 = {
+  bar: string;
+};
+
+
+export type Array6 = Array<FooContainer1 | Record5>;
+
+
+export type Record6 = {
+  a: string;
+};
+
+
+export type Record7 = {
+  b: number;
+};
+
+
+export type SomeIntersection = Record6 & Record7;
+
+
+export type Dict2 = Record<string | number, string>
+
+
+export type Record8 = {
+  foo: string;
+};
+
+
+export type Record9 = {
+  bar: string;
+};
+
+
+  export type Union2 = Record8 | Record9;
+
+/**
+ * A record identical to the parent record, but with all fields optional
+ */
+export type OptionalTestRecord = {
+  id?: string;
+  number?: number;
+  bool?: boolean;
+  stringSet?: Array4;
+  stringArray?: Array5;
+  unionArray?: Array6;
+  literalString?: "literal";
+  literalNumber?: 1;
+  literalBoolean?: true;
+  enum?: Enum;
+  bMember?: Enum.B;
+  recordIntersection?: SomeIntersection;
+  dict?: Dict2;
+  oneof?: Union2;
+};
+
+
+export type TestRecord = {
+  /**
+   * User unique identifier
+   */
+  uuid: string;
+  number: number;
+  bool: boolean;
+  stringSet: Array1;
+  stringArray: Array2;
+  /**
+   * Array of two possible record types
+   */
+  unionArray: Array3;
+  literalString: "literal";
+  literalNumber: 1;
+  literalBoolean: true;
+  enum: Enum;
+  bMember: Enum.B;
+  recordIntersection: Intersection1;
+  dict: Dict1;
+  oneof: Union1;
+  symbol: symbol;
+  undef: undefined;
+  customValidator: unknown;
+  /**
+   * A record identical to the parent record, but with all fields optional
+   */
+  optionalSelfCopy?: OptionalTestRecord;
+};
+"
+`;
+
+exports[`toTsType should correctly generate a complex type with 'named-expanded' mode 1`] = `
+"export type FooContainer = {
+  foo: string;
+};
+
+
+export type BarContainer = {
+  bar: string;
+};
+
+
+export type FooContainer1 = {
+  foo: string;
+};
+
+
+export type SomeIntersection = {
+  a: string;
+} & {
+  b: number;
+};
+
+/**
+ * A record identical to the parent record, but with all fields optional
+ */
+export type OptionalTestRecord = {
+  id?: string;
+  number?: number;
+  bool?: boolean;
+  stringSet?: Array<string>;
+  stringArray?: Array<string>;
+  unionArray?: Array<FooContainer1 | {
+    bar: string;
+  }>;
+  literalString?: "literal";
+  literalNumber?: 1;
+  literalBoolean?: true;
+  enum?: Enum;
+  bMember?: Enum.B;
+  recordIntersection?: SomeIntersection;
+  dict?: Record<string | number, string>;
+  oneof?: {
+    foo: string;
+  } | {
+    bar: string;
+  };
+};
+
+
+export type TestRecord = {
+  /**
+   * User unique identifier
+   */
+  uuid: string;
+  number: number;
+  bool: boolean;
+  stringSet: Array<string>;
+  stringArray: Array<string>;
+  /**
+   * Array of two possible record types
+   */
+  unionArray: Array<{
+    foo: string;
+  } | {
+    bar: string;
+  }>;
+  literalString: "literal";
+  literalNumber: 1;
+  literalBoolean: true;
+  enum: Enum;
+  bMember: Enum.B;
+  recordIntersection: {
+    a: string;
+  } & {
+    b: number;
+  };
+  dict: Record<string | number, string>;
+  oneof: FooContainer | BarContainer;
+  symbol: symbol;
+  undef: undefined;
+  customValidator: unknown;
+  /**
+   * A record identical to the parent record, but with all fields optional
+   */
+  optionalSelfCopy?: OptionalTestRecord;
+};
+"
+`;
