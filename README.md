@@ -1,7 +1,7 @@
 # Dilswer
 
 ![GitHub](https://img.shields.io/github/license/ncpa0cpl/Dilswer?style=for-the-badge)
-![GitHub Workflow Status](https://img.shields.io/github/workflow/status/ncpa0cpl/Dilswer/Build%20Test?label=Build&style=for-the-badge)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ncpa0cpl/dilswer/test.yml?branch=master&style=for-the-badge)
 [![npm](https://img.shields.io/npm/v/dilswer?style=for-the-badge)](https://www.npmjs.com/package/dilswer)
 ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/Dilswer?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ncpa0cpl/Dilswer?style=for-the-badge)
@@ -242,13 +242,15 @@ const toJsonSchema = (
 type ParseToJsonSchemaOptions = {
   /**
    * Defines how to handle DataTypes that do not have an
-   * equivalent type in JSON Schema. (Set's, undefined, Symbols, etc.)
+   * equivalent type in JSON Schema. (Set's, undefined, Symbols,
+   * etc.)
    *
    * - `throw` (default): Throw an error if an incompatible type is
    *   encountered.
    * - `omit`: Omits incompatible properties from the JSON Schema.
    * - `set-as-any`: Adds the type to the schema without a "type"
-   *   property but with a name equivalent to the given DataType.
+   *   property but with a name equivalent to the given
+   *   DataType.
    */
   incompatibleTypes?: "throw" | "omit" | "set-as-any";
   /**
@@ -261,7 +263,8 @@ type ParseToJsonSchemaOptions = {
    * DataTypes to JSON Schema's.
    *
    * By default a strategy defined in `incompatibleTypes` is
-   * used, if a method is defined, that method will be used instead.
+   * used, if a method is defined, that method will be used
+   * instead.
    */
   customParser?: {
     Set?: (
