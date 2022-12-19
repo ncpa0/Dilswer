@@ -1,7 +1,7 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
-import { Path } from "./path";
-import { validatorsLookupMap } from "./validators/validate-type";
+import { Path } from "@Validation/path";
+import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 const DEFAULT_ROOT = Path.init("$");
 
