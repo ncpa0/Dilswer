@@ -44,9 +44,10 @@ both the runtime validation types and the TypeScript type definitions.
    16. [Dict](#datatypedictdatatypes)
    17. [SetOf](#datatypesetofdatatypes)
    18. [Literal](#datatypeliteralstring--number--boolean)
-   19. [Enum](#datatypeenumenum)
-   20. [EnumMember](#datatypeenummemberenum-member)
-   21. [Custom](#datatypecustomfunction)
+   19. [InstanceOf](#datatypeinstanceofclass)
+   20. [Enum](#datatypeenumenum)
+   21. [EnumMember](#datatypeenummemberenum-member)
+   22. [Custom](#datatypecustomfunction)
 4. [Utility Functions](#utility-functions)
    1. [And](#and)
    2. [Omit](#omit)
@@ -468,6 +469,19 @@ type T1 = GetDataType<typeof bar>; // type T1 = 123
 const baz = DataType.Literal(true);
 
 type T2 = GetDataType<typeof baz>; // type T2 = true
+```
+
+#### DataType.InstanceOf(class)
+
+will match any value that is an instance of the passed class and translate to
+the `InstanceType` type of that class in TypeScript.
+
+```ts
+class FooBar {}
+
+const foo = DataType.InstanceOf(FooBar);
+
+type T = GetDataType<typeof foo>; // type T = InstanceType<typeof FooBar>
 ```
 
 #### DataType.Enum(enum)
