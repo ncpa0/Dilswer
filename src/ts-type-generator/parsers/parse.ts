@@ -28,6 +28,8 @@ export type TsParsingOptions = {
    * - `named-expanded` - similar to `fully-expanded`, but only the
    *   types that have titles assigned will be split into
    *   separate type definitions.
+   *
+   * Default: `compact`
    */
   mode: TsParsingMode;
   /**
@@ -35,15 +37,30 @@ export type TsParsingOptions = {
    *
    * - `main` - only the main DataType type will be exported
    * - `all` - all types generated will be exported
+   * - `named` - only the types with titles will be exported
    * - `none` - nothing will be exported
+   *
+   * Default: `main`
    */
-  exports: "main" | "all" | "none";
+  exports: "main" | "named" | "all" | "none";
+  /**
+   * Defines whether to generate the type as a declaration or
+   * not.
+   *
+   * The difference is that declaration will generate each type
+   * definition with a `declare` keyword preceding it.
+   *
+   * Default: `false`
+   */
+  declaration: boolean;
   /**
    * Defines how to handle duplicate names.
    *
    * - `error` - will throw an error if a duplicate name is
    *   encountered
    * - `rename` - will rename the duplicate type
+   *
+   * Default: `error`
    */
   onDuplicateName: "error" | "rename";
   /**

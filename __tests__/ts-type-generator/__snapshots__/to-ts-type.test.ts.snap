@@ -1,5 +1,81 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`toTsType should correctly add export statements when exporting all should add \`declare\` 1`] = `
+"export declare type Array1 = Array<number>;
+
+
+export declare type FooList = Array<string>;
+
+
+export declare type Main = {
+  unnamed: Array1;
+  foo: FooList;
+};
+"
+`;
+
+exports[`toTsType should correctly add export statements when exporting all should not add \`declare\` 1`] = `
+"export type Array1 = Array<number>;
+
+
+export type FooList = Array<string>;
+
+
+export type Main = {
+  unnamed: Array1;
+  foo: FooList;
+};
+"
+`;
+
+exports[`toTsType should correctly add export statements when exporting only main should add \`declare\` 1`] = `
+"declare type FooList = Array<string>;
+
+
+export declare type Main = {
+  foo: FooList;
+};
+"
+`;
+
+exports[`toTsType should correctly add export statements when exporting only main should not add \`declare\` 1`] = `
+"type FooList = Array<string>;
+
+
+export type Main = {
+  foo: FooList;
+};
+"
+`;
+
+exports[`toTsType should correctly add export statements when exporting only named should add \`declare\` 1`] = `
+"declare type Array1 = Array<number>;
+
+
+export declare type FooList = Array<string>;
+
+
+export declare type Main = {
+  unnamed: Array1;
+  foo: FooList;
+};
+"
+`;
+
+exports[`toTsType should correctly add export statements when exporting only named should not add \`declare\` 1`] = `
+"type Array1 = Array<number>;
+
+
+export type FooList = Array<string>;
+
+
+export type Main = {
+  unnamed: Array1;
+  foo: FooList;
+};
+"
+`;
+
 exports[`toTsType should correctly generate a complex type with 'compact' mode 1`] = `
 "export type TestRecord = {
   /**
@@ -73,107 +149,107 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
 `;
 
 exports[`toTsType should correctly generate a complex type with 'fully-expanded' mode 1`] = `
-"export type Array1 = Array<string>;
+"type Array1 = Array<string>;
 
 
-export type Array2 = Array<string>;
+type Array2 = Array<string>;
 
 
-export type Record1 = {
+type Record1 = {
   foo: string;
 };
 
 
-export type Record2 = {
+type Record2 = {
   bar: string;
 };
 
 /**
  * Array of two possible record types
  */
-export type Array3 = Array<Record1 | Record2>;
+type Array3 = Array<Record1 | Record2>;
 
 
-export type Record3 = {
+type Record3 = {
   a: string;
 };
 
 
-export type Record4 = {
+type Record4 = {
   b: number;
 };
 
 
-export type Intersection1 = Record3 & Record4;
+type Intersection1 = Record3 & Record4;
 
 
-export type Dict1 = Record<string | number, string>
+type Dict1 = Record<string | number, string>
 
 
-export type FooContainer = {
+type FooContainer = {
   foo: string;
 };
 
 
-export type BarContainer = {
+type BarContainer = {
   bar: string;
 };
 
 
-  export type Union1 = FooContainer | BarContainer;
+type Union1 = FooContainer | BarContainer;
 
 
-export type Array4 = Array<string>;
+type Array4 = Array<string>;
 
 
-export type Array5 = Array<string>;
+type Array5 = Array<string>;
 
 
-export type FooContainer1 = {
+type FooContainer1 = {
   foo: string;
 };
 
 
-export type Record5 = {
+type Record5 = {
   bar: string;
 };
 
 
-export type Array6 = Array<FooContainer1 | Record5>;
+type Array6 = Array<FooContainer1 | Record5>;
 
 
-export type Record6 = {
+type Record6 = {
   a: string;
 };
 
 
-export type Record7 = {
+type Record7 = {
   b: number;
 };
 
 
-export type SomeIntersection = Record6 & Record7;
+type SomeIntersection = Record6 & Record7;
 
 
-export type Dict2 = Record<string | number, string>
+type Dict2 = Record<string | number, string>
 
 
-export type Record8 = {
+type Record8 = {
   foo: string;
 };
 
 
-export type Record9 = {
+type Record9 = {
   bar: string;
 };
 
 
-  export type Union2 = Record8 | Record9;
+type Union2 = Record8 | Record9;
 
 /**
  * A record identical to the parent record, but with all fields optional
  */
-export type OptionalTestRecord = {
+type OptionalTestRecord = {
   id?: string;
   number?: number;
   bool?: boolean;
@@ -224,22 +300,22 @@ export type TestRecord = {
 `;
 
 exports[`toTsType should correctly generate a complex type with 'named-expanded' mode 1`] = `
-"export type FooContainer = {
+"type FooContainer = {
   foo: string;
 };
 
 
-export type BarContainer = {
+type BarContainer = {
   bar: string;
 };
 
 
-export type FooContainer1 = {
+type FooContainer1 = {
   foo: string;
 };
 
 
-export type SomeIntersection = {
+type SomeIntersection = {
   a: string;
 } & {
   b: number;
@@ -248,7 +324,7 @@ export type SomeIntersection = {
 /**
  * A record identical to the parent record, but with all fields optional
  */
-export type OptionalTestRecord = {
+type OptionalTestRecord = {
   id?: string;
   number?: number;
   bool?: boolean;
@@ -330,7 +406,7 @@ export type Record1 = {
 `;
 
 exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with global FooBar 1`] = `
-"export type ClassInstance1 = InstanceType<typeof FooBar>
+"type ClassInstance1 = InstanceType<typeof FooBar>
 
 
 export type Record1 = {
@@ -340,7 +416,7 @@ export type Record1 = {
 `;
 
 exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with global FooBar 2`] = `
-"export type AliasFooBar = InstanceType<typeof FooBar>
+"type AliasFooBar = InstanceType<typeof FooBar>
 
 
 export type Record1 = {
@@ -353,7 +429,7 @@ exports[`toTsType should correctly generate a type referencing a class in fully-
 "import type { FooBar } from "./foo-bar";
 
 
-export type ClassInstance1 = InstanceType<typeof FooBar>
+type ClassInstance1 = InstanceType<typeof FooBar>
 
 
 export type Record1 = {
@@ -366,7 +442,7 @@ exports[`toTsType should correctly generate a type referencing a class in fully-
 "import type { FooBar } from "./foo-bar";
 
 
-export type AliasFooBar = InstanceType<typeof FooBar>
+type AliasFooBar = InstanceType<typeof FooBar>
 
 
 export type Record1 = {

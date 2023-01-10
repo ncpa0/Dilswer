@@ -1,9 +1,11 @@
 import { NameGenerator } from "@TsTypeGenerator/name-generator";
+import type { ExportType } from "@TsTypeGenerator/ts-builder";
 
 export class TsBaseBuilder {
   protected description = "";
   protected name?: string;
 
+  isTitled = false;
   isAddedToScope = false;
 
   hasName(): boolean {
@@ -34,5 +36,22 @@ export class TsBaseBuilder {
 
   getName(): string | undefined {
     return this.name;
+  }
+
+  setIsTitled(isTitled: boolean) {
+    this.isTitled = isTitled;
+  }
+
+  parseExportType(type: ExportType): string {
+    switch (type) {
+      case "export":
+        return "export ";
+      case "declare":
+        return "declare ";
+      case "export/declare":
+        return "export declare ";
+      default:
+        return "";
+    }
   }
 }

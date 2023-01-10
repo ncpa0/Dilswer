@@ -19,7 +19,7 @@ export const tsParseOneOf = (
 
   if (
     options.mode === "fully-expanded" ||
-    (options.mode === "named-expanded" && builder.hasName())
+    (options.mode === "named-expanded" && builder.isTitled)
   ) {
     return fileScope.addType(builder);
   }

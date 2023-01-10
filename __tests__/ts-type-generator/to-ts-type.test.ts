@@ -118,6 +118,108 @@ describe("toTsType", () => {
     expect(tsType).toMatchSnapshot();
   });
 
+  describe("should correctly add export statements", () => {
+    describe("when exporting only main", () => {
+      it("should not add `declare`", () => {
+        const dt = DataType.RecordOf({
+          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        }).setTitle("Main");
+
+        const tsType = toTsType(dt, {
+          declaration: false,
+          exports: "main",
+          mode: "named-expanded",
+          onDuplicateName: "rename",
+        });
+
+        expect(tsType).toMatchSnapshot();
+      });
+
+      it("should add `declare`", () => {
+        const dt = DataType.RecordOf({
+          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        }).setTitle("Main");
+
+        const tsType = toTsType(dt, {
+          declaration: true,
+          exports: "main",
+          mode: "named-expanded",
+          onDuplicateName: "rename",
+        });
+
+        expect(tsType).toMatchSnapshot();
+      });
+    });
+
+    describe("when exporting only named", () => {
+      it("should not add `declare`", () => {
+        const dt = DataType.RecordOf({
+          unnamed: DataType.ArrayOf(DataType.Number),
+          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        }).setTitle("Main");
+
+        const tsType = toTsType(dt, {
+          declaration: false,
+          exports: "named",
+          mode: "fully-expanded",
+          onDuplicateName: "rename",
+        });
+
+        expect(tsType).toMatchSnapshot();
+      });
+
+      it("should add `declare`", () => {
+        const dt = DataType.RecordOf({
+          unnamed: DataType.ArrayOf(DataType.Number),
+          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        }).setTitle("Main");
+
+        const tsType = toTsType(dt, {
+          declaration: true,
+          exports: "named",
+          mode: "fully-expanded",
+          onDuplicateName: "rename",
+        });
+
+        expect(tsType).toMatchSnapshot();
+      });
+    });
+
+    describe("when exporting all", () => {
+      it("should not add `declare`", () => {
+        const dt = DataType.RecordOf({
+          unnamed: DataType.ArrayOf(DataType.Number),
+          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        }).setTitle("Main");
+
+        const tsType = toTsType(dt, {
+          declaration: false,
+          exports: "all",
+          mode: "fully-expanded",
+          onDuplicateName: "rename",
+        });
+
+        expect(tsType).toMatchSnapshot();
+      });
+
+      it("should add `declare`", () => {
+        const dt = DataType.RecordOf({
+          unnamed: DataType.ArrayOf(DataType.Number),
+          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        }).setTitle("Main");
+
+        const tsType = toTsType(dt, {
+          declaration: true,
+          exports: "all",
+          mode: "fully-expanded",
+          onDuplicateName: "rename",
+        });
+
+        expect(tsType).toMatchSnapshot();
+      });
+    });
+  });
+
   describe("should correctly generate a type referencing a class", () => {
     it("in compact mode with global FooBar", () => {
       class FooBar {}

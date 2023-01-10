@@ -1,11 +1,11 @@
 import { TemplateBuilder } from "@TsTypeGenerator/template-builder";
-import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
+import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 
 const DICT_TEMPLATE = new TemplateBuilder("Record<string | number, {{type}}>");
 
 const EXPORTED_DICT_TEMPLATE = new TemplateBuilder(`{{description}}
-export type {{name}} = Record<string | number, {{type}}>`);
+{{export}}type {{name}} = Record<string | number, {{type}}>`);
 
 export class TsDictBuilder extends TsBaseBuilder implements TsBuilder {
   private types: Set<TsBuilder> = new Set();
@@ -36,13 +36,14 @@ export class TsDictBuilder extends TsBaseBuilder implements TsBuilder {
     });
   }
 
-  buildExport(): string {
+  buildExport(type: ExportType): string {
     const types = this.getTypes("");
 
     return EXPORTED_DICT_TEMPLATE.build({
       name: this.name ?? this.generateName("Dict"),
       description: this.description,
       type: types.join(" | "),
+      export: this.parseExportType(type),
     });
   }
 }

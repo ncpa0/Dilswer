@@ -9,6 +9,7 @@ export const tsAddMetadataToBuilder = (
   const metadata = BaseDataType.getOriginalMetadata(type);
 
   if (metadata.title) {
+    builder.setIsTitled(true);
     builder.setName(metadata.title);
   }
 

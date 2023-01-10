@@ -1,12 +1,12 @@
 import { TemplateBuilder } from "@TsTypeGenerator/template-builder";
-import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
+import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 
 const ARRAY_TEMPLATE = new TemplateBuilder("Array<{{types}}>");
 
 const EXPORT_ARRAY_TEMPLATE = new TemplateBuilder(
   `{{description}}
-export type {{name}} = Array<{{types}}>;`
+{{export}}type {{name}} = Array<{{types}}>;`
 );
 
 export class TsArrayBuilder extends TsBaseBuilder implements TsBuilder {
@@ -34,13 +34,14 @@ export class TsArrayBuilder extends TsBaseBuilder implements TsBuilder {
     });
   }
 
-  buildExport(): string {
+  buildExport(type: ExportType): string {
     const types = this.getTypes("");
 
     return EXPORT_ARRAY_TEMPLATE.build({
       types: types.join(" | "),
       description: this.description,
       name: this.name ?? this.generateName("Array"),
+      export: this.parseExportType(type),
     });
   }
 }

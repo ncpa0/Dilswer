@@ -1,5 +1,5 @@
 import { TemplateBuilder } from "@TsTypeGenerator/template-builder";
-import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
+import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 
 const INSTANCEOF_TEMPLATE = new TemplateBuilder(
@@ -7,7 +7,7 @@ const INSTANCEOF_TEMPLATE = new TemplateBuilder(
 );
 
 const EXPORTED_INSTANCEOF_TEMPLATE = new TemplateBuilder(`{{description}}
-export type {{name}} = InstanceType<typeof {{type}}>`);
+{{export}}type {{name}} = InstanceType<typeof {{type}}>`);
 
 export class TsInstanceOfBuilder extends TsBaseBuilder implements TsBuilder {
   constructor(private constructorName: string) {
@@ -20,11 +20,12 @@ export class TsInstanceOfBuilder extends TsBaseBuilder implements TsBuilder {
     });
   }
 
-  buildExport(): string {
+  buildExport(type: ExportType): string {
     return EXPORTED_INSTANCEOF_TEMPLATE.build({
       name: this.name ?? this.generateName("ClassInstance"),
       description: this.description,
       type: this.constructorName,
+      export: this.parseExportType(type),
     });
   }
 }

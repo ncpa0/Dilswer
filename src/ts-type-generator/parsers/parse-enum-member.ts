@@ -1,4 +1,5 @@
 import { EnumMember } from "@DataTypes/types";
+import { tsAddMetadataToBuilder } from "@TsTypeGenerator/parsers/add-metadata-to-builder";
 import { TsEnumMemberBuilder } from "@TsTypeGenerator/type-builders/enum-member-builder";
 
 export const tsParseEnumMember = (type: EnumMember) => {
@@ -11,6 +12,7 @@ export const tsParseEnumMember = (type: EnumMember) => {
   }
 
   const builder = new TsEnumMemberBuilder(metadata.enumMemberName);
+  tsAddMetadataToBuilder(builder, type);
 
   return builder;
 };

@@ -17,6 +17,7 @@ export const toTsType = (
     const opt: TsParsingOptions = {
       mode: options?.mode ?? "compact",
       exports: options?.exports ?? "main",
+      declaration: options?.declaration ?? false,
       onDuplicateName: options?.onDuplicateName ?? "error",
       getExternalTypeImport: options?.getExternalTypeImport,
     };

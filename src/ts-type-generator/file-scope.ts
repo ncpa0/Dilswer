@@ -1,13 +1,34 @@
 import { NameGenerator } from "@TsTypeGenerator/name-generator";
 import type { TsParsingOptions } from "@TsTypeGenerator/parsers/parse";
-import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
+import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import type { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 import { TsTypeReference } from "@TsTypeGenerator/type-builders/type-reference";
 
 export class TsFileScope {
   private imports = new Map<string, Set<string>>();
-  private typeDefinitions: Array<string> = [];
+  private typeDefinitions: Map<TsBuilder, string> = new Map();
   private definedTypes = new Set<string>();
+
+  private exportTypeFor(builder: TsBuilder, isRoot = false): ExportType {
+    if (this.options.declaration) {
+      if (this.options.exports === "none") return "declare";
+
+      if (this.options.exports === "main" && !isRoot) return "declare";
+
+      if (this.options.exports === "named" && !builder.isTitled)
+        return "declare";
+
+      return "export/declare";
+    }
+
+    if (this.options.exports === "none") return null;
+
+    if (this.options.exports === "main" && !isRoot) return null;
+
+    if (this.options.exports === "named" && !builder.isTitled) return null;
+
+    return "export";
+  }
 
   constructor(private options: TsParsingOptions) {}
 
@@ -22,17 +43,17 @@ export class TsFileScope {
     imports.add(type);
   }
 
-  appendDef(name: string, code: string) {
+  appendDef(builder: TsBuilder, name: string, code: string) {
     if (this.options.exports === "none" || this.options.exports === "main") {
       code = code.replace(/^export /, "");
     }
 
     this.definedTypes.add(name);
-    this.typeDefinitions.push(code);
+    this.typeDefinitions.set(builder, code);
   }
 
   addType(builder: TsBuilder & TsBaseBuilder) {
-    let def = builder.buildExport();
+    let def = builder.buildExport(this.exportTypeFor(builder));
     let name = builder.getName();
 
     if (!name) {
@@ -48,29 +69,41 @@ export class TsFileScope {
         case "rename": {
           name = NameGenerator.generate(name);
           builder.setName(name);
-          def = builder.buildExport(); // rebuild with the new name
+          // rebuild with the new name
+          def = builder.buildExport(this.exportTypeFor(builder));
         }
       }
     }
 
-    this.appendDef(name, def);
+    this.appendDef(builder, name, def);
     builder.isAddedToScope = true;
 
     return new TsTypeReference(builder, name);
   }
 
   addRootType(builder: TsBuilder) {
-    if (!builder.isAddedToScope) {
-      builder = TsTypeReference.resolveReference(builder);
+    builder = TsTypeReference.resolveReference(builder);
+    const def = builder.buildExport(this.exportTypeFor(builder, true));
+    this.typeDefinitions.set(builder, def);
 
-      let def = builder.buildExport();
-
-      if (this.options.exports === "none") {
-        def = def.replace(/^export /, "");
-      }
-
-      this.typeDefinitions.push(def);
-    }
+    // if (!builder.isAddedToScope) {
+    // } else {
+    // if (this.options.exports === "main") {
+    //   const exportType = this.exportTypeFor(builder, true);
+    //   switch (exportType) {
+    //     case "export":
+    //       this.typeDefinitions.set(`export { ${builder.getName()} };`);
+    //       break;
+    //     case "declare":
+    //       this.typeDefinitions.push(
+    //         `declare export { ${builder.getName()} };`
+    //       );
+    //       break;
+    //     default:
+    //       break;
+    //   }
+    // }
+    // }
   }
 
   build(): string {
@@ -82,7 +115,7 @@ export class TsFileScope {
       imports += `import type { ${typesList} } from "${from}";\n`;
     }
 
-    const content = this.typeDefinitions.join("\n\n");
+    const content = [...this.typeDefinitions.values()].join("\n\n");
 
     return imports + "\n" + content;
   }

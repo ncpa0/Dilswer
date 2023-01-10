@@ -1,12 +1,12 @@
 import { TemplateBuilder } from "@TsTypeGenerator/template-builder";
-import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
+import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 
 const SET_TEMPLATE = new TemplateBuilder("Set<{{types}}>");
 
 const EXPORT_SET_TEMPLATE = new TemplateBuilder(
   `{{description}}
-  export type {{name}} = Set<{{types}}>;`
+{{export}}type {{name}} = Set<{{types}}>;`
 );
 
 export class TsSetBuilder extends TsBaseBuilder implements TsBuilder {
@@ -34,13 +34,14 @@ export class TsSetBuilder extends TsBaseBuilder implements TsBuilder {
     });
   }
 
-  buildExport(): string {
+  buildExport(type: ExportType): string {
     const types = this.getTypes("");
 
     return EXPORT_SET_TEMPLATE.build({
       types: types.join(" | "),
       description: this.description,
       name: this.name ?? this.generateName("Set"),
+      export: this.parseExportType(type),
     });
   }
 }

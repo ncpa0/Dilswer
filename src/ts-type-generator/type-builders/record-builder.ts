@@ -1,6 +1,6 @@
 import { addIndentToLastLine } from "@TsTypeGenerator/add-indent-to-last-line";
 import { TemplateBuilder } from "@TsTypeGenerator/template-builder";
-import type { TsBuilder } from "@TsTypeGenerator/ts-builder";
+import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 
 const RECORD_TEMPLATE = new TemplateBuilder(`{
@@ -12,12 +12,12 @@ const EXTENDED_RECORD_TEMPLATE = new TemplateBuilder(`{{extends}} & {
 }`);
 
 const EXPORTED_RECORD_TEMPLATE = new TemplateBuilder(`{{description}}
-export type {{name}} = {
+{{export}}type {{name}} = {
 {{properties}}
 };`);
 
 const EXPORTED_EXTENDED_RECORD_TEMPLATE = new TemplateBuilder(`{{description}}
-export type {{name}} = {{extends}} & {
+{{export}}type {{name}} = {{extends}} & {
 {{properties}}
 };`);
 
@@ -76,7 +76,7 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
     );
   }
 
-  buildExport(): string {
+  buildExport(type: ExportType): string {
     const properties = this.getPropertiesTypes("");
 
     if (this.extend) {
@@ -85,6 +85,7 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
         description: this.description,
         extends: this.extend,
         properties: properties.join("\n"),
+        export: this.parseExportType(type),
       });
     }
 
@@ -92,6 +93,7 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
       name: this.name ?? this.generateName("Record"),
       description: this.description,
       properties: properties.join("\n"),
+      export: this.parseExportType(type),
     });
   }
 }

@@ -9,6 +9,7 @@ export class TsTypeReference implements TsBuilder {
     return b;
   }
 
+  isTitled = false;
   isAddedToScope = true;
 
   constructor(private type: TsBuilder, private name: string) {}
