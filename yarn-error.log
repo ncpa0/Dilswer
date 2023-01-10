@@ -27,7 +27,7 @@ Trace:
 npm manifest: 
   {
     "name": "dilswer",
-    "version": "1.4.1",
+    "version": "1.5.0",
     "main": "./dist/legacy/index.js",
     "types": "./dist/types/index.d.ts",
     "exports": {

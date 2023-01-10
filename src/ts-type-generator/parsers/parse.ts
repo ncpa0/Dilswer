@@ -1,5 +1,5 @@
-import type { InstanceOf } from "@DataTypes/data-types";
-import type { AnyDataType, Enum } from "@DataTypes/types";
+import type { InstanceOf, SimpleDataType } from "@DataTypes/data-types";
+import type { AnyDataType, Custom, Enum } from "@DataTypes/types";
 import type { TsFileScope } from "@TsTypeGenerator/file-scope";
 import { tsParseAllOf } from "@TsTypeGenerator/parsers/parse-all-of";
 import { tsParseArray } from "@TsTypeGenerator/parsers/parse-array";
@@ -106,7 +106,7 @@ export type TsParsingOptions = {
    *   //"
    */
   getExternalTypeImport?: (
-    type: Enum | InstanceOf
+    type: Enum | InstanceOf | Custom | SimpleDataType<"function">
   ) => { typeName: string; path: string } | undefined;
 };
 
@@ -127,13 +127,13 @@ export const tsParseDataType = (
     case "set":
       return tsParseSet(type, fileScope, options);
     case "simple":
-      return tsParseSimpleType(type);
+      return tsParseSimpleType(type, fileScope, options);
     case "union":
       return tsParseOneOf(type as any, fileScope, options);
     case "literal":
       return tsParseLiteralType(type);
     case "custom":
-      return tsParseCustom(type);
+      return tsParseCustom(type, fileScope, options);
     case "enumMember":
       return tsParseEnumMember(type);
     case "enumUnion":
