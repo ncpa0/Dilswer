@@ -192,6 +192,15 @@ export class EnumMember<DT = any> extends BaseDataType {
   }
 }
 
+export class InstanceOf<
+  DT extends new (...args: any[]) => any = any
+> extends BaseDataType {
+  readonly kind = "instanceOf";
+  constructor(public instanceOf: DT) {
+    super();
+  }
+}
+
 export class Custom<
   VF extends (v: any) => boolean = (v: any) => v is unknown
 > extends BaseDataType {
@@ -263,6 +272,9 @@ export const DataType = {
     [key in T]: TEnumValue;
   }) {
     return new Enum<TEnumValue>(enumInstance);
+  },
+  InstanceOf<DT extends new (...args: any[]) => any>(instanceOf: DT) {
+    return new InstanceOf(instanceOf);
   },
   Custom<VF extends (v: any) => boolean>(validateFunction: VF) {
     return new Custom(validateFunction);

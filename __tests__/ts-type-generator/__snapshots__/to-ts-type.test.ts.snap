@@ -311,3 +311,66 @@ export type TestRecord = {
 };
 "
 `;
+
+exports[`toTsType should correctly generate a type referencing a class in compact mode with global FooBar 1`] = `
+"export type Record1 = {
+  foobar: InstanceType<typeof FooBar>;
+};
+"
+`;
+
+exports[`toTsType should correctly generate a type referencing a class in compact mode with imported FooBar 1`] = `
+"import type { FooBar } from "./foo-bar";
+
+
+export type Record1 = {
+  foobar: InstanceType<typeof FooBar>;
+};
+"
+`;
+
+exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with global FooBar 1`] = `
+"export type ClassInstance1 = InstanceType<typeof FooBar>
+
+
+export type Record1 = {
+  foobar: ClassInstance1;
+};
+"
+`;
+
+exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with global FooBar 2`] = `
+"export type AliasFooBar = InstanceType<typeof FooBar>
+
+
+export type Record1 = {
+  foobar: AliasFooBar;
+};
+"
+`;
+
+exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with imported FooBar 1`] = `
+"import type { FooBar } from "./foo-bar";
+
+
+export type ClassInstance1 = InstanceType<typeof FooBar>
+
+
+export type Record1 = {
+  foobar: ClassInstance1;
+};
+"
+`;
+
+exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with imported FooBar 2`] = `
+"import type { FooBar } from "./foo-bar";
+
+
+export type AliasFooBar = InstanceType<typeof FooBar>
+
+
+export type Record1 = {
+  foobar: AliasFooBar;
+};
+"
+`;

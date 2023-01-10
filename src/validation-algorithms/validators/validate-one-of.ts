@@ -1,7 +1,7 @@
 import type { AnyDataType, OneOf } from "@DataTypes/types";
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { Path } from "../path";
-import { validatorsLookupMap } from "./validate-type";
+import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 export const validateOneOf = (
   path: Path,

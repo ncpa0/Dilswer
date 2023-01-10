@@ -1703,6 +1703,65 @@ describe("createValidator", () => {
       });
     });
 
+    describe("for class instances", () => {
+      it("should correctly check if the value is an instance of the class", () => {
+        class Foo {}
+
+        const typeDef = DataType.InstanceOf(Foo);
+
+        type ExpectedType = Foo;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate(new Foo())).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(Foo)).toEqual(false);
+        expect(validate("A")).toEqual(false);
+        expect(validate("B")).toEqual(false);
+        expect(validate("C")).toEqual(false);
+        expect(validate("D")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(2)).toEqual(false);
+        expect(validate(3)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+      });
+
+      it("should correctly check if the value is an instance of a builtin class", () => {
+        const typeDef = DataType.InstanceOf(RegExp);
+
+        type ExpectedType = RegExp;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate(/foo/)).toEqual(true);
+        expect(validate(new RegExp("foo"))).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(RegExp)).toEqual(false);
+        expect(validate("A")).toEqual(false);
+        expect(validate(3)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+      });
+    });
+
     describe("for custom validators", () => {
       it("should validate the value against the custom validator", () => {
         const customValidator = (value: unknown): value is string => {

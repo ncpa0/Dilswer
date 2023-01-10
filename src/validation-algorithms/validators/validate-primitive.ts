@@ -1,8 +1,8 @@
 import type { BasicDataType } from "@DataTypes/types";
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateStringInteger } from "@Validation/validators/validate-string-integer";
 import { validateStringNumeral } from "@Validation/validators/validate-string-numeral";
-import type { Path } from "../path";
 
 export const validatePrimitive = (
   path: Path,

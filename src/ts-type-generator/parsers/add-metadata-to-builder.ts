@@ -15,4 +15,6 @@ export const tsAddMetadataToBuilder = (
   if (metadata.description) {
     builder.setDescription(metadata.description);
   }
+
+  return metadata;
 };

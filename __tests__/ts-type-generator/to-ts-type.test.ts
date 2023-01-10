@@ -117,4 +117,107 @@ describe("toTsType", () => {
 
     expect(tsType).toMatchSnapshot();
   });
+
+  describe("should correctly generate a type referencing a class", () => {
+    it("in compact mode with global FooBar", () => {
+      class FooBar {}
+
+      const dt = DataType.RecordOf({
+        foobar: DataType.InstanceOf(FooBar),
+      });
+
+      const tsType = toTsType(dt);
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("in fully-expanded mode with global FooBar", () => {
+      class FooBar {}
+
+      const dt = DataType.RecordOf({
+        foobar: DataType.InstanceOf(FooBar),
+      });
+
+      const tsType = toTsType(dt, { mode: "fully-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("in fully-expanded mode with global FooBar", () => {
+      class FooBar {}
+
+      const dt = DataType.RecordOf({
+        foobar: DataType.InstanceOf(FooBar).setTitle("FooBar"),
+      });
+
+      const tsType = toTsType(dt, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("in compact mode with imported FooBar", () => {
+      class FooBar {}
+
+      const dt = DataType.RecordOf({
+        foobar: DataType.InstanceOf(FooBar),
+      });
+
+      const tsType = toTsType(dt, {
+        getExternalTypeImport(type) {
+          if (type.kind === "instanceOf" && type.instanceOf === FooBar) {
+            return {
+              path: "./foo-bar",
+              typeName: "FooBar",
+            };
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("in fully-expanded mode with imported FooBar", () => {
+      class FooBar {}
+
+      const dt = DataType.RecordOf({
+        foobar: DataType.InstanceOf(FooBar),
+      });
+
+      const tsType = toTsType(dt, {
+        mode: "fully-expanded",
+        getExternalTypeImport(type) {
+          if (type.kind === "instanceOf" && type.instanceOf === FooBar) {
+            return {
+              path: "./foo-bar",
+              typeName: "FooBar",
+            };
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("in fully-expanded mode with imported FooBar", () => {
+      class FooBar {}
+
+      const dt = DataType.RecordOf({
+        foobar: DataType.InstanceOf(FooBar).setTitle("FooBar"),
+      });
+
+      const tsType = toTsType(dt, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          if (type.kind === "instanceOf" && type.instanceOf === FooBar) {
+            return {
+              path: "./foo-bar",
+              typeName: "FooBar",
+            };
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+  });
 });

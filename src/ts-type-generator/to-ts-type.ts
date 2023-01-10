@@ -18,6 +18,7 @@ export const toTsType = (
       mode: options?.mode ?? "compact",
       exports: options?.exports ?? "main",
       onDuplicateName: options?.onDuplicateName ?? "error",
+      getExternalTypeImport: options?.getExternalTypeImport,
     };
 
     const fileScope = new TsFileScope(opt);

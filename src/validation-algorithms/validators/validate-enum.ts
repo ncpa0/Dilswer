@@ -1,6 +1,6 @@
 import type { Enum } from "@DataTypes/types";
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { Path } from "../path";
 
 export const validateEnum = (path: Path, type: Enum<any>, data: unknown) => {
   const enumKeys = Object.keys(type.enumInstance);

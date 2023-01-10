@@ -1,8 +1,8 @@
+import { DataType } from "@DataTypes/data-types";
 import type { Dict } from "@DataTypes/types";
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { DataType } from "../..";
-import type { Path } from "../path";
-import { validateOneOf } from "./validate-one-of";
+import { validateOneOf } from "@Validation/validators/validate-one-of";
 
 export const validateDict = (path: Path, type: Dict, data: unknown) => {
   if (typeof data !== "object" || data === null || Array.isArray(data))

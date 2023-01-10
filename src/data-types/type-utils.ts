@@ -1,4 +1,4 @@
-import type { DataTypeSymbol } from "@DataTypes/data-types";
+import type { DataTypeSymbol, InstanceOf } from "@DataTypes/data-types";
 import type {
   AllOf,
   AnyDataType,
@@ -76,6 +76,7 @@ export type EnsureIsKey<K> = K extends
   | "literal"
   | "enumInstance"
   | "enumMember"
+  | "instanceOf"
   | "custom"
   ? K
   : "invalid";
@@ -118,6 +119,9 @@ export type GetTypeFromEnum<D extends ComplexDataType> = D extends Enum<infer T>
   ? T
   : never;
 
+export type GetTypeFromInstanceOf<D extends ComplexDataType> =
+  D extends InstanceOf<infer T> ? InstanceType<T> : never;
+
 export type GetTypeFromCustom<D extends ComplexDataType> = D extends Custom<
   infer F
 >
@@ -139,6 +143,7 @@ export type ParseComplexType<D extends ComplexDataType> = {
   literal: GetTypeFromLiteral<D>;
   enumInstance: GetTypeFromEnum<D>;
   enumMember: GetTypeFromEnumMember<D>;
+  instanceOf: GetTypeFromInstanceOf<D>;
   custom: GetTypeFromCustom<D>;
   invalid: never;
 }[EnsureIsKey<Exclude<keyof D, typeof DataTypeSymbol>>];

@@ -1,4 +1,5 @@
-import type { AnyDataType } from "@DataTypes/types";
+import type { InstanceOf } from "@DataTypes/data-types";
+import type { AnyDataType, Enum } from "@DataTypes/types";
 import type { TsFileScope } from "@TsTypeGenerator/file-scope";
 import { tsParseAllOf } from "@TsTypeGenerator/parsers/parse-all-of";
 import { tsParseArray } from "@TsTypeGenerator/parsers/parse-array";
@@ -6,6 +7,7 @@ import { tsParseCustom } from "@TsTypeGenerator/parsers/parse-custom";
 import { tsParseDict } from "@TsTypeGenerator/parsers/parse-dict";
 import { tsParseEnum } from "@TsTypeGenerator/parsers/parse-enum";
 import { tsParseEnumMember } from "@TsTypeGenerator/parsers/parse-enum-member";
+import { tsParseInstanceOf } from "@TsTypeGenerator/parsers/parse-instance-of";
 import { tsParseLiteralType } from "@TsTypeGenerator/parsers/parse-literal";
 import { tsParseOneOf } from "@TsTypeGenerator/parsers/parse-one-of";
 import { tsParseRecord } from "@TsTypeGenerator/parsers/parse-record";
@@ -44,6 +46,51 @@ export type TsParsingOptions = {
    * - `rename` - will rename the duplicate type
    */
   onDuplicateName: "error" | "rename";
+  /**
+   * Some DataType can reference enums or classes, in which case
+   * it's sometimes impossible to generate a valid TypeScript
+   * type for them. By default just the name of that class/enum
+   * will be used, and if that name is not available in the
+   * global scope, TS will resolve it to `any`. This option
+   * allows to define a custom import path for such types.
+   *
+   * @example
+   *   // foo.ts
+   *   export class Foo {}
+   *
+   *   // data-type.ts
+   *   import { Foo } from "./foo";
+   *
+   *   export const dt = DataType.RecordOf({
+   *     foo: DataType.InstanceOf(Foo),
+   *   });
+   *
+   *   // ts-type-generator.ts
+   *   import { dt } from "./data-type";
+   *   import { Foo } from "./foo";
+   *
+   *   const tsType = toTsType(dt, {
+   *     getExternalTypeImport: (t) => {
+   *       if (t.instanceOf === Foo) {
+   *         return {
+   *           typeName: "Foo",
+   *           path: "./foo",
+   *         };
+   *       }
+   *     },
+   *   });
+   *   // tsType:
+   *   //"
+   *   // import { Foo } from "./foo";
+   *   //
+   *   // export type Record1 = {
+   *   //   foo: InstanceType<typeof Foo>;
+   *   // }
+   *   //"
+   */
+  getExternalTypeImport?: (
+    type: Enum | InstanceOf
+  ) => { typeName: string; path: string } | undefined;
 };
 
 export const tsParseDataType = (
@@ -73,6 +120,8 @@ export const tsParseDataType = (
     case "enumMember":
       return tsParseEnumMember(type);
     case "enumUnion":
-      return tsParseEnum(type);
+      return tsParseEnum(type, fileScope, options);
+    case "instanceOf":
+      return tsParseInstanceOf(type, fileScope, options);
   }
 };

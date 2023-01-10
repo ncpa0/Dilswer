@@ -1,4 +1,4 @@
-import type { SimpleDataType } from "@DataTypes/data-types";
+import type { InstanceOf, SimpleDataType } from "@DataTypes/data-types";
 import {
   AllOf,
   ArrayOf,
@@ -50,6 +50,7 @@ export type ComplexDataType =
   | Literal
   | Enum
   | EnumMember
+  | InstanceOf
   | Custom;
 
 export type DataTypeKind =
@@ -63,6 +64,7 @@ export type DataTypeKind =
   | "literal"
   | "enumUnion"
   | "enumMember"
+  | "instanceOf"
   | "custom";
 
 export type AnyDataType = BasicDataType | ComplexDataType;

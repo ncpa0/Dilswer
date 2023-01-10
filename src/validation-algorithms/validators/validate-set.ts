@@ -1,8 +1,8 @@
 import { DataType } from "@DataTypes/data-types";
 import type { AnyDataType, SetOf } from "@DataTypes/types";
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateOneOf } from "@Validation/validators/validate-one-of";
-import type { Path } from "../path";
 
 export const validateSet = (
   path: Path,

@@ -5,10 +5,22 @@ import type { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder"
 import { TsTypeReference } from "@TsTypeGenerator/type-builders/type-reference";
 
 export class TsFileScope {
+  private imports = new Map<string, Set<string>>();
   private typeDefinitions: Array<string> = [];
   private definedTypes = new Set<string>();
 
   constructor(private options: TsParsingOptions) {}
+
+  addTypeImport(type: string, from: string) {
+    let imports = this.imports.get(from);
+
+    if (!imports) {
+      imports = new Set();
+      this.imports.set(from, imports);
+    }
+
+    imports.add(type);
+  }
 
   appendDef(name: string, code: string) {
     if (this.options.exports === "none" || this.options.exports === "main") {
@@ -62,6 +74,16 @@ export class TsFileScope {
   }
 
   build(): string {
-    return this.typeDefinitions.join("\n\n");
+    let imports = "";
+
+    for (const [from, types] of this.imports) {
+      const typesList = Array.from(types).join(", ");
+
+      imports += `import type { ${typesList} } from "${from}";\n`;
+    }
+
+    const content = this.typeDefinitions.join("\n\n");
+
+    return imports + "\n" + content;
   }
 }

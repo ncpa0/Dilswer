@@ -1,8 +1,8 @@
 import type { RecordOf } from "@DataTypes/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { Path } from "../path";
-import { validatorsLookupMap } from "./validate-type";
+import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
   if (typeof data !== "object" || data === null || Array.isArray(data))

@@ -1,3 +1,4 @@
+import type { InstanceOf } from "@DataTypes/data-types";
 import type { AnyDataType, BasicDataType, Custom } from "@DataTypes/types";
 import { parseAllOf } from "@JSONSchemaParser/parse-all-of";
 import { parseArrayOf } from "@JSONSchemaParser/parse-array-of";
@@ -5,6 +6,7 @@ import { parseCustom } from "@JSONSchemaParser/parse-custom";
 import { parseDict } from "@JSONSchemaParser/parse-dict";
 import { parseEnum } from "@JSONSchemaParser/parse-enum";
 import { parseEnumMember } from "@JSONSchemaParser/parse-enum-member";
+import { parseInstanceOf } from "@JSONSchemaParser/parse-instance-of";
 import { parseLiteral } from "@JSONSchemaParser/parse-literal";
 import { parseOneOf } from "@JSONSchemaParser/parse-one-of";
 import { parsePrimitive } from "@JSONSchemaParser/parse-primitive";
@@ -62,6 +64,10 @@ export type ParseToJsonSchemaOptions = {
       dataType: BasicDataType,
       options: ParseToJsonSchemaOptions
     ) => JSONSchema6 | undefined;
+    InstanceOf?: (
+      original: InstanceOf<new (...args: any[]) => any>,
+      options: ParseToJsonSchemaOptions
+    ) => JSONSchema6 | undefined;
   };
 };
 
@@ -103,6 +109,9 @@ export const toJsonSchema = (
       break;
     case "enumMember":
       schema = parseEnumMember(type);
+      break;
+    case "instanceOf":
+      schema = parseInstanceOf(type, options);
       break;
     case "custom":
       schema = parseCustom(type, options);

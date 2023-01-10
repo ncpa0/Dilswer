@@ -1,5 +1,5 @@
+import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { Path } from "../path";
 
 const AllowedChars = new Set([
   "0",
