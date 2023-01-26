@@ -1,0 +1,22 @@
+{
+  "packageManager": "yarn",
+  "parallel": true,
+  "hooks": {
+    "pre-push": [
+      {
+        "name": "Lint",
+        "script": "test:lint"
+      },
+      {
+        "name": "TypeScript",
+        "script": "test:tsc"
+      },
+      {
+        "name": "Unit Tests",
+        "script": "test:unit"
+      }
+    ],
+    "pre-commit": [],
+    "post-commit": []
+  }
+}

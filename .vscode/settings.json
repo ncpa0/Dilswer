@@ -4,7 +4,17 @@
     "source.organizeImports": true,
     "source.fixAll.eslint": true
   },
-  "cSpell.words": ["dilswer"],
+  "cSpell.words": [
+    "dilswer"
+  ],
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.preferences.importModuleSpecifier": "non-relative"
+  "typescript.preferences.importModuleSpecifier": "non-relative",
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "git-hook-tasks.config.json"
+      ],
+      "url": "./node_modules/git-hook-tasks/dist/config/json-schema.json"
+    }
+  ]
 }
