@@ -26,14 +26,24 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
       - uses: actions/setup-node@v3
         with:
-          node-version: 14
-      - uses: borales/actions-yarn@v3.0.0
+          node-version: 16
+      - name: Installing dependencies
+        uses: borales/actions-yarn@v3.0.0
         with:
           cmd: install
-      - uses: borales/actions-yarn@v3.0.0
+      - name: Validating syntax
+        uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: test:tsc
+      - name: Running unit tests
+        uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: test:unit
+      - name: Building
+        uses: borales/actions-yarn@v3.0.0
         with:
           cmd: build
-      - name: Publish
+      - name: Publishing
         env:
           NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
           TAG_NAME: ${{ github.event.release.tag_name }}
