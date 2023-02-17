@@ -78,7 +78,8 @@
       "@JSONSchemaParser/*": ["./json-schema-parser/*"],
       "@Intrinsic/*": ["./intrinsic-type-utils/*"],
       "@Intrinsic": ["./intrinsic-type-utils"],
-      "@TsTypeGenerator/*": ["./ts-type-generator/*"]
+      "@TsTypeGenerator/*": ["./ts-type-generator/*"],
+      "@UniversalParser/*": ["./universal-parser/*"],
     }
   },
   "exclude": ["./dist"]

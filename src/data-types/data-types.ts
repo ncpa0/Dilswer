@@ -2,9 +2,12 @@ import type {
   AnyDataType,
   BasicTypeNames,
   DataTypeKind,
+  DataTypeVisitor,
+  RecordOfVisitChild,
   RecordTypeSchema,
   TypeMetadata,
 } from "@DataTypes/types";
+import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 
 export const DataTypeSymbol: unique symbol = Symbol();
 export const MetadataSymbol = Symbol("metadata");
@@ -23,7 +26,7 @@ export const BasicDataTypes = {
   StringInt: "stringinteger",
 } as const;
 
-export class BaseDataType {
+export abstract class BaseDataType {
   /** Will return a copy. */
   static getMetadata(dt: BaseDataType): TypeMetadata {
     return {
@@ -79,12 +82,20 @@ export class BaseDataType {
     this[MetadataSymbol].format = format;
     return this;
   }
+
+  /** @internal */
+  abstract _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R;
 }
 
 export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
   readonly kind = "simple";
   constructor(public simpleType: DT) {
     super();
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
   }
 }
 
@@ -95,12 +106,44 @@ export class RecordOf<
   constructor(public recordOf: TS) {
     super();
   }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: RecordOfVisitChild<R>[] = [];
+
+    for (const key of Object.keys(this.recordOf)) {
+      const entry = this.recordOf[key];
+      const descriptor = isFieldDescriptor(entry)
+        ? entry
+        : { type: entry, required: true };
+
+      children.push({
+        _isRecordOfVisitChild: true,
+        child: descriptor.type._acceptVisitor(visitor),
+        propertyName: key,
+        required: !!descriptor.required,
+      });
+    }
+
+    return visitor.visit(this, children);
+  }
 }
 
 export class ArrayOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "array";
   constructor(public arrayOf: DT) {
     super();
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: R[] = [];
+
+    for (let i = 0; i < this.arrayOf.length; i++) {
+      children.push(this.arrayOf[i]._acceptVisitor(visitor));
+    }
+
+    return visitor.visit(this, children);
   }
 }
 
@@ -109,12 +152,34 @@ export class Dict<DT extends AnyDataType[] = any[]> extends BaseDataType {
   constructor(public dict: DT) {
     super();
   }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: R[] = [];
+
+    for (let i = 0; i < this.dict.length; i++) {
+      children.push(this.dict[i]._acceptVisitor(visitor));
+    }
+
+    return visitor.visit(this, children);
+  }
 }
 
 export class SetOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "set";
   constructor(public setOf: DT) {
     super();
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: R[] = [];
+
+    for (let i = 0; i < this.setOf.length; i++) {
+      children.push(this.setOf[i]._acceptVisitor(visitor));
+    }
+
+    return visitor.visit(this, children);
   }
 }
 
@@ -123,12 +188,34 @@ export class OneOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   constructor(public oneOf: DT) {
     super();
   }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: R[] = [];
+
+    for (let i = 0; i < this.oneOf.length; i++) {
+      children.push(this.oneOf[i]._acceptVisitor(visitor));
+    }
+
+    return visitor.visit(this, children);
+  }
 }
 
 export class AllOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "intersection";
   constructor(public allOf: DT) {
     super();
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: R[] = [];
+
+    for (let i = 0; i < this.allOf.length; i++) {
+      children.push(this.allOf[i]._acceptVisitor(visitor));
+    }
+
+    return visitor.visit(this, children);
   }
 }
 
@@ -138,6 +225,11 @@ export class Literal<
   readonly kind = "literal";
   constructor(public literal: DT) {
     super();
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
   }
 }
 
@@ -163,6 +255,11 @@ export class Enum<
   setEnumName<T extends Enum>(this: T, name: string): T {
     this[MetadataSymbol].enumName = name;
     return this;
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
   }
 }
 
@@ -190,6 +287,11 @@ export class EnumMember<DT = any> extends BaseDataType {
     this[MetadataSymbol].enumMemberName = name;
     return this;
   }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
+  }
 }
 
 export class InstanceOf<
@@ -199,14 +301,24 @@ export class InstanceOf<
   constructor(public instanceOf: DT) {
     super();
   }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
+  }
 }
 
 export class Custom<
-  VF extends (v: any) => boolean = (v: any) => v is unknown
+  VF extends (v: any) => v is any = (v: any) => v is unknown
 > extends BaseDataType {
   readonly kind = "custom";
   constructor(public custom: VF) {
     super();
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
   }
 }
 
@@ -276,7 +388,7 @@ export const DataType = {
   InstanceOf<DT extends new (...args: any[]) => any>(instanceOf: DT) {
     return new InstanceOf(instanceOf);
   },
-  Custom<VF extends (v: any) => boolean>(validateFunction: VF) {
+  Custom<VF extends (v: any) => v is any>(validateFunction: VF) {
     return new Custom(validateFunction);
   },
 };

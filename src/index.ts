@@ -10,6 +10,7 @@ import {
 } from "@Intrinsic";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
+import { parseWith } from "@UniversalParser/universal-parser";
 import {
   createTypeGuardedFunction,
   createValidatedFunction,
@@ -26,6 +27,7 @@ export type {
   BasicTypeNames,
   ComplexDataType,
   Custom,
+  DataTypeVisitor,
   Dict,
   Enum,
   EnumMember,
@@ -33,6 +35,7 @@ export type {
   Literal,
   OneOf,
   RecordOf,
+  RecordOfVisitChild,
   RecordTypeSchema,
   SetOf,
   TypeMetadata,
@@ -61,6 +64,7 @@ export {
   Required,
   toJsonSchema,
   toTsType,
+  parseWith,
 };
 
 const assertDataType = ensureDataType;
@@ -83,4 +87,5 @@ export default {
   Required,
   toJsonSchema,
   toTsType,
+  parseWith,
 };

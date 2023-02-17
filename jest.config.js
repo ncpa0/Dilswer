@@ -13,6 +13,8 @@ module.exports = {
     "^@Intrinsic": "<rootDir>/src/intrinsic-type-utils/index",
     "^@TsTypeGenerator/(.*)": "<rootDir>/src/ts-type-generator/$1",
     "^@TsTypeGenerator": "<rootDir>/src/ts-type-generator/index",
+    "^@UniversalParser/(.*)": "<rootDir>/src/universal-parser/$1",
+    "^@UniversalParser": "<rootDir>/src/universal-parser/index",
   },
   testEnvironment: "jsdom",
   roots: ["<rootDir>"],
