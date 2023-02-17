@@ -25,6 +25,18 @@ export {
   SetOf,
 };
 
+export interface RecordOfVisitChild<R> {
+  _isRecordOfVisitChild: true;
+  propertyName: string;
+  required: boolean;
+  child: R;
+}
+
+export interface DataTypeVisitor<R = any> {
+  visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
+  visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
+}
+
 export type BasicTypeNames =
   | "string"
   | "number"
