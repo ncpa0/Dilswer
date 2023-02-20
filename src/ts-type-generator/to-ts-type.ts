@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
-import type { InstanceOf, SimpleDataType } from "@DataTypes/data-types";
+import type { InstanceOf, SimpleDataType, Tuple } from "@DataTypes/data-types";
 import { BaseDataType } from "@DataTypes/data-types";
 import type {
   AllOf,
@@ -42,6 +42,7 @@ import { TsStringBuilder } from "@TsTypeGenerator/type-builders/simple-types/str
 import { TsSymbolBuilder } from "@TsTypeGenerator/type-builders/simple-types/symbol-builder";
 import { TsUndefinedBuilder } from "@TsTypeGenerator/type-builders/simple-types/undefined-builder";
 import { TsUnknownBuilder } from "@TsTypeGenerator/type-builders/simple-types/unknown-builder";
+import { TsTupleBuilder } from "@TsTypeGenerator/type-builders/tuple-builder";
 import { TsUnionBuilder } from "@TsTypeGenerator/type-builders/union-builder";
 import { capitalize } from "@Utilities/capitalize";
 
@@ -216,6 +217,15 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
+  private parseTuple(type: Tuple, children: Array<R> = []): R {
+    const builder = new TsTupleBuilder();
+    this.tsAddMetadataToBuilder(builder, type);
+
+    builder.setTypes(children);
+
+    return this.addFileExportAndResolveBuilder(builder);
+  }
+
   private parseRecordOf(
     type: RecordOf,
     children: RecordOfVisitChild<R>[] = []
@@ -371,6 +381,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
         return this.parsePrimitive(type);
       case "array":
         return this.parseArrayOf(type, children as R[]);
+      case "tuple":
+        return this.parseTuple(type, children as R[]);
       case "record":
         return this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
       case "dictionary":

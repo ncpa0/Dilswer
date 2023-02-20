@@ -179,6 +179,26 @@ export class ArrayOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   }
 }
 
+export class Tuple<DT extends AnyDataType[] = any[]> extends BaseDataType {
+  readonly kind = "tuple";
+  constructor(public tuple: DT) {
+    super();
+    Object.freeze(this.tuple);
+    Object.freeze(this);
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const children: R[] = [];
+
+    for (let i = 0; i < this.tuple.length; i++) {
+      children.push(this.tuple[i]._acceptVisitor(visitor));
+    }
+
+    return visitor.visit(this, children);
+  }
+}
+
 export class Dict<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "dictionary";
   constructor(public dict: DT) {
@@ -425,6 +445,9 @@ export const DataType = {
   },
   ArrayOf<DT extends AnyDataType[]>(...args: DT) {
     return new ArrayOf(args);
+  },
+  Tuple<DT extends AnyDataType[]>(...args: DT) {
+    return new Tuple(args);
   },
   SetOf<DT extends AnyDataType[]>(...args: DT) {
     return new SetOf(args);

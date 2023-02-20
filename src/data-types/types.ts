@@ -1,4 +1,4 @@
-import type { InstanceOf, SimpleDataType } from "@DataTypes/data-types";
+import type { InstanceOf, SimpleDataType, Tuple } from "@DataTypes/data-types";
 import {
   AllOf,
   ArrayOf,
@@ -54,6 +54,7 @@ export type BasicDataType = SimpleDataType<BasicTypeNames>;
 
 export type ComplexDataType =
   | ArrayOf
+  | Tuple
   | RecordOf
   | Dict
   | SetOf
@@ -68,6 +69,7 @@ export type ComplexDataType =
 export type DataTypeKind =
   | "simple"
   | "array"
+  | "tuple"
   | "record"
   | "dictionary"
   | "set"

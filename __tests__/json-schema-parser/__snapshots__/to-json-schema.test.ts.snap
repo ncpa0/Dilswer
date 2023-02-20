@@ -268,6 +268,34 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
           ],
           "type": "array",
         },
+        "tuple": {
+          "items": [
+            {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "type": "object",
+            },
+            {
+              "enum": [
+                "separator",
+              ],
+              "type": "string",
+            },
+            {
+              "type": "boolean",
+            },
+          ],
+          "required": [
+            "0",
+            "1",
+            "2",
+          ],
+          "type": "array",
+        },
         "unionArray": {
           "items": [
             {
@@ -333,6 +361,21 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
       ],
       "type": "array",
     },
+    "tuple": {
+      "items": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "number",
+        },
+      ],
+      "required": [
+        "0",
+        "1",
+      ],
+      "type": "array",
+    },
     "unionArray": {
       "items": [
         {
@@ -370,6 +413,7 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
     "bool",
     "stringArray",
     "unionArray",
+    "tuple",
     "literalString",
     "literalNumber",
     "literalBoolean",
@@ -613,6 +657,34 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
         "stringSet": {
           "title": "Set",
         },
+        "tuple": {
+          "items": [
+            {
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "type": "object",
+            },
+            {
+              "enum": [
+                "separator",
+              ],
+              "type": "string",
+            },
+            {
+              "type": "boolean",
+            },
+          ],
+          "required": [
+            "0",
+            "1",
+            "2",
+          ],
+          "type": "array",
+        },
         "unionArray": {
           "items": [
             {
@@ -684,6 +756,21 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
     "symbol": {
       "title": "Symbol",
     },
+    "tuple": {
+      "items": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "number",
+        },
+      ],
+      "required": [
+        "0",
+        "1",
+      ],
+      "type": "array",
+    },
     "undef": {
       "title": "undefined",
     },
@@ -725,6 +812,7 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
     "stringSet",
     "stringArray",
     "unionArray",
+    "tuple",
     "literalString",
     "literalNumber",
     "literalBoolean",
@@ -973,6 +1061,35 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
           ],
           "type": "array",
         },
+        "tuple": {
+          "items": [
+            {
+              "additionalProperties": false,
+              "properties": {
+                "id": {
+                  "type": "string",
+                },
+              },
+              "required": [],
+              "type": "object",
+            },
+            {
+              "enum": [
+                "separator",
+              ],
+              "type": "string",
+            },
+            {
+              "type": "boolean",
+            },
+          ],
+          "required": [
+            "0",
+            "1",
+            "2",
+          ],
+          "type": "array",
+        },
         "unionArray": {
           "items": [
             {
@@ -1042,6 +1159,21 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
       ],
       "type": "array",
     },
+    "tuple": {
+      "items": [
+        {
+          "type": "string",
+        },
+        {
+          "type": "number",
+        },
+      ],
+      "required": [
+        "0",
+        "1",
+      ],
+      "type": "array",
+    },
     "unionArray": {
       "items": [
         {
@@ -1081,6 +1213,7 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
     "bool",
     "stringArray",
     "unionArray",
+    "tuple",
     "literalString",
     "literalNumber",
     "literalBoolean",

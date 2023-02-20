@@ -145,6 +145,11 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
   } | {
     bar: string;
   }>;
+  tuple: [string, number];
+  /**
+   * A tuple with a named type
+   */
+  namedTuple: [Array<string>, Enum];
   literalString: "literal";
   literalNumber: 1;
   literalBoolean: true;
@@ -178,6 +183,7 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
     } | {
       bar: string;
     }>;
+    tuple?: [string, number];
     literalString?: "literal";
     literalNumber?: 1;
     literalBoolean?: true;
@@ -221,6 +227,17 @@ type Record2 = {
 type Array2 = Array<Record1 | Record2>;
 
 
+type Tuple1 = [string, number];
+
+
+type Array3 = Array<string>;
+
+/**
+ * A tuple with a named type
+ */
+type ATuple = [Array3, Enum];
+
+
 type Record3 = {
   a: string;
 };
@@ -253,7 +270,7 @@ type Union1 = FooContainer | BarContainer;
 type Set2 = Set<string>;
 
 
-type Array3 = Array<string>;
+type Array4 = Array<string>;
 
 
 type FooContainer1 = {
@@ -266,7 +283,10 @@ type Record5 = {
 };
 
 
-type Array4 = Array<FooContainer1 | Record5>;
+type Array5 = Array<FooContainer1 | Record5>;
+
+
+type Tuple2 = [string, number];
 
 
 type Record6 = {
@@ -305,8 +325,9 @@ type OptionalTestRecord = {
   number?: number;
   bool?: boolean;
   stringSet?: Set2;
-  stringArray?: Array3;
-  unionArray?: Array4;
+  stringArray?: Array4;
+  unionArray?: Array5;
+  tuple?: Tuple2;
   literalString?: "literal";
   literalNumber?: 1;
   literalBoolean?: true;
@@ -331,6 +352,11 @@ export type TestRecord = {
    * Array of two possible record types
    */
   unionArray: Array2;
+  tuple: Tuple1;
+  /**
+   * A tuple with a named type
+   */
+  namedTuple: ATuple;
   literalString: "literal";
   literalNumber: 1;
   literalBoolean: true;
@@ -351,7 +377,13 @@ export type TestRecord = {
 `;
 
 exports[`toTsType should correctly generate a complex type with 'named-expanded' mode 1`] = `
-"type FooContainer = {
+"/**
+ * A tuple with a named type
+ */
+type ATuple = [Array<string>, Enum];
+
+
+type FooContainer = {
   foo: string;
 };
 
@@ -384,6 +416,7 @@ type OptionalTestRecord = {
   unionArray?: Array<FooContainer1 | {
     bar: string;
   }>;
+  tuple?: [string, number];
   literalString?: "literal";
   literalNumber?: 1;
   literalBoolean?: true;
@@ -416,6 +449,11 @@ export type TestRecord = {
   } | {
     bar: string;
   }>;
+  tuple: [string, number];
+  /**
+   * A tuple with a named type
+   */
+  namedTuple: ATuple;
   literalString: "literal";
   literalNumber: 1;
   literalBoolean: true;
