@@ -1,4 +1,4 @@
-name: Build Test
+name: Run Tests
 
 on:
   push:
@@ -10,25 +10,32 @@ env:
   NPM_TOKEN: ""
 
 jobs:
-  build:
+  run-tests:
+    name: Run Tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        name: Checkout to master
         with:
           ref: master
       - uses: actions/setup-node@v3
+        name: Setup Node.js
         with:
           node-version: 16
           cache: yarn
       - uses: borales/actions-yarn@v3.0.0
+        name: Install dependencies
         with:
           cmd: install
       - uses: borales/actions-yarn@v3.0.0
+        name: Run TypeScript check
         with:
           cmd: test:tsc
       - uses: borales/actions-yarn@v3.0.0
+        name: Run unit tests
         with:
           cmd: test:unit
       - uses: borales/actions-yarn@v3.0.0
+        name: Run linter
         with:
           cmd: test:lint
