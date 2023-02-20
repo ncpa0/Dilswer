@@ -28,7 +28,9 @@ export const BasicDataTypes = {
 
 export abstract class BaseDataType {
   /** Will return a copy. */
-  static getMetadata(dt: BaseDataType): TypeMetadata {
+  static getMetadata<T extends Record<any, any>>(
+    dt: BaseDataType
+  ): TypeMetadata<T> {
     return {
       ...dt[MetadataSymbol],
     };
@@ -83,6 +85,16 @@ export abstract class BaseDataType {
     return this;
   }
 
+  /**
+   * Sets the extra metadata. The extra metadata can be anything.
+   * This metadata is not used by Dilswer, but can be by the
+   * Dilswer consumer.
+   */
+  setExtra<T extends BaseDataType>(this: T, extra: Record<any, any>): T {
+    this[MetadataSymbol].extra = extra;
+    return this;
+  }
+
   /** @internal */
   abstract _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R;
 }
@@ -111,7 +123,9 @@ export class RecordOf<
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     const children: RecordOfVisitChild<R>[] = [];
 
-    for (const key of Object.keys(this.recordOf)) {
+    const keys = Object.keys(this.recordOf);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
       const entry = this.recordOf[key];
       const descriptor = isFieldDescriptor(entry)
         ? entry
@@ -252,6 +266,11 @@ export class Enum<
     this.enumInstance = enumInstance;
   }
 
+  /**
+   * Sets the metadata for the enum name. This is used for
+   * generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   */
   setEnumName<T extends Enum>(this: T, name: string): T {
     this[MetadataSymbol].enumName = name;
     return this;
@@ -265,14 +284,13 @@ export class Enum<
 
 export class EnumMember<DT = any> extends BaseDataType {
   /** @internal */
-  static getOriginalMetadata(
-    dt: EnumMember
-  ): TypeMetadata & { enumMemberName?: `${string}.${string}` } {
+  static getOriginalMetadata(dt: EnumMember) {
     return dt[MetadataSymbol];
   }
 
   protected [MetadataSymbol]: TypeMetadata & {
-    enumMemberName?: `${string}.${string}`;
+    memberName?: `${string}`;
+    enumName?: string;
   } = {};
 
   readonly kind = "enumMember";
@@ -280,11 +298,23 @@ export class EnumMember<DT = any> extends BaseDataType {
     super();
   }
 
-  setEnumMemberName<T extends EnumMember>(
-    this: T,
-    name: `${string}.${string}`
-  ): T {
-    this[MetadataSymbol].enumMemberName = name;
+  /**
+   * Sets the metadata for the enum name. This is used for
+   * generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   */
+  setEnumName<T extends EnumMember>(this: T, name: string): T {
+    this[MetadataSymbol].enumName = name;
+    return this;
+  }
+
+  /**
+   * Sets the metadata for the enum member name. This is used for
+   * generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   */
+  setMemberName<T extends EnumMember>(this: T, name: `${string}`): T {
+    this[MetadataSymbol].memberName = name;
     return this;
   }
 
@@ -400,4 +430,5 @@ export const DataType = {
  * Metadata must be explicitly set on the DataType, otherwise it
  * will be an empty object.
  */
-export const getMetadata = (dt: AnyDataType) => BaseDataType.getMetadata(dt);
+export const getMetadata = <T extends Record<any, any>>(dt: AnyDataType) =>
+  BaseDataType.getMetadata<T>(dt);

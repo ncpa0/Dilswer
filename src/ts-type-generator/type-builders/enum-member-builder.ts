@@ -6,12 +6,12 @@ const ENUM_EXPORT_TEMPLATE = new TemplateBuilder(`{{description}}
 {{export}}type {{name}} = {{type}};`);
 
 export class TsEnumMemberBuilder extends TsBaseBuilder implements TsBuilder {
-  constructor(private enumName: string) {
+  constructor(private enumName: string, private memberName: string) {
     super();
   }
 
   build(): string {
-    return this.enumName;
+    return `${this.enumName}.${this.memberName}`;
   }
 
   buildExport(type: ExportType): string {

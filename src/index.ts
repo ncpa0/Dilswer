@@ -45,7 +45,7 @@ export type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema"
 export type {
   TsParsingMode,
   TsParsingOptions,
-} from "@TsTypeGenerator/parsers/parse";
+} from "@TsTypeGenerator/parser-options";
 export {
   And,
   assertDataType,

@@ -1,4 +1,5 @@
-import { DataType, toTsType } from "../../src/index";
+import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
+import { DataType, getMetadata, toTsType } from "../../src/index";
 
 enum Enum {
   A = "A",
@@ -20,7 +21,7 @@ const testDt = DataType.RecordOf({
   literalNumber: DataType.Literal(1),
   literalBoolean: DataType.Literal(true),
   enum: DataType.Enum(Enum).setEnumName("Enum"),
-  bMember: DataType.EnumMember(Enum.B).setEnumMemberName("Enum.B"),
+  bMember: DataType.EnumMember(Enum.B).setEnumName("Enum").setMemberName("B"),
   recordIntersection: DataType.AllOf(
     DataType.RecordOf({
       a: DataType.String,
@@ -64,7 +65,9 @@ const testDt = DataType.RecordOf({
       },
       bMember: {
         required: false,
-        type: DataType.EnumMember(Enum.B).setEnumMemberName("Enum.B"),
+        type: DataType.EnumMember(Enum.B)
+          .setEnumName("Enum")
+          .setMemberName("B"),
       },
       recordIntersection: {
         required: false,
@@ -315,6 +318,139 @@ describe("toTsType", () => {
               path: "./foo-bar",
               typeName: "FooBar",
             };
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+  });
+
+  describe("should correctly add external type import statements", () => {
+    it("with regular Custom validator", () => {
+      const type = DataType.RecordOf({
+        foo: DataType.Custom(
+          (v): v is string => typeof v === "string"
+        ).setExtra({
+          typeName: "CustomFoo",
+          path: "./custom-validator.d.ts",
+        } satisfies ExternalTypeImport),
+      });
+
+      const tsType = toTsType(type, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          const meta = getMetadata<ExternalTypeImport>(type);
+          if (meta.extra) {
+            return meta.extra;
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("with regular Enum", () => {
+      const type = DataType.RecordOf({
+        foo: DataType.Enum(Enum).setExtra({
+          typeName: "MyEnum",
+          path: "./enum.d.ts",
+        } satisfies ExternalTypeImport),
+      });
+
+      const tsType = toTsType(type, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          const meta = getMetadata<ExternalTypeImport>(type);
+          if (meta.extra) {
+            return meta.extra;
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("with regular Enum Member", () => {
+      const type = DataType.RecordOf({
+        foo: DataType.EnumMember(Enum.C)
+          .setMemberName("C")
+          .setExtra({
+            typeName: "MyEnum",
+            path: "./enum.d.ts",
+          } satisfies ExternalTypeImport),
+      });
+
+      const tsType = toTsType(type, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          const meta = getMetadata<ExternalTypeImport>(type);
+          if (meta.extra) {
+            return meta.extra;
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("with regular Function as a type", () => {
+      const type = DataType.RecordOf({
+        foo: DataType.Function.setExtra({
+          typeName: "MyFunction",
+          path: "./my-function.d.ts",
+        } satisfies ExternalTypeImport),
+      });
+
+      const tsType = toTsType(type, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          const meta = getMetadata<ExternalTypeImport>(type);
+          if (meta.extra) {
+            return meta.extra;
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("with regular Function as a value", () => {
+      const type = DataType.RecordOf({
+        foo: DataType.Function.setExtra({
+          typeName: "myFunction",
+          path: "./my-function.d.ts",
+          valueImport: true,
+        } satisfies ExternalTypeImport),
+      });
+
+      const tsType = toTsType(type, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          const meta = getMetadata<ExternalTypeImport>(type);
+          if (meta.extra) {
+            return meta.extra;
+          }
+        },
+      });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("and export it directly if it's a root type", () => {
+      const foo = DataType.Custom((v): v is string => typeof v === "string")
+        .setTitle("IsStringFn")
+        .setExtra({
+          typeName: "IsStringFn",
+          path: "./is-string-fn.d.ts",
+        } satisfies ExternalTypeImport);
+
+      const tsType = toTsType(foo, {
+        mode: "named-expanded",
+        getExternalTypeImport(type) {
+          const meta = getMetadata<ExternalTypeImport>(type);
+          if (meta.extra) {
+            return meta.extra;
           }
         },
       });
