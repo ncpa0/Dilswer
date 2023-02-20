@@ -103,6 +103,7 @@ export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
   readonly kind = "simple";
   constructor(public simpleType: DT) {
     super();
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -114,18 +115,33 @@ export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
 export class RecordOf<
   TS extends RecordTypeSchema = RecordTypeSchema
 > extends BaseDataType {
+  private readonly keys: string[];
   readonly kind = "record";
+
   constructor(public recordOf: TS) {
     super();
+    this.keys = Object.keys(this.recordOf);
+
+    for (let i = 0; i < this.keys.length; i++) {
+      const key = this.keys[i];
+      const entry = this.recordOf[key];
+
+      if (isFieldDescriptor(entry)) {
+        Object.freeze(entry);
+      }
+    }
+
+    Object.freeze(this.keys);
+    Object.freeze(this.recordOf);
+    Object.freeze(this);
   }
 
   /** @internal */
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     const children: RecordOfVisitChild<R>[] = [];
 
-    const keys = Object.keys(this.recordOf);
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
+    for (let i = 0; i < this.keys.length; i++) {
+      const key = this.keys[i];
       const entry = this.recordOf[key];
       const descriptor = isFieldDescriptor(entry)
         ? entry
@@ -147,6 +163,8 @@ export class ArrayOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "array";
   constructor(public arrayOf: DT) {
     super();
+    Object.freeze(this.arrayOf);
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -165,6 +183,8 @@ export class Dict<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "dictionary";
   constructor(public dict: DT) {
     super();
+    Object.freeze(this.dict);
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -183,6 +203,8 @@ export class SetOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "set";
   constructor(public setOf: DT) {
     super();
+    Object.freeze(this.setOf);
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -201,6 +223,8 @@ export class OneOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "union";
   constructor(public oneOf: DT) {
     super();
+    Object.freeze(this.oneOf);
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -219,6 +243,8 @@ export class AllOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
   readonly kind = "intersection";
   constructor(public allOf: DT) {
     super();
+    Object.freeze(this.allOf);
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -239,6 +265,7 @@ export class Literal<
   readonly kind = "literal";
   constructor(public literal: DT) {
     super();
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -264,6 +291,7 @@ export class Enum<
     super();
 
     this.enumInstance = enumInstance;
+    Object.freeze(this);
   }
 
   /**
@@ -296,6 +324,7 @@ export class EnumMember<DT = any> extends BaseDataType {
   readonly kind = "enumMember";
   constructor(public enumMember: DT) {
     super();
+    Object.freeze(this);
   }
 
   /**
@@ -330,6 +359,7 @@ export class InstanceOf<
   readonly kind = "instanceOf";
   constructor(public instanceOf: DT) {
     super();
+    Object.freeze(this);
   }
 
   /** @internal */
@@ -344,6 +374,7 @@ export class Custom<
   readonly kind = "custom";
   constructor(public custom: VF) {
     super();
+    Object.freeze(this);
   }
 
   /** @internal */
