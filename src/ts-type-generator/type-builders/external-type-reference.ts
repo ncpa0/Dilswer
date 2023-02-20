@@ -17,11 +17,15 @@ export class TsExternalTypeReference
     return this.referenceName;
   }
 
-  buildExport(type: ExportType): string {
+  buildExport(type: ExportType): string | undefined {
+    const name = this.getName();
+
+    if (name === this.referenceName) return undefined;
+
     return EXTERNAL_TYPE_REF_EXPORT_TEMPLATE.build({
       description: this.getDescription(""),
       export: this.parseExportType(type),
-      alias: this.getName() ?? this.generateName("ExternalType"),
+      alias: name ?? this.generateName("ExternalType"),
       refName: this.referenceName,
     });
   }

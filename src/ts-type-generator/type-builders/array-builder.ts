@@ -22,8 +22,9 @@ export class TsArrayBuilder extends TsBaseBuilder implements TsBuilder {
     return types;
   }
 
-  addType(type: TsBuilder): void {
-    this.types.add(type);
+  /** Sets what types are allowed as the array elements. */
+  setTypes(types: Iterable<TsBuilder>): void {
+    this.types = new Set(types);
   }
 
   build(indent: string): string {

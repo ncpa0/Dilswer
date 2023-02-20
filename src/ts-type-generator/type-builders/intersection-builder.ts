@@ -22,8 +22,9 @@ export class TsIntersectionBuilder extends TsBaseBuilder implements TsBuilder {
     return types;
   }
 
-  addType(type: TsBuilder): void {
-    this.types.add(type);
+  /** Sets types that are part of the intersection. */
+  setTypes(type: Iterable<TsBuilder>): void {
+    this.types = new Set(type);
   }
 
   build(indent: string): string {

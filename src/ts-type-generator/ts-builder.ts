@@ -6,5 +6,5 @@ export interface TsBuilder {
   getDescription(indent: string): string;
   getName(): string | undefined;
   build(indent: string): string;
-  buildExport(type: ExportType): string;
+  buildExport(type: ExportType): string | undefined;
 }

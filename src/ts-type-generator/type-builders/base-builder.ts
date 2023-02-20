@@ -42,7 +42,7 @@ export class TsBaseBuilder {
     this.isTitled = isTitled;
   }
 
-  parseExportType(type: ExportType): string {
+  static parseExportType(type: ExportType): string {
     switch (type) {
       case "export":
         return "export ";
@@ -53,5 +53,9 @@ export class TsBaseBuilder {
       default:
         return "";
     }
+  }
+
+  parseExportType(type: ExportType): string {
+    return TsBaseBuilder.parseExportType(type);
   }
 }

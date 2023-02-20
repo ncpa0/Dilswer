@@ -76,6 +76,57 @@ export type Main = {
 "
 `;
 
+exports[`toTsType should correctly add external type import statements and export it directly if it's a root type 1`] = `
+"import type { IsStringFn } from "./is-string-fn.d.ts";
+export { IsStringFn };
+"
+`;
+
+exports[`toTsType should correctly add external type import statements with regular Custom validator 1`] = `
+"import type { CustomFoo } from "./custom-validator.d.ts";
+
+export type Record1 = {
+  foo: CustomFoo;
+};
+"
+`;
+
+exports[`toTsType should correctly add external type import statements with regular Enum 1`] = `
+"import type { MyEnum } from "./enum.d.ts";
+
+export type Record1 = {
+  foo: MyEnum;
+};
+"
+`;
+
+exports[`toTsType should correctly add external type import statements with regular Enum Member 1`] = `
+"import type { MyEnum } from "./enum.d.ts";
+
+export type Record1 = {
+  foo: MyEnum.C;
+};
+"
+`;
+
+exports[`toTsType should correctly add external type import statements with regular Function as a type 1`] = `
+"import type { MyFunction } from "./my-function.d.ts";
+
+export type Record1 = {
+  foo: MyFunction;
+};
+"
+`;
+
+exports[`toTsType should correctly add external type import statements with regular Function as a value 1`] = `
+"import type { myFunction } from "./my-function.d.ts";
+
+export type Record1 = {
+  foo: typeof myFunction;
+};
+"
+`;
+
 exports[`toTsType should correctly generate a complex type with 'compact' mode 1`] = `
 "export type TestRecord = {
   /**
@@ -84,7 +135,7 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
   uuid: string;
   number: number;
   bool: boolean;
-  stringSet: Array<string>;
+  stringSet: Set<string>;
   stringArray: Array<string>;
   /**
    * Array of two possible record types
@@ -120,7 +171,7 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
     id?: string;
     number?: number;
     bool?: boolean;
-    stringSet?: Array<string>;
+    stringSet?: Set<string>;
     stringArray?: Array<string>;
     unionArray?: Array<{
       foo: string;
@@ -149,10 +200,10 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
 `;
 
 exports[`toTsType should correctly generate a complex type with 'fully-expanded' mode 1`] = `
-"type Array1 = Array<string>;
+"type Set1 = Set<string>;
 
 
-type Array2 = Array<string>;
+type Array1 = Array<string>;
 
 
 type Record1 = {
@@ -167,7 +218,7 @@ type Record2 = {
 /**
  * Array of two possible record types
  */
-type Array3 = Array<Record1 | Record2>;
+type Array2 = Array<Record1 | Record2>;
 
 
 type Record3 = {
@@ -199,10 +250,10 @@ type BarContainer = {
 type Union1 = FooContainer | BarContainer;
 
 
-type Array4 = Array<string>;
+type Set2 = Set<string>;
 
 
-type Array5 = Array<string>;
+type Array3 = Array<string>;
 
 
 type FooContainer1 = {
@@ -215,7 +266,7 @@ type Record5 = {
 };
 
 
-type Array6 = Array<FooContainer1 | Record5>;
+type Array4 = Array<FooContainer1 | Record5>;
 
 
 type Record6 = {
@@ -253,9 +304,9 @@ type OptionalTestRecord = {
   id?: string;
   number?: number;
   bool?: boolean;
-  stringSet?: Array4;
-  stringArray?: Array5;
-  unionArray?: Array6;
+  stringSet?: Set2;
+  stringArray?: Array3;
+  unionArray?: Array4;
   literalString?: "literal";
   literalNumber?: 1;
   literalBoolean?: true;
@@ -274,12 +325,12 @@ export type TestRecord = {
   uuid: string;
   number: number;
   bool: boolean;
-  stringSet: Array1;
-  stringArray: Array2;
+  stringSet: Set1;
+  stringArray: Array1;
   /**
    * Array of two possible record types
    */
-  unionArray: Array3;
+  unionArray: Array2;
   literalString: "literal";
   literalNumber: 1;
   literalBoolean: true;
@@ -328,7 +379,7 @@ type OptionalTestRecord = {
   id?: string;
   number?: number;
   bool?: boolean;
-  stringSet?: Array<string>;
+  stringSet?: Set<string>;
   stringArray?: Array<string>;
   unionArray?: Array<FooContainer1 | {
     bar: string;
@@ -355,7 +406,7 @@ export type TestRecord = {
   uuid: string;
   number: number;
   bool: boolean;
-  stringSet: Array<string>;
+  stringSet: Set<string>;
   stringArray: Array<string>;
   /**
    * Array of two possible record types
@@ -398,7 +449,6 @@ exports[`toTsType should correctly generate a type referencing a class in compac
 exports[`toTsType should correctly generate a type referencing a class in compact mode with imported FooBar 1`] = `
 "import type { FooBar } from "./foo-bar";
 
-
 export type Record1 = {
   foobar: InstanceType<typeof FooBar>;
 };
@@ -428,7 +478,6 @@ export type Record1 = {
 exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with imported FooBar 1`] = `
 "import type { FooBar } from "./foo-bar";
 
-
 type ClassInstance1 = InstanceType<typeof FooBar>
 
 
@@ -440,7 +489,6 @@ export type Record1 = {
 
 exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with imported FooBar 2`] = `
 "import type { FooBar } from "./foo-bar";
-
 
 type AliasFooBar = InstanceType<typeof FooBar>
 

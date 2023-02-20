@@ -22,8 +22,8 @@ export class TsSetBuilder extends TsBaseBuilder implements TsBuilder {
     return types;
   }
 
-  addType(type: TsBuilder): void {
-    this.types.add(type);
+  setTypes(type: Iterable<TsBuilder>): void {
+    this.types = new Set(type);
   }
 
   build(indent: string): string {

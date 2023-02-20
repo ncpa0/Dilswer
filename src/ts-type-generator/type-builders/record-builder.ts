@@ -23,7 +23,7 @@ const EXPORTED_EXTENDED_RECORD_TEMPLATE = new TemplateBuilder(`{{description}}
 
 export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
   private properties = new Map<string, TsBuilder>();
-  private optional = new Set<string>();
+  private required = new Set<string>();
 
   constructor(private extend?: string) {
     super();
@@ -34,13 +34,13 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
     const properties: string[] = [];
 
     for (const [name, prop] of this.properties) {
-      const isOptional = this.optional.has(name);
+      const isRequired = this.required.has(name);
       const description = prop.getDescription(indent);
       const type = prop.build(indent);
 
       properties.push(
         `${description}${description ? "\n" : ""}${indent}${name}${
-          isOptional ? "?" : ""
+          isRequired ? "" : "?"
         }: ${type};`
       );
     }
@@ -48,10 +48,10 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
     return properties;
   }
 
-  addProperty(name: string, type: TsBuilder, optional = false) {
+  addProperty(name: string, type: TsBuilder, required = true) {
     this.properties.set(name, type);
-    if (optional) {
-      this.optional.add(name);
+    if (required) {
+      this.required.add(name);
     }
   }
 

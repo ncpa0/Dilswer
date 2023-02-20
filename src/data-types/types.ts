@@ -92,8 +92,9 @@ export interface RecordTypeSchema {
   readonly [key: string]: FieldDescriptor | AnyDataType;
 }
 
-export type TypeMetadata = {
+export type TypeMetadata<T extends Record<any, any> = Record<any, any>> = {
   description?: string;
   title?: string;
   format?: string;
+  extra?: T;
 };
