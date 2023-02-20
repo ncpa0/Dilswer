@@ -1,0 +1,31 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`parseWith readme example test 1`] = `
+{
+  "children": {
+    "bar": {
+      "children": [
+        {
+          "typeName": "number",
+        },
+      ],
+      "typeName": "array",
+    },
+    "baz": {
+      "children": [
+        {
+          "typeName": "string",
+        },
+        {
+          "typeName": "number",
+        },
+      ],
+      "typeName": "union",
+    },
+    "foo": {
+      "typeName": "string",
+    },
+  },
+  "typeName": "record",
+}
+`;

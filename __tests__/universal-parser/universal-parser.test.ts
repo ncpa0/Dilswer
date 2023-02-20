@@ -93,4 +93,48 @@ describe("parseWith", () => {
       ],
     });
   });
+
+  it("readme example test", () => {
+    type Node = {
+      typeName: string;
+      children?: Node[] | Record<string, Node>;
+    };
+
+    const visitor = {
+      visit(
+        type: AnyDataType,
+        children?: Node[] | RecordOfVisitChild<Node>[]
+      ): Node {
+        switch (type.kind) {
+          case "simple":
+            return { typeName: type.simpleType };
+          case "record":
+            return {
+              typeName: "record",
+              children:
+                children &&
+                Object.fromEntries(
+                  (children as RecordOfVisitChild<Node>[]).map(
+                    ({ propertyName, child }) => [propertyName, child]
+                  )
+                ),
+            };
+          default:
+            return { typeName: type.kind, children: children as Node[] };
+        }
+      },
+    };
+
+    const type = DataType.RecordOf({
+      foo: DataType.String,
+      bar: DataType.ArrayOf(DataType.Number),
+      baz: DataType.OneOf(DataType.String, DataType.Number),
+    });
+
+    const nodeTree = parseWith(visitor, type);
+
+    console.log(JSON.stringify(nodeTree, null, 2));
+
+    expect(nodeTree).toMatchSnapshot();
+  });
 });

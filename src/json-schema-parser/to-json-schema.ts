@@ -31,6 +31,8 @@ export type ParseToJsonSchemaOptions = {
    * - `set-as-any`: Adds the type to the schema without a "type"
    *   property but with a name equivalent to the given
    *   DataType.
+   *
+   * @default "throw"
    */
   incompatibleTypes?: "throw" | "omit" | "set-as-any";
   /**
