@@ -1,4 +1,4 @@
-import type { DataTypeSymbol, InstanceOf } from "@DataTypes/data-types";
+import type { DataTypeSymbol, InstanceOf, Tuple } from "@DataTypes/data-types";
 import type {
   AllOf,
   AnyDataType,
@@ -68,6 +68,7 @@ export type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<
 
 export type EnsureIsKey<K> = K extends
   | "arrayOf"
+  | "tuple"
   | "recordOf"
   | "dict"
   | "setOf"
@@ -133,8 +134,22 @@ export type GetTypeFromCustom<D extends ComplexDataType> = D extends Custom<
 export type GetTypeFromEnumMember<D extends ComplexDataType> =
   D extends EnumMember<infer T> ? T : never;
 
+type RepackTuple<T extends AnyDataType[]> = T extends [
+  infer A extends AnyDataType,
+  ...infer B extends AnyDataType[]
+]
+  ? [ParseDataType<A>, ...RepackTuple<B>]
+  : [];
+
+export type GetTypeFromTuple<D extends ComplexDataType> = D extends Tuple<
+  infer T
+>
+  ? RepackTuple<T>
+  : never;
+
 export type ParseComplexType<D extends ComplexDataType> = {
   arrayOf: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
+  tuple: GetTypeFromTuple<D>;
   recordOf: ParseRecordType<GetTypeFromRecordOf<D>>;
   dict: Record<string | number, ParseDataType<GetTypeFromDict<D>>>;
   setOf: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;

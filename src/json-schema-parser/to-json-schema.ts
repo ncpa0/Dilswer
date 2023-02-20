@@ -1,4 +1,4 @@
-import type { InstanceOf } from "@DataTypes/data-types";
+import type { InstanceOf, Tuple } from "@DataTypes/data-types";
 import { BaseDataType, DataType } from "@DataTypes/data-types";
 import type {
   AllOf,
@@ -188,6 +188,20 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     const schema: JSONSchema6 = {
       type: "array",
       items: children?.filter(isDefined),
+    };
+
+    this.assignMetadataToSchema(schema, type);
+
+    return schema;
+  }
+
+  private parseTuple(type: Tuple, children?: Array<R>): R {
+    const items = children?.filter(isDefined);
+
+    const schema: JSONSchema6 = {
+      type: "array",
+      items,
+      required: items?.map((_, i) => i.toString()),
     };
 
     this.assignMetadataToSchema(schema, type);
@@ -394,6 +408,8 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
         return this.parsePrimitive(type);
       case "array":
         return this.parseArrayOf(type, children as R[]);
+      case "tuple":
+        return this.parseTuple(type, children as R[]);
       case "record":
         return this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
       case "dictionary":

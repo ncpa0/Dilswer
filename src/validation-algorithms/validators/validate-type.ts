@@ -12,6 +12,7 @@ import { validateOneOf } from "@Validation/validators/validate-one-of";
 import { validatePrimitive } from "@Validation/validators/validate-primitive";
 import { validateRecord } from "@Validation/validators/validate-record";
 import { validateSet } from "@Validation/validators/validate-set";
+import { validateTuple } from "@Validation/validators/validate-tuple";
 
 export const validatorsLookupMap = new Map<
   DataTypeKind,
@@ -19,6 +20,7 @@ export const validatorsLookupMap = new Map<
 >([
   ["simple", validatePrimitive],
   ["array", validateArray],
+  ["tuple", validateTuple],
   ["record", validateRecord],
   ["dictionary", validateDict],
   ["union", validateOneOf],

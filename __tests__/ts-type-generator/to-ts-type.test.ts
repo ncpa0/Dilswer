@@ -17,6 +17,11 @@ const testDt = DataType.RecordOf({
     DataType.RecordOf({ foo: DataType.String }),
     DataType.RecordOf({ bar: DataType.String })
   ).setDescription("Array of two possible record types"),
+  tuple: DataType.Tuple(DataType.String, DataType.Number),
+  namedTuple: DataType.Tuple(
+    DataType.ArrayOf(DataType.String),
+    DataType.Enum(Enum).setEnumName("Enum")
+  ).setTitle("A Tuple").setDescription("A tuple with a named type"),
   literalString: DataType.Literal("literal"),
   literalNumber: DataType.Literal(1),
   literalBoolean: DataType.Literal(true),
@@ -55,6 +60,10 @@ const testDt = DataType.RecordOf({
           DataType.RecordOf({ foo: DataType.String }).setTitle("Foo Container"),
           DataType.RecordOf({ bar: DataType.String })
         ),
+      },
+      tuple: {
+        required: false,
+        type: DataType.Tuple(DataType.String, DataType.Number),
       },
       literalString: { required: false, type: DataType.Literal("literal") },
       literalNumber: { required: false, type: DataType.Literal(1) },

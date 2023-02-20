@@ -1025,6 +1025,73 @@ describe("createValidator", () => {
       });
     });
 
+    describe("for tuples", () => {
+      it("should validate against simple tuple", () => {
+        const typeDef = DataType.Tuple(DataType.String, DataType.Number);
+
+        type ExpectedType = [string, number];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate(["foo", 1])).toEqual(true);
+
+        expect(validate([])).toEqual(false);
+        expect(validate([, 1])).toEqual(false);
+        expect(validate(["foo"])).toEqual(false);
+        expect(validate(["foo", 1, 2])).toEqual(false);
+        expect(validate(["foo", 1, "2"])).toEqual(false);
+        expect(validate([1, "foo"])).toEqual(false);
+        expect(validate(["foo", "1"])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate([true])).toEqual(false);
+        expect(validate({ 0: "baz", 1: 2 })).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate(0)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+      });
+
+      it("should validate against nested tuples", () => {
+        const typeDef = DataType.Tuple(
+          DataType.String,
+          DataType.Tuple(DataType.Number, DataType.String)
+        );
+
+        type ExpectedType = [string, [number, string]];
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate(["foo", [1, "bar"]])).toEqual(true);
+
+        expect(validate([])).toEqual(false);
+        expect(validate([, 1])).toEqual(false);
+        expect(validate(["foo"])).toEqual(false);
+        expect(validate(["foo", [1, "bar", 2]])).toEqual(false);
+        expect(validate(["foo", [1, "bar", "2"]])).toEqual(false);
+        expect(validate([1, ["foo", "bar"]])).toEqual(false);
+        expect(validate(["foo", ["1", "bar"]])).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate([true])).toEqual(false);
+        expect(validate({ 0: "baz", 1: 2 })).toEqual(false);
+        expect(validate("foo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate(0)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+      });
+    });
+
     describe("for records", () => {
       it("should not validate null for empty objects", () => {
         const typeDef = DataType.RecordOf({});

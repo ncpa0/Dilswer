@@ -17,6 +17,7 @@ const testDt = DataType.RecordOf({
     DataType.RecordOf({ foo: DataType.String }),
     DataType.RecordOf({ bar: DataType.String })
   ),
+  tuple: DataType.Tuple(DataType.String, DataType.Number),
   literalString: DataType.Literal("literal"),
   literalNumber: DataType.Literal(1),
   literalBoolean: DataType.Literal(true),
@@ -51,6 +52,16 @@ const testDt = DataType.RecordOf({
         type: DataType.ArrayOf(
           DataType.RecordOf({ foo: DataType.String }),
           DataType.RecordOf({ bar: DataType.String })
+        ),
+      },
+      tuple: {
+        required: false,
+        type: DataType.Tuple(
+          DataType.RecordOf({
+            id: { required: false, type: DataType.String },
+          }),
+          DataType.Literal("separator"),
+          DataType.Boolean
         ),
       },
       literalString: { required: false, type: DataType.Literal("literal") },

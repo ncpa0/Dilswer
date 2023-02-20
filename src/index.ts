@@ -17,6 +17,10 @@ import {
 } from "@Validation/create-validated-function";
 import { createChecker, createValidator } from "@Validation/create-validator";
 import { ensureDataType } from "@Validation/ensure-data-type";
+
+const assertDataType = ensureDataType;
+const Type = DataType;
+
 export type { GetDataType } from "@DataTypes/type-utils";
 export type {
   AllDataTypes,
@@ -54,6 +58,7 @@ export {
   createValidatedFunction,
   createValidator,
   DataType,
+  Type,
   ensureDataType,
   Exclude,
   getMetadata,
@@ -67,8 +72,6 @@ export {
   parseWith,
 };
 
-const assertDataType = ensureDataType;
-
 export default {
   And,
   assertDataType,
@@ -77,6 +80,7 @@ export default {
   createValidatedFunction,
   createValidator,
   DataType,
+  Type,
   ensureDataType,
   Exclude,
   getMetadata,
