@@ -15,7 +15,7 @@ export type TsParsingOptions = {
    *   types that have titles assigned will be split into
    *   separate type definitions.
    *
-   * Default: `compact`
+   * @default `compact`
    */
   mode: TsParsingMode;
   /**
@@ -26,7 +26,7 @@ export type TsParsingOptions = {
    * - `named` - only the types with titles will be exported
    * - `none` - nothing will be exported
    *
-   * Default: `main`
+   * @default `main`
    */
   exports: "main" | "named" | "all" | "none";
   /**
@@ -36,7 +36,7 @@ export type TsParsingOptions = {
    * The difference is that declaration will generate each type
    * definition with a `declare` keyword preceding it.
    *
-   * Default: `false`
+   * @default `false`
    */
   declaration: boolean;
   /**
@@ -46,7 +46,7 @@ export type TsParsingOptions = {
    *   encountered
    * - `rename` - will rename the duplicate type
    *
-   * Default: `error`
+   * @default `error`
    */
   onDuplicateName: "error" | "rename";
   /**
@@ -109,9 +109,8 @@ export type ExternalTypeImport = {
    * Name of the type as it is to be used within the generated
    * declarations.
    *
-   * If original name is not provided it is also the name of the
-   * imported type, otherwise this basically becomes the name
-   * alias fo it.
+   * If original name is not provided this is also the name of
+   * the imported type.
    */
   typeName: string;
   /**
@@ -120,8 +119,8 @@ export type ExternalTypeImport = {
    */
   originalName?: string;
   /**
-   * Whether the imported name is a value or a type. If it is a
-   * name it will be referenced with a `typeof` keyword.
+   * Whether the imported name is a "value" or a "type". If it is
+   * a "value" it will be referenced with a `typeof` keyword.
    */
   valueImport?: boolean;
 };

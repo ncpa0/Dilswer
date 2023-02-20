@@ -18,13 +18,14 @@ both the runtime validation types and the TypeScript type definitions.
    2. [Create a TypeScript type from a Dilswer definition](#create-a-typescript-type-from-a-dilswer-definition)
    3. [Create a validation function](#create-a-validation-function)
    4. [Create a function with a validated input](#create-a-function-with-a-validated-input)
-2. [Main exported functions](#main-exported-functions)
-   1. [assertDataType()](#dilswerassertdatatype)
-   2. [createValidator()](#dilswercreatevalidator)
-   3. [createTypeGuardedFunction()](#dilswercreatetypeguardedfunction)
-   4. [createValidatedFunction()](#dilswercreatevalidatedfunction)
-   5. [toJsonSchema()](#dilswertojsonschema)
-   6. [DataType](#dilswerdatatype)
+2. [Available Functions](#available-functions)
+   1. [assertDataType()](#assertdatatype)
+   2. [createValidator()](#createvalidator)
+   3. [createTypeGuardedFunction()](#createtypeguardedfunction)
+   4. [createValidatedFunction()](#createvalidatedfunction)
+   5. [toJsonSchema()](#tojsonschema)
+   6. [toTsType()](#totstype)
+   7. [DataType](#datatype)
 3. [Data Types](#data-types)
    1. [String](#datatypestring)
    2. [Number](#datatypenumber)
@@ -59,6 +60,7 @@ both the runtime validation types and the TypeScript type definitions.
    1. [Assign Metadata](#assign-metadata)
    2. [Read Metadata](#read-metadata)
    3. [Metadata in JSON Schema](#metadata-in-json-schema)
+6. [Parsing](#parsing)
 
 ## Quick Start
 
@@ -176,9 +178,9 @@ const person = await axios
 const result = processPerson(person); // => "Success!" or "Failure"
 ```
 
-## Main exported functions
+## Available Functions
 
-#### dilswer.createValidator()
+#### createValidator()
 
 ```ts
 const createValidator: <DT extends AllDataTypes>(
@@ -190,7 +192,7 @@ Higher order function that generates a validator which will check the provided
 `data` against the `dataType` type structure definition and returns a boolean
 indicating if the check was successful.
 
-#### dilswer.createTypeGuardedFunction()
+#### createTypeGuardedFunction()
 
 ```ts
 const createTypeGuardedFunction: <DT extends AllDataTypes, R, ER = void>(
@@ -207,11 +209,11 @@ as it's argument, otherwise the second callback `onValidationError` is invoked
 with the type validation error as it's argument (unless the callback is not
 specified).
 
-#### dilswer.createValidatedFunction()
+#### createValidatedFunction()
 
 Alias for the `createTypeGuardedFunction()`.
 
-#### dilswer.assertDataType()
+#### assertDataType()
 
 _Also available under an alias `dilswer.ensureDataType()`_
 
@@ -225,16 +227,16 @@ const assertDataType: <DT extends AllDataTypes>(
 Checks the provided `data` against the `dataType` type definition and throws an
 ValidationError if the `data` does not conform to the `dataType`.
 
-#### dilswer.toJsonSchema()
+#### toJsonSchema()
 
 Translates given DataType into a JSON Schema.
 
 ```ts
-const toJsonSchema = (
+const toJsonSchema: (
   type: AnyDataType,
   options: ParseToJsonSchemaOptions = {},
   include$schemaProperty = true
-): JSONSchema6 | undefined
+) => JSONSchema6 | undefined;
 ```
 
 ##### ParseToJsonSchemaOptions
@@ -294,7 +296,149 @@ type ParseToJsonSchemaOptions = {
 };
 ```
 
-#### dilswer.DataType
+#### toTsType()
+
+Translates given DataType into a TypeScript type definition. This is not very
+useful at runtime, and is mostly intended for generating type definitions with
+JSDoc comments that can be bundled with libraries.
+
+```ts
+const toTsType: (
+  dataType: AnyDataType,
+  options?: Partial<TsParsingOptions>
+) => string;
+```
+
+#### TsParsingOptions
+
+```ts
+type TsParsingOptions = {
+  /**
+   * Defines how to parse the type.
+   *
+   * - `compact` - the type will be parsed into a single type
+   *   definition
+   * - `fully-expanded` - the type will be split into multiple type
+   *   definitions, and the main DataType type definition will
+   *   reference them.
+   * - `named-expanded` - similar to `fully-expanded`, but only the
+   *   types that have titles assigned will be split into
+   *   separate type definitions.
+   *
+   * @default `compact`
+   */
+  mode: TsParsingMode;
+  /**
+   * Defines how to export the generated types.
+   *
+   * - `main` - only the main DataType type will be exported
+   * - `all` - all types generated will be exported
+   * - `named` - only the types with titles will be exported
+   * - `none` - nothing will be exported
+   *
+   * @default `main`
+   */
+  exports: "main" | "named" | "all" | "none";
+  /**
+   * Defines whether to generate the type as a declaration or
+   * not.
+   *
+   * The difference is that declaration will generate each type
+   * definition with a `declare` keyword preceding it.
+   *
+   * @default `false`
+   */
+  declaration: boolean;
+  /**
+   * Defines how to handle duplicate names.
+   *
+   * - `error` - will throw an error if a duplicate name is
+   *   encountered
+   * - `rename` - will rename the duplicate type
+   *
+   * @default `error`
+   */
+  onDuplicateName: "error" | "rename";
+  /**
+   * Some DataType can reference enums or classes, in which case
+   * it's sometimes impossible to generate a valid TypeScript
+   * type for them. By default just the name of that class/enum
+   * will be used, and if that name is not available in the
+   * global scope, TS will resolve it to `any`. This option
+   * allows to define a custom import path for such types.
+   *
+   * @example
+   *   // foo.ts
+   *   export class Foo {}
+   *
+   *   // data-type.ts
+   *   import { Foo } from "./foo";
+   *
+   *   export const dt = DataType.RecordOf({
+   *     foo: DataType.InstanceOf(Foo),
+   *   });
+   *
+   *   // ts-type-generator.ts
+   *   import { dt } from "./data-type";
+   *   import { Foo } from "./foo";
+   *
+   *   const tsType = toTsType(dt, {
+   *     getExternalTypeImport: (t) => {
+   *       if (t.instanceOf === Foo) {
+   *         return {
+   *           typeName: "Foo",
+   *           path: "./foo",
+   *         };
+   *       }
+   *     },
+   *   });
+   *   // tsType:
+   *   //"
+   *   // import { Foo } from "./foo";
+   *   //
+   *   // export type Record1 = {
+   *   //   foo: InstanceType<typeof Foo>;
+   *   // }
+   *   //"
+   */
+  getExternalTypeImport?: (
+    type: Enum | EnumMember | InstanceOf | Custom | SimpleDataType<"function">
+  ) => ExternalTypeImport | undefined;
+};
+
+type TsParsingMode = "compact" | "fully-expanded" | "named-expanded";
+
+type ExternalTypeImport = {
+  /**
+   * Path to the file containing the external type. If the path
+   * is not specified, the import statement will be omitted, so
+   * for the generated declarations to be valid, you will have to
+   * include that yourself or make the specified type available
+   * in the global scope.
+   */
+  path?: string;
+  /**
+   * Name of the type as it is to be used within the generated
+   * declarations.
+   *
+   * If original name is not provided this is also the name of
+   * the imported type.
+   */
+  typeName: string;
+  /**
+   * Name of the type that will be used in the generated import
+   * statement.
+   */
+  originalName?: string;
+  /**
+   * Whether the imported name is a "value" or a "type". If it is
+   * a "value" it will be referenced with a `typeof` keyword.
+   */
+  valueImport?: boolean;
+};
+```
+
+#### DataType
 
 Object containing all the dilswer runtime type definitions (like `Number`,
 `String`, `ArrayOf(...)`, etc.)
@@ -761,4 +905,97 @@ const jsonSchema = toJsonSchema(UserDT);
 //    },
 //    required: ["name", "id", "friends"],
 // }
+```
+
+### Parsing
+
+Dilswer data types can be easily parsed into any arbitrary data structure via
+`parseWith` function.
+
+This function takes a `visitor` object, which should contain a `visit` method,
+this method should generate a node of the new, desired data structure.
+
+This method is also used internally by `toJsonSchema` and `toTsType` functions.
+You can see the implementation of these functions in the source code
+[here](./src/json-schema-parser/to-json-schema.ts) and
+[here](./src/ts-type-generator/to-ts-type.ts).
+
+#### Example
+
+```ts
+import { DataType, parseWith, AnyDataType } from "dilswer";
+
+// Define how the new structure should look like
+type Node = {
+  typeName: string;
+  children?: Node[] | Record<string, Node>;
+};
+
+// Create a visitor which will be used to translate Dilswer's data types into `Node`s
+const visitor = {
+  visit(
+    type: AnyDataType,
+    children?: Node[] | RecordOfVisitChild<Node>[]
+  ): Node {
+    switch (type.kind) {
+      case "simple":
+        return { typeName: type.simpleType };
+      case "record":
+        return {
+          typeName: "record",
+          children: children
+            ? Object.fromEntries(
+                (children as RecordOfVisitChild<Node>[]).map(
+                  ({ propertyName, child }) => [propertyName, child]
+                )
+              )
+            : undefined,
+        };
+      default:
+        return { typeName: type.kind, children: children as Node[] };
+    }
+  },
+};
+
+// use the visitor on a Dilser data type
+
+const type = DataType.RecordOf({
+  foo: DataType.String,
+  bar: DataType.ArrayOf(DataType.Number),
+  baz: DataType.OneOf(DataType.String, DataType.Number),
+});
+
+const nodeTree = parseWith(visitor, type);
+```
+
+##### Example output
+
+```json
+{
+  "typeName": "record",
+  "children": {
+    "foo": {
+      "typeName": "string"
+    },
+    "bar": {
+      "typeName": "array",
+      "children": [
+        {
+          "typeName": "number"
+        }
+      ]
+    },
+    "baz": {
+      "typeName": "union",
+      "children": [
+        {
+          "typeName": "string"
+        },
+        {
+          "typeName": "number"
+        }
+      ]
+    }
+  }
+}
 ```
