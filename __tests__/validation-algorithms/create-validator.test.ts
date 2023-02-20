@@ -1,4 +1,4 @@
-import { ParseDataType, UnknownFunction } from "@DataTypes/type-utils";
+import type { ParseDataType, UnknownFunction } from "@DataTypes/type-utils";
 import {
   AnyDataType,
   createValidator,
