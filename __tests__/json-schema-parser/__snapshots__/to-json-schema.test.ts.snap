@@ -289,6 +289,8 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
               "type": "boolean",
             },
           ],
+          "maxItems": 3,
+          "minItems": 3,
           "required": [
             "0",
             "1",
@@ -370,6 +372,8 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
           "type": "number",
         },
       ],
+      "maxItems": 2,
+      "minItems": 2,
       "required": [
         "0",
         "1",
@@ -678,6 +682,8 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
               "type": "boolean",
             },
           ],
+          "maxItems": 3,
+          "minItems": 3,
           "required": [
             "0",
             "1",
@@ -765,6 +771,8 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
           "type": "number",
         },
       ],
+      "maxItems": 2,
+      "minItems": 2,
       "required": [
         "0",
         "1",
@@ -1083,6 +1091,8 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
               "type": "boolean",
             },
           ],
+          "maxItems": 3,
+          "minItems": 3,
           "required": [
             "0",
             "1",
@@ -1168,6 +1178,8 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
           "type": "number",
         },
       ],
+      "maxItems": 2,
+      "minItems": 2,
       "required": [
         "0",
         "1",

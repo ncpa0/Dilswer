@@ -1037,12 +1037,13 @@ describe("createValidator", () => {
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate(["foo", 1])).toEqual(true);
+        expect(validate(["", 0])).toEqual(true);
 
+        expect(validate(["foo", 1, 2])).toEqual(false);
+        expect(validate(["foo", 1, undefined])).toEqual(false);
         expect(validate([])).toEqual(false);
         expect(validate([, 1])).toEqual(false);
         expect(validate(["foo"])).toEqual(false);
-        expect(validate(["foo", 1, 2])).toEqual(false);
-        expect(validate(["foo", 1, "2"])).toEqual(false);
         expect(validate([1, "foo"])).toEqual(false);
         expect(validate(["foo", "1"])).toEqual(false);
         expect(validate(null)).toEqual(false);
@@ -1072,11 +1073,14 @@ describe("createValidator", () => {
 
         expect(validate(["foo", [1, "bar"]])).toEqual(true);
 
+        expect(validate(["foo", [1, "bar", 2]])).toEqual(false);
+        expect(validate(["foo", [1, "bar", null], () => {}])).toEqual(false);
         expect(validate([])).toEqual(false);
         expect(validate([, 1])).toEqual(false);
         expect(validate(["foo"])).toEqual(false);
-        expect(validate(["foo", [1, "bar", 2]])).toEqual(false);
-        expect(validate(["foo", [1, "bar", "2"]])).toEqual(false);
+        expect(validate(["foo", { 0: 1, 2: "foo" }, [1, "bar"]])).toEqual(
+          false
+        );
         expect(validate([1, ["foo", "bar"]])).toEqual(false);
         expect(validate(["foo", ["1", "bar"]])).toEqual(false);
         expect(validate(null)).toEqual(false);
