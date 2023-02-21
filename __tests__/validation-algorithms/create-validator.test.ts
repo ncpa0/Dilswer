@@ -1891,5 +1891,62 @@ describe("createValidator", () => {
         expect(() => validate({ foo: "bar" })).toThrowError("foo");
       });
     });
+
+    describe("for string matching pattern", () => {
+      it("should validate the string against the pattern", () => {
+        const typeDef = DataType.StringMatching(/^foo/);
+
+        type ExpectedType = string;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate("foobar")).toEqual(true);
+        expect(validate("foo")).toEqual(true);
+        expect(validate("foo bar")).toEqual(true);
+
+        expect(validate("bar")).toEqual(false);
+        expect(validate("barfoo")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+      });
+
+      it("should validate the string against the pattern and assert the type", () => {
+        const typeDef = DataType.StringMatching<`bar.${string}`>(/^bar\./);
+
+        type ExpectedType = `bar.${string}`;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = createValidator(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate("bar.foo")).toEqual(true);
+        expect(validate("bar.")).toEqual(true);
+
+        expect(validate("foo")).toEqual(false);
+        expect(validate("bar")).toEqual(false);
+        expect(validate("foobar.")).toEqual(false);
+        expect(validate("foo.bar.")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate(Symbol())).toEqual(false);
+        expect(validate(() => {})).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+      });
+    });
   });
 });

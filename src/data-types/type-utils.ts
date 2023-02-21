@@ -1,4 +1,4 @@
-import type { DataTypeSymbol, InstanceOf, Tuple } from "@DataTypes/data-types";
+import type { InstanceOf, StringMatching, Tuple } from "@DataTypes/data-types";
 import type {
   AllOf,
   AnyDataType,
@@ -66,22 +66,6 @@ export type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<
   >
 >;
 
-export type EnsureIsKey<K> = K extends
-  | "arrayOf"
-  | "tuple"
-  | "recordOf"
-  | "dict"
-  | "setOf"
-  | "oneOf"
-  | "allOf"
-  | "literal"
-  | "enumInstance"
-  | "enumMember"
-  | "instanceOf"
-  | "custom"
-  ? K
-  : "invalid";
-
 export type GetTypeFromArrayOf<D extends ComplexDataType> = D extends ArrayOf<
   infer T
 >
@@ -147,21 +131,27 @@ export type GetTypeFromTuple<D extends ComplexDataType> = D extends Tuple<
   ? RepackTuple<T>
   : never;
 
-export type ParseComplexType<D extends ComplexDataType> = {
-  arrayOf: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
+export type GetTypeFromStringMatching<D extends ComplexDataType> =
+  D extends StringMatching<infer T> ? T : never;
+
+type TypeMap<D extends ComplexDataType> = {
+  array: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
   tuple: GetTypeFromTuple<D>;
-  recordOf: ParseRecordType<GetTypeFromRecordOf<D>>;
-  dict: Record<string | number, ParseDataType<GetTypeFromDict<D>>>;
-  setOf: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;
-  oneOf: ParseDataType<GetTypeFromOneOf<D>>;
-  allOf: GetTypeFromAllOf<D>;
+  record: ParseRecordType<GetTypeFromRecordOf<D>>;
+  dictionary: Record<string | number, ParseDataType<GetTypeFromDict<D>>>;
+  set: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;
+  union: ParseDataType<GetTypeFromOneOf<D>>;
+  intersection: GetTypeFromAllOf<D>;
   literal: GetTypeFromLiteral<D>;
-  enumInstance: GetTypeFromEnum<D>;
+  enumUnion: GetTypeFromEnum<D>;
   enumMember: GetTypeFromEnumMember<D>;
   instanceOf: GetTypeFromInstanceOf<D>;
   custom: GetTypeFromCustom<D>;
-  invalid: never;
-}[EnsureIsKey<Exclude<keyof D, typeof DataTypeSymbol>>];
+  stringMatching: GetTypeFromStringMatching<D>;
+};
+
+export type ParseComplexType<D extends ComplexDataType> =
+  D["kind"] extends keyof TypeMap<D> ? TypeMap<D>[D["kind"]] : never;
 
 export type ParseBasicDataType<D extends BasicDataType> = {
   unknown: unknown;

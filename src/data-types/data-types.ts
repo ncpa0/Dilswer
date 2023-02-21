@@ -403,6 +403,48 @@ export class Custom<
   }
 }
 
+export class StringMatching<T extends string = string> extends BaseDataType {
+  /** @internal */
+  static getOriginalMetadata(dt: StringMatching) {
+    return dt[MetadataSymbol];
+  }
+
+  protected [MetadataSymbol]: TypeMetadata & {
+    tsPattern?: string;
+  } = {};
+
+  readonly kind = "stringMatching";
+  constructor(public pattern: RegExp) {
+    super();
+    Object.freeze(this);
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
+  }
+
+  /**
+   * Sets the metadata for the TypeScript pattern. This is used
+   * for generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   *
+   * This value must use the same syntax as the type literal
+   * types in TypeScript.
+   *
+   * @example
+   *   const type =
+   *     DataType.StringMatching<`${string}.${string}`>(
+   *       /^.+\..+$/
+   *     ).setTsPattern("${string}.${string}");
+   */
+  setTsPattern(tsPattern: string) {
+    this[MetadataSymbol].tsPattern = tsPattern;
+
+    return this;
+  }
+}
+
 export const DataType = {
   get Unknown() {
     return new SimpleDataType(BasicDataTypes.Unknown);
@@ -474,6 +516,9 @@ export const DataType = {
   },
   Custom<VF extends (v: any) => v is any>(validateFunction: VF) {
     return new Custom(validateFunction);
+  },
+  StringMatching<T extends string>(pattern: RegExp) {
+    return new StringMatching<T>(pattern);
   },
 };
 

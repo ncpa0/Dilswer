@@ -1,4 +1,4 @@
-import type { InstanceOf, Tuple } from "@DataTypes/data-types";
+import type { InstanceOf, StringMatching, Tuple } from "@DataTypes/data-types";
 import { BaseDataType, DataType } from "@DataTypes/data-types";
 import type {
   AllOf,
@@ -402,6 +402,24 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
+  private parseStringMatching(type: StringMatching): R {
+    const schema: JSONSchema6 = {
+      type: "string",
+      pattern: type.pattern.source,
+    };
+
+    if (type.pattern.flags) {
+      // json schema does not support Regexp flags,
+      // but even if JsonSchema validators cannot use this information
+      // we store it under a extra property for the sake of completeness
+      Object.assign(schema, { patternFlags: type.pattern.flags });
+    }
+
+    this.assignMetadataToSchema(schema, type);
+
+    return schema;
+  }
+
   visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
   visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
   visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
@@ -432,6 +450,8 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
         return this.parseInstanceOf(type);
       case "custom":
         return this.parseCustom(type);
+      case "stringMatching":
+        return this.parseStringMatching(type);
     }
   }
 }
