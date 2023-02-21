@@ -12,6 +12,7 @@ import { validateOneOf } from "@Validation/validators/validate-one-of";
 import { validatePrimitive } from "@Validation/validators/validate-primitive";
 import { validateRecord } from "@Validation/validators/validate-record";
 import { validateSet } from "@Validation/validators/validate-set";
+import { validateStringMatching } from "@Validation/validators/validate-string-matching";
 import { validateTuple } from "@Validation/validators/validate-tuple";
 
 export const validatorsLookupMap = new Map<
@@ -31,4 +32,5 @@ export const validatorsLookupMap = new Map<
   ["set", validateSet],
   ["instanceOf", validateInstanceOf],
   ["custom", validateCustom],
+  ["stringMatching", validateStringMatching],
 ]);

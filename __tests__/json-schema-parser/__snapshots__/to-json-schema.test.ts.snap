@@ -268,6 +268,11 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
           ],
           "type": "array",
         },
+        "stringMatching": {
+          "pattern": "foo.+[0-9]$",
+          "patternFlags": "gi",
+          "type": "string",
+        },
         "tuple": {
           "items": [
             {
@@ -363,6 +368,10 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
       ],
       "type": "array",
     },
+    "stringMatching": {
+      "pattern": "^foo$",
+      "type": "string",
+    },
     "tuple": {
       "items": [
         {
@@ -426,6 +435,7 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'omit' 1`] 
     "recordIntersection",
     "dict",
     "oneof",
+    "stringMatching",
   ],
   "type": "object",
 }
@@ -658,6 +668,11 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
           ],
           "type": "array",
         },
+        "stringMatching": {
+          "pattern": "foo.+[0-9]$",
+          "patternFlags": "gi",
+          "type": "string",
+        },
         "stringSet": {
           "title": "Set",
         },
@@ -756,6 +771,10 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
       ],
       "type": "array",
     },
+    "stringMatching": {
+      "pattern": "^foo$",
+      "type": "string",
+    },
     "stringSet": {
       "title": "Set",
     },
@@ -832,6 +851,7 @@ exports[`toJsonSchema should parse to a valid JSONSchema when set to 'set-as-any
     "symbol",
     "undef",
     "customValidator",
+    "stringMatching",
   ],
   "type": "object",
 }
@@ -1069,6 +1089,11 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
           ],
           "type": "array",
         },
+        "stringMatching": {
+          "pattern": "foo.+[0-9]$",
+          "patternFlags": "gi",
+          "type": "string",
+        },
         "tuple": {
           "items": [
             {
@@ -1169,6 +1194,10 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
       ],
       "type": "array",
     },
+    "stringMatching": {
+      "pattern": "^foo$",
+      "type": "string",
+    },
     "tuple": {
       "items": [
         {
@@ -1234,6 +1263,7 @@ exports[`toJsonSchema should set the specified additionalProperty 1`] = `
     "recordIntersection",
     "dict",
     "oneof",
+    "stringMatching",
   ],
   "type": "object",
 }

@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 import type { InstanceOf, SimpleDataType, Tuple } from "@DataTypes/data-types";
-import { BaseDataType } from "@DataTypes/data-types";
+import { BaseDataType, StringMatching } from "@DataTypes/data-types";
 import type {
   AllOf,
   AnyDataType,
@@ -42,6 +42,7 @@ import { TsStringBuilder } from "@TsTypeGenerator/type-builders/simple-types/str
 import { TsSymbolBuilder } from "@TsTypeGenerator/type-builders/simple-types/symbol-builder";
 import { TsUndefinedBuilder } from "@TsTypeGenerator/type-builders/simple-types/undefined-builder";
 import { TsUnknownBuilder } from "@TsTypeGenerator/type-builders/simple-types/unknown-builder";
+import { TsStringMatchingBuilder } from "@TsTypeGenerator/type-builders/string-matching-builder";
 import { TsTupleBuilder } from "@TsTypeGenerator/type-builders/tuple-builder";
 import { TsUnionBuilder } from "@TsTypeGenerator/type-builders/union-builder";
 import { capitalize } from "@Utilities/capitalize";
@@ -373,6 +374,15 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return builder;
   }
 
+  private parseStringMatching(type: StringMatching): R {
+    const { tsPattern } = StringMatching.getOriginalMetadata(type);
+
+    const builder = new TsStringMatchingBuilder(tsPattern);
+    this.tsAddMetadataToBuilder(builder, type);
+
+    return this.addFileExportAndResolveBuilder(builder);
+  }
+
   visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
   visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
   visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
@@ -403,6 +413,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
         return this.parseInstanceOf(type);
       case "custom":
         return this.parseCustom(type);
+      case "stringMatching":
+        return this.parseStringMatching(type);
     }
   }
 }

@@ -21,7 +21,9 @@ const testDt = DataType.RecordOf({
   namedTuple: DataType.Tuple(
     DataType.ArrayOf(DataType.String),
     DataType.Enum(Enum).setEnumName("Enum")
-  ).setTitle("A Tuple").setDescription("A tuple with a named type"),
+  )
+    .setTitle("A Tuple")
+    .setDescription("A tuple with a named type"),
   literalString: DataType.Literal("literal"),
   literalNumber: DataType.Literal(1),
   literalBoolean: DataType.Literal(true),
@@ -43,6 +45,10 @@ const testDt = DataType.RecordOf({
   symbol: DataType.Symbol,
   undef: DataType.Undefined,
   customValidator: DataType.Custom((value: any): value is any => true),
+  stringMatching: DataType.StringMatching(/^foo$/),
+  namedStringMatching: DataType.StringMatching(/^'foo'\..+$/)
+    .setTitle("Foo Matcher")
+    .setTsPattern("'foo'.${string}"),
   optionalSelfCopy: {
     required: false,
     type: DataType.RecordOf({

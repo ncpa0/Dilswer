@@ -39,6 +39,7 @@ const testDt = DataType.RecordOf({
   symbol: DataType.Symbol,
   undef: DataType.Undefined,
   customValidator: DataType.Custom((value: any): value is any => true),
+  stringMatching: DataType.StringMatching(/^foo$/),
   optionalSelfCopy: {
     required: false,
     type: DataType.RecordOf({
@@ -87,6 +88,10 @@ const testDt = DataType.RecordOf({
           DataType.RecordOf({ foo: DataType.String }),
           DataType.RecordOf({ bar: DataType.String })
         ),
+      },
+      stringMatching: {
+        required: false,
+        type: DataType.StringMatching(/foo.+[0-9]$/gi),
       },
     }),
   },
