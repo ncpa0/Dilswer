@@ -133,8 +133,6 @@ describe("parseWith", () => {
 
     const nodeTree = parseWith(visitor, type);
 
-    console.log(JSON.stringify(nodeTree, null, 2));
-
     expect(nodeTree).toMatchSnapshot();
   });
 });

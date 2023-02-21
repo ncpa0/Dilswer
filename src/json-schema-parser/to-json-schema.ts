@@ -196,12 +196,14 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
   }
 
   private parseTuple(type: Tuple, children?: Array<R>): R {
-    const items = children?.filter(isDefined);
+    const items = children?.map((c) => c ?? {}) ?? [];
 
     const schema: JSONSchema6 = {
       type: "array",
       items,
-      required: items?.map((_, i) => i.toString()),
+      required: items.map((_, i) => i.toString()),
+      minItems: items.length,
+      maxItems: items.length,
     };
 
     this.assignMetadataToSchema(schema, type);
