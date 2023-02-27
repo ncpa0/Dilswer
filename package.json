@@ -44,7 +44,7 @@
     "@typescript-eslint/parser": "^5.52.0",
     "ajv": "^8.12.0",
     "esbuild": "0.17.9",
-    "eslint": "^8.34.0",
+    "eslint": "^8.35.0",
     "eslint-config-prettier": "^8.6.0",
     "eslint-plugin-prettier": "^4.2.1",
     "git-hook-tasks": "ncpa0cpl/git-hook-tasks",
