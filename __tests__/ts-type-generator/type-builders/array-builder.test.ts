@@ -6,7 +6,7 @@ describe("TsArrayBuilder", () => {
 
     const tsType = toTsType(dt);
 
-    expect(tsType).toBe("export type Array1 = Array<string>;\n");
+    expect(tsType).toBe("export type ArrayType = Array<string>;\n");
   });
 
   it("should correctly generate a simple array type with title and description", () => {

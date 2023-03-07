@@ -8,6 +8,7 @@ import { TsTypeReference } from "@TsTypeGenerator/type-builders/type-reference";
 export class TsFileScope {
   private imports = new Map<string, Set<string>>();
   private typeDefinitions: Map<TsBuilder, string> = new Map();
+  private exportedNames = new Set<string>();
   private definedTypes = new Set<string>();
 
   private exportTypeFor(builder: TsBuilder, isRoot = false): ExportType {
@@ -46,18 +47,51 @@ export class TsFileScope {
     }
   }
 
-  appendDef(builder: TsBuilder, name: string, code: string) {
+  appendDef(builder: TsBuilder, name: string, declarationStatement: string) {
     if (this.options.exports === "none" || this.options.exports === "main") {
-      code = code.replace(/^export /, "");
+      declarationStatement = declarationStatement.replace(/^export /, "");
     }
 
     this.definedTypes.add(name);
-    this.typeDefinitions.set(builder, code);
+    this.typeDefinitions.set(builder, declarationStatement);
+
+    if (declarationStatement.match(/^\s*export/)) {
+      this.exportedNames.add(name);
+    }
   }
 
-  addTypeExport(builder: TsBuilder & TsBaseBuilder) {
-    let def = builder.buildExport(this.exportTypeFor(builder));
-    let name = builder.getName();
+  changeReferenceName(ref: TsTypeReference, newName: string) {
+    const currentName = ref.getName();
+
+    if (currentName === newName) return;
+
+    if (this.definedTypes.has(newName)) {
+      throw new Error(`Duplicate type name: ${newName}`);
+    }
+
+    const referencedBuilder = TsTypeReference.resolveReference(ref);
+
+    if (currentName) {
+      this.definedTypes.delete(currentName);
+      this.typeDefinitions.delete(referencedBuilder);
+      this.exportedNames.delete(currentName);
+    }
+
+    referencedBuilder.setName(newName);
+    ref.name = newName;
+
+    const declarationStatement = referencedBuilder.buildExport(
+      this.exportTypeFor(referencedBuilder)
+    );
+
+    if (declarationStatement) {
+      this.appendDef(referencedBuilder, newName, declarationStatement);
+    }
+  }
+
+  addTypeExport(builder: TsBuilder & TsBaseBuilder, forceName?: string) {
+    let declarationStatement = builder.buildExport(this.exportTypeFor(builder));
+    let name = forceName ?? builder.getName();
 
     if (!name) {
       throw new Error(
@@ -65,37 +99,53 @@ export class TsFileScope {
       );
     }
 
-    if (this.definedTypes.has(name)) {
-      switch (this.options.onDuplicateName) {
-        case "error":
-          throw new Error(`Duplicate type name: ${name}`);
-        case "rename": {
-          name = NameGenerator.generate(name);
-          builder.setName(name);
-          // rebuild with the new name
-          def = builder.buildExport(this.exportTypeFor(builder));
+    if (!forceName) {
+      if (this.definedTypes.has(name)) {
+        switch (this.options.onDuplicateName) {
+          case "error":
+            throw new Error(`Duplicate type name: ${name}`);
+          case "rename": {
+            name = NameGenerator.generate(name);
+            builder.setName(name);
+            // rebuild with the new name
+            declarationStatement = builder.buildExport(
+              this.exportTypeFor(builder)
+            );
+          }
         }
       }
-    }
 
-    if (def) {
-      this.appendDef(builder, name, def);
+      if (declarationStatement) {
+        this.appendDef(builder, name, declarationStatement);
+      }
+    } else if (declarationStatement && !this.definedTypes.has(name)) {
+      this.appendDef(builder, name, declarationStatement);
     }
 
     builder.isAddedToScope = true;
 
-    return new TsTypeReference(builder, name);
+    return new TsTypeReference(this, builder, name);
   }
 
   addRootType(builder: TsBuilder) {
-    builder = TsTypeReference.resolveReference(builder);
+    const referencedBuilder = TsTypeReference.resolveReference(builder);
+
+    if (!referencedBuilder.isAddedToScope) {
+      this.addTypeExport(referencedBuilder as any);
+    }
+
     const exportType = this.exportTypeFor(builder, true);
     const def = builder.buildExport(exportType);
+
+    const name = builder.getName();
+
+    if (name && this.exportedNames.has(name)) {
+      return;
+    }
 
     if (def) {
       this.typeDefinitions.set(builder, def);
     } else {
-      const name = builder.getName();
       if (name) {
         // eslint-disable-next-line
         switch (exportType) {

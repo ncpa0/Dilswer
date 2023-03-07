@@ -1298,3 +1298,561 @@ exports[`toJsonSchema should use the custom parsers 1`] = `
   "type": "object",
 }
 `;
+
+exports[`toJsonSchema should work correctly with circular type deeply nested circular types 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/RecordType",
+    },
+  ],
+  "definitions": {
+    "ArrayType": {
+      "items": [
+        {
+          "$ref": "#/definitions/RecordType",
+        },
+        {
+          "properties": {
+            "items": {
+              "$ref": "#/definitions/ArrayType",
+            },
+            "nested": {
+              "enum": [
+                true,
+              ],
+              "type": "boolean",
+            },
+          },
+          "required": [
+            "nested",
+            "items",
+          ],
+          "type": "object",
+        },
+      ],
+      "type": "array",
+    },
+    "RecordType": {
+      "properties": {
+        "children": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/ArrayType",
+            },
+          ],
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+        "children",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type deeply nested structure 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/Node",
+    },
+  ],
+  "definitions": {
+    "Node": {
+      "properties": {
+        "children": {
+          "properties": {
+            "container": {
+              "properties": {
+                "children": {
+                  "items": [
+                    {
+                      "$ref": "#/definitions/Node",
+                    },
+                  ],
+                  "type": "array",
+                },
+                "name": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "name",
+                "children",
+              ],
+              "type": "object",
+            },
+            "type": {
+              "type": "string",
+            },
+          },
+          "required": [
+            "type",
+            "container",
+          ],
+          "type": "object",
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+        "children",
+      ],
+      "title": "Node",
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type deeply nested structure of named types 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/Node",
+    },
+  ],
+  "definitions": {
+    "Node": {
+      "properties": {
+        "children": {
+          "items": [
+            {
+              "properties": {
+                "children": {
+                  "items": [
+                    {
+                      "$ref": "#/definitions/Node",
+                    },
+                  ],
+                  "type": "array",
+                },
+                "name": {
+                  "enum": [
+                    "span",
+                  ],
+                  "type": "string",
+                },
+              },
+              "required": [
+                "name",
+                "children",
+              ],
+              "title": "SpanNode",
+              "type": "object",
+            },
+          ],
+          "title": "SpanNodeList",
+          "type": "array",
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+        "children",
+      ],
+      "title": "Node",
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type immediately self-referencing record 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/SelfReferencingRecord",
+    },
+  ],
+  "definitions": {
+    "SelfReferencingRecord": {
+      "properties": {
+        "name": {
+          "type": "string",
+        },
+        "self": {
+          "$ref": "#/definitions/SelfReferencingRecord",
+        },
+      },
+      "required": [
+        "name",
+      ],
+      "title": "SelfReferencingRecord",
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type simple circular array 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/ArrayType",
+    },
+  ],
+  "definitions": {
+    "ArrayType": {
+      "items": [
+        {
+          "type": "string",
+        },
+        {
+          "$ref": "#/definitions/ArrayType",
+        },
+      ],
+      "type": "array",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type simple circular named record 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/Node",
+    },
+  ],
+  "definitions": {
+    "Node": {
+      "properties": {
+        "children": {
+          "items": [
+            {
+              "$ref": "#/definitions/Node",
+            },
+          ],
+          "type": "array",
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+        "children",
+      ],
+      "title": "Node",
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type simple circular record 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/RecordType",
+    },
+  ],
+  "definitions": {
+    "RecordType": {
+      "properties": {
+        "children": {
+          "items": [
+            {
+              "$ref": "#/definitions/RecordType",
+            },
+          ],
+          "type": "array",
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+        "children",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with dicts 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/RecordType",
+    },
+  ],
+  "definitions": {
+    "RecordType": {
+      "properties": {
+        "children": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/definitions/RecordType",
+              },
+            ],
+          },
+          "type": "object",
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+        "children",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with direct dicts 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/Dictionary",
+    },
+  ],
+  "definitions": {
+    "Dictionary": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/Dictionary",
+          },
+          {
+            "type": "string",
+          },
+        ],
+      },
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with direct tuples 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/Tuple",
+    },
+  ],
+  "definitions": {
+    "Tuple": {
+      "items": [
+        {
+          "$ref": "#/definitions/Tuple",
+        },
+        {
+          "type": "string",
+        },
+      ],
+      "maxItems": 2,
+      "minItems": 2,
+      "required": [
+        "0",
+        "1",
+      ],
+      "type": "array",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with direct unions 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/OneOf",
+    },
+  ],
+  "definitions": {
+    "OneOf": {
+      "anyOf": [
+        {
+          "$ref": "#/definitions/OneOf",
+        },
+        {
+          "type": "string",
+        },
+      ],
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with intersections 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/RecordType",
+    },
+  ],
+  "definitions": {
+    "RecordType": {
+      "properties": {
+        "children": {
+          "allOf": [
+            {
+              "$ref": "#/definitions/RecordType",
+            },
+            {
+              "properties": {
+                "type": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "type",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with tuples 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/RecordType",
+    },
+  ],
+  "definitions": {
+    "RecordType": {
+      "properties": {
+        "children": {
+          "anyOf": [
+            {
+              "items": [
+                {
+                  "$ref": "#/definitions/RecordType",
+                },
+              ],
+              "maxItems": 1,
+              "minItems": 1,
+              "required": [
+                "0",
+              ],
+              "type": "array",
+            },
+            {
+              "items": [
+                {
+                  "$ref": "#/definitions/RecordType",
+                },
+                {
+                  "$ref": "#/definitions/RecordType",
+                },
+              ],
+              "maxItems": 2,
+              "minItems": 2,
+              "required": [
+                "0",
+                "1",
+              ],
+              "type": "array",
+            },
+            {
+              "items": [
+                {
+                  "$ref": "#/definitions/RecordType",
+                },
+                {
+                  "$ref": "#/definitions/RecordType",
+                },
+                {
+                  "$ref": "#/definitions/RecordType",
+                },
+              ],
+              "maxItems": 3,
+              "minItems": 3,
+              "required": [
+                "0",
+                "1",
+                "2",
+              ],
+              "type": "array",
+            },
+          ],
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;
+
+exports[`toJsonSchema should work correctly with circular type works with unions 1`] = `
+{
+  "allOf": [
+    {
+      "$ref": "#/definitions/RecordType",
+    },
+  ],
+  "definitions": {
+    "RecordType": {
+      "properties": {
+        "children": {
+          "anyOf": [
+            {
+              "$ref": "#/definitions/RecordType",
+            },
+            {
+              "properties": {
+                "children": {
+                  "$ref": "#/definitions/RecordType",
+                },
+                "name": {
+                  "type": "string",
+                },
+              },
+              "required": [
+                "name",
+                "children",
+              ],
+              "type": "object",
+            },
+          ],
+        },
+        "name": {
+          "type": "string",
+        },
+      },
+      "required": [
+        "name",
+      ],
+      "type": "object",
+    },
+  },
+}
+`;

@@ -671,6 +671,57 @@ validate(MyEnum.A); // => true
 validate(MyEnum.B); // => false
 ```
 
+#### DataType.Circular(Function)
+
+Allows to define types that reference themselves. The function it accepts should
+always return a valid DataType, which the reference provided to that function
+will point to.
+
+Example
+
+```ts
+const Node = DataType.Circular((self) =>
+  DataType.Record({
+    tag: DataType.String,
+    children: DataType.ArrayOf(self),
+  })
+);
+
+// this is equivalent to the following type:
+type Node = {
+  tag: string;
+  children: Node[];
+};
+```
+
+Type definitions given for circular DataTypes via `GetDataType` and validation
+methods will not however include infinite recursion as they should. (this does
+not affect the runtime validation) Due to the TypeScript limitations, it's
+impossible for a inferred type to include a reference to itself, so to get a
+usable type we use some TypeScript magic to create a similar type that is
+4-levels deep. For the above example the actual type you will get will look like
+this:
+
+```ts
+type Node = {
+  tag: string;
+  children: Array<{
+    tag: string;
+    children: Array<{
+      tag: string;
+      children: Array<{
+        tag: string;
+        children: Array<any>;
+      }>;
+    }>;
+  }>;
+};
+```
+
+If you absolutely need to get a type that has infinite recursion, you can use
+[toTsType](#totstype) utility to generate TypeScript code which will meet that
+need.
+
 #### DataType.Custom(Function)
 
 will test the data with the provided function, provided function should return a

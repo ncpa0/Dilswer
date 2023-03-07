@@ -1,6 +1,13 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
-import type { InstanceOf, SimpleDataType, Tuple } from "@DataTypes/data-types";
+import type {
+  Circular,
+  CircularRef,
+  InstanceOf,
+  SimpleDataType,
+  Tuple,
+} from "@DataTypes/data-types";
 import { BaseDataType, StringMatching } from "@DataTypes/data-types";
+import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
   AllOf,
   AnyDataType,
@@ -44,6 +51,7 @@ import { TsUndefinedBuilder } from "@TsTypeGenerator/type-builders/simple-types/
 import { TsUnknownBuilder } from "@TsTypeGenerator/type-builders/simple-types/unknown-builder";
 import { TsStringMatchingBuilder } from "@TsTypeGenerator/type-builders/string-matching-builder";
 import { TsTupleBuilder } from "@TsTypeGenerator/type-builders/tuple-builder";
+import { TsNamedReference } from "@TsTypeGenerator/type-builders/type-reference";
 import { TsUnionBuilder } from "@TsTypeGenerator/type-builders/union-builder";
 import { capitalize } from "@Utilities/capitalize";
 
@@ -383,39 +391,100 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
+  private parseCircular(_: Circular, children: R[]): R {
+    const [actualType] = children;
+
+    return actualType;
+  }
+
+  private parseCircularRef(type: CircularRef): R {
+    const referencedType = type._getReferencedType();
+
+    const metadata = BaseDataType.getOriginalMetadata(referencedType);
+    const title = metadata.title;
+
+    if (this.circulars.has(referencedType)) {
+      return new TsNamedReference(this.circulars.get(referencedType)!);
+    }
+
+    if (title) {
+      const typeName = NameGenerator.generate(title);
+      this.circulars.set(referencedType, typeName);
+      return new TsNamedReference(typeName);
+    }
+
+    const typeName = NameGenerator.generate(
+      TypeKindNames.get(referencedType.kind) ?? "Circular"
+    );
+    this.circulars.set(referencedType, typeName);
+    return new TsNamedReference(typeName);
+  }
+
+  private circulars: Map<AnyDataType, string> = new Map();
+
   visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
   visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
   visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
+    let result: R;
+
     switch (type.kind) {
       case "simple":
-        return this.parsePrimitive(type);
+        result = this.parsePrimitive(type);
+        break;
       case "array":
-        return this.parseArrayOf(type, children as R[]);
+        result = this.parseArrayOf(type, children as R[]);
+        break;
       case "tuple":
-        return this.parseTuple(type, children as R[]);
+        result = this.parseTuple(type, children as R[]);
+        break;
       case "record":
-        return this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
+        result = this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
+        break;
       case "dictionary":
-        return this.parseDict(type, children as R[]);
+        result = this.parseDict(type, children as R[]);
+        break;
       case "set":
-        return this.parseSetOf(type, children as R[]);
+        result = this.parseSetOf(type, children as R[]);
+        break;
       case "union":
-        return this.parseOneOf(type, children as R[]);
+        result = this.parseOneOf(type, children as R[]);
+        break;
       case "intersection":
-        return this.parseAllOf(type, children as R[]);
+        result = this.parseAllOf(type, children as R[]);
+        break;
       case "literal":
-        return this.parseLiteral(type);
+        result = this.parseLiteral(type);
+        break;
       case "enumUnion":
-        return this.parseEnum(type);
+        result = this.parseEnum(type);
+        break;
       case "enumMember":
-        return this.parseEnumMember(type);
+        result = this.parseEnumMember(type);
+        break;
       case "instanceOf":
-        return this.parseInstanceOf(type);
+        result = this.parseInstanceOf(type);
+        break;
       case "custom":
-        return this.parseCustom(type);
+        result = this.parseCustom(type);
+        break;
       case "stringMatching":
-        return this.parseStringMatching(type);
+        result = this.parseStringMatching(type);
+        break;
+      case "circular":
+        result = this.parseCircular(type, children as R[]);
+        break;
+      case "circularRef":
+        result = this.parseCircularRef(type);
+        break;
     }
+
+    if (this.circulars.has(type)) {
+      const name = this.circulars.get(type)!;
+      result.setName(name);
+      return this.fileScope.addTypeExport(result as any, name);
+    }
+
+    return result;
   }
 }
 

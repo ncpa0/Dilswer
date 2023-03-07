@@ -115,7 +115,8 @@ export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
 export class RecordOf<
   TS extends RecordTypeSchema = RecordTypeSchema
 > extends BaseDataType {
-  private readonly keys: string[];
+  /** @internal */
+  readonly keys: string[];
   readonly kind = "record";
 
   constructor(public recordOf: TS) {
@@ -445,6 +446,44 @@ export class StringMatching<T extends string = string> extends BaseDataType {
   }
 }
 
+export class CircularRef extends BaseDataType {
+  readonly kind = "circularRef";
+  private foo!: never;
+
+  /** This is the type this reference points to. */
+  get type(): AnyDataType {
+    return this.parent.type;
+  }
+
+  constructor(private parent: Circular) {
+    super();
+  }
+
+  /** @internal */
+  _getReferencedType(): AnyDataType {
+    return this.parent.type;
+  }
+
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    return visitor.visit(this);
+  }
+}
+
+export class Circular<DT extends AnyDataType = any> extends BaseDataType {
+  readonly kind = "circular";
+  type: DT;
+  constructor(getDataType: (ref: CircularRef) => DT) {
+    super();
+    this.type = getDataType(new CircularRef(this));
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
+    const c = this.type._acceptVisitor(visitor);
+    return visitor.visit(this, [c]);
+  }
+}
+
 export const DataType = {
   get Unknown() {
     return new SimpleDataType(BasicDataTypes.Unknown);
@@ -519,6 +558,9 @@ export const DataType = {
   },
   StringMatching<T extends string>(pattern: RegExp) {
     return new StringMatching<T>(pattern);
+  },
+  Circular<DT extends AnyDataType>(getDataType: (ref: CircularRef) => DT) {
+    return new Circular(getDataType);
   },
 };
 

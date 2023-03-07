@@ -1,28 +1,28 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`toTsType should correctly add export statements when exporting all should add \`declare\` 1`] = `
-"export declare type Array1 = Array<number>;
+"export declare type ArrayType = Array<number>;
 
 
 export declare type FooList = Array<string>;
 
 
 export declare type Main = {
-  unnamed: Array1;
+  unnamed: ArrayType;
   foo: FooList;
 };
 "
 `;
 
 exports[`toTsType should correctly add export statements when exporting all should not add \`declare\` 1`] = `
-"export type Array1 = Array<number>;
+"export type ArrayType = Array<number>;
 
 
 export type FooList = Array<string>;
 
 
 export type Main = {
-  unnamed: Array1;
+  unnamed: ArrayType;
   foo: FooList;
 };
 "
@@ -32,9 +32,11 @@ exports[`toTsType should correctly add export statements when exporting only mai
 "declare type FooList = Array<string>;
 
 
-export declare type Main = {
+declare type Main = {
   foo: FooList;
 };
+
+export { Main };
 "
 `;
 
@@ -42,35 +44,37 @@ exports[`toTsType should correctly add export statements when exporting only mai
 "type FooList = Array<string>;
 
 
-export type Main = {
+type Main = {
   foo: FooList;
 };
+
+export { Main };
 "
 `;
 
 exports[`toTsType should correctly add export statements when exporting only named should add \`declare\` 1`] = `
-"declare type Array1 = Array<number>;
+"declare type ArrayType = Array<number>;
 
 
 export declare type FooList = Array<string>;
 
 
 export declare type Main = {
-  unnamed: Array1;
+  unnamed: ArrayType;
   foo: FooList;
 };
 "
 `;
 
 exports[`toTsType should correctly add export statements when exporting only named should not add \`declare\` 1`] = `
-"type Array1 = Array<number>;
+"type ArrayType = Array<number>;
 
 
 export type FooList = Array<string>;
 
 
 export type Main = {
-  unnamed: Array1;
+  unnamed: ArrayType;
   foo: FooList;
 };
 "
@@ -85,7 +89,7 @@ export { IsStringFn };
 exports[`toTsType should correctly add external type import statements with regular Custom validator 1`] = `
 "import type { CustomFoo } from "./custom-validator.d.ts";
 
-export type Record1 = {
+export type RecordType = {
   foo: CustomFoo;
 };
 "
@@ -94,7 +98,7 @@ export type Record1 = {
 exports[`toTsType should correctly add external type import statements with regular Enum 1`] = `
 "import type { MyEnum } from "./enum.d.ts";
 
-export type Record1 = {
+export type RecordType = {
   foo: MyEnum;
 };
 "
@@ -103,7 +107,7 @@ export type Record1 = {
 exports[`toTsType should correctly add external type import statements with regular Enum Member 1`] = `
 "import type { MyEnum } from "./enum.d.ts";
 
-export type Record1 = {
+export type RecordType = {
   foo: MyEnum.C;
 };
 "
@@ -112,7 +116,7 @@ export type Record1 = {
 exports[`toTsType should correctly add external type import statements with regular Function as a type 1`] = `
 "import type { MyFunction } from "./my-function.d.ts";
 
-export type Record1 = {
+export type RecordType = {
   foo: MyFunction;
 };
 "
@@ -121,7 +125,7 @@ export type Record1 = {
 exports[`toTsType should correctly add external type import statements with regular Function as a value 1`] = `
 "import type { myFunction } from "./my-function.d.ts";
 
-export type Record1 = {
+export type RecordType = {
   foo: typeof myFunction;
 };
 "
@@ -208,52 +212,52 @@ exports[`toTsType should correctly generate a complex type with 'compact' mode 1
 `;
 
 exports[`toTsType should correctly generate a complex type with 'fully-expanded' mode 1`] = `
-"type Set1 = Set<string>;
+"type SetType = Set<string>;
 
 
-type Array1 = Array<string>;
+type ArrayType = Array<string>;
 
 
-type Record1 = {
+type RecordType = {
   foo: string;
 };
 
 
-type Record2 = {
+type RecordType1 = {
   bar: string;
 };
 
 /**
  * Array of two possible record types
  */
-type Array2 = Array<Record1 | Record2>;
+type ArrayType1 = Array<RecordType | RecordType1>;
 
 
-type Tuple1 = [string, number];
+type Tuple = [string, number];
 
 
-type Array3 = Array<string>;
+type ArrayType2 = Array<string>;
 
 /**
  * A tuple with a named type
  */
-type ATuple = [Array3, Enum];
+type ATuple = [ArrayType2, Enum];
 
 
-type Record3 = {
+type RecordType2 = {
   a: string;
 };
 
 
-type Record4 = {
+type RecordType3 = {
   b: number;
 };
 
 
-type Intersection1 = Record3 & Record4;
+type Intersection = RecordType2 & RecordType3;
 
 
-type Dict1 = Record<string | number, string>
+type Dict = Record<string | number, string>
 
 
 type FooContainer = {
@@ -266,64 +270,64 @@ type BarContainer = {
 };
 
 
-type Union1 = FooContainer | BarContainer;
+type Union = FooContainer | BarContainer;
 
 
-type StringMatching1 = string;
+type StringMatching = string;
 
 
 type FooMatcher = '\\'foo\\'.\${string}';
 
 
-type Set2 = Set<string>;
+type SetType1 = Set<string>;
 
 
-type Array4 = Array<string>;
+type ArrayType3 = Array<string>;
 
 
-type FooContainer1 = {
+type FooContainer = {
   foo: string;
 };
 
 
-type Record5 = {
+type RecordType4 = {
   bar: string;
 };
 
 
-type Array5 = Array<FooContainer1 | Record5>;
+type ArrayType4 = Array<FooContainer | RecordType4>;
 
 
-type Tuple2 = [string, number];
+type Tuple1 = [string, number];
 
 
-type Record6 = {
+type RecordType5 = {
   a: string;
 };
 
 
-type Record7 = {
+type RecordType6 = {
   b: number;
 };
 
 
-type SomeIntersection = Record6 & Record7;
+type SomeIntersection = RecordType5 & RecordType6;
 
 
-type Dict2 = Record<string | number, string>
+type Dict1 = Record<string | number, string>
 
 
-type Record8 = {
+type RecordType7 = {
   foo: string;
 };
 
 
-type Record9 = {
+type RecordType8 = {
   bar: string;
 };
 
 
-type Union2 = Record8 | Record9;
+type Union1 = RecordType7 | RecordType8;
 
 /**
  * A record identical to the parent record, but with all fields optional
@@ -332,35 +336,35 @@ type OptionalTestRecord = {
   id?: string;
   number?: number;
   bool?: boolean;
-  stringSet?: Set2;
-  stringArray?: Array4;
-  unionArray?: Array5;
-  tuple?: Tuple2;
+  stringSet?: SetType1;
+  stringArray?: ArrayType3;
+  unionArray?: ArrayType4;
+  tuple?: Tuple1;
   literalString?: "literal";
   literalNumber?: 1;
   literalBoolean?: true;
   enum?: Enum;
   bMember?: Enum.B;
   recordIntersection?: SomeIntersection;
-  dict?: Dict2;
-  oneof?: Union2;
+  dict?: Dict1;
+  oneof?: Union1;
 };
 
 
-export type TestRecord = {
+type TestRecord = {
   /**
    * User unique identifier
    */
   uuid: string;
   number: number;
   bool: boolean;
-  stringSet: Set1;
-  stringArray: Array1;
+  stringSet: SetType;
+  stringArray: ArrayType;
   /**
    * Array of two possible record types
    */
-  unionArray: Array2;
-  tuple: Tuple1;
+  unionArray: ArrayType1;
+  tuple: Tuple;
   /**
    * A tuple with a named type
    */
@@ -370,19 +374,21 @@ export type TestRecord = {
   literalBoolean: true;
   enum: Enum;
   bMember: Enum.B;
-  recordIntersection: Intersection1;
-  dict: Dict1;
-  oneof: Union1;
+  recordIntersection: Intersection;
+  dict: Dict;
+  oneof: Union;
   symbol: symbol;
   undef: undefined;
   customValidator: unknown;
-  stringMatching: StringMatching1;
+  stringMatching: StringMatching;
   namedStringMatching: FooMatcher;
   /**
    * A record identical to the parent record, but with all fields optional
    */
   optionalSelfCopy?: OptionalTestRecord;
 };
+
+export { TestRecord };
 "
 `;
 
@@ -406,7 +412,7 @@ type BarContainer = {
 type FooMatcher = '\\'foo\\'.\${string}';
 
 
-type FooContainer1 = {
+type FooContainer = {
   foo: string;
 };
 
@@ -426,7 +432,7 @@ type OptionalTestRecord = {
   bool?: boolean;
   stringSet?: Set<string>;
   stringArray?: Array<string>;
-  unionArray?: Array<FooContainer1 | {
+  unionArray?: Array<FooContainer | {
     bar: string;
   }>;
   tuple?: [string, number];
@@ -445,7 +451,7 @@ type OptionalTestRecord = {
 };
 
 
-export type TestRecord = {
+type TestRecord = {
   /**
    * User unique identifier
    */
@@ -489,11 +495,13 @@ export type TestRecord = {
    */
   optionalSelfCopy?: OptionalTestRecord;
 };
+
+export { TestRecord };
 "
 `;
 
 exports[`toTsType should correctly generate a type referencing a class in compact mode with global FooBar 1`] = `
-"export type Record1 = {
+"export type RecordType = {
   foobar: InstanceType<typeof FooBar>;
 };
 "
@@ -502,19 +510,21 @@ exports[`toTsType should correctly generate a type referencing a class in compac
 exports[`toTsType should correctly generate a type referencing a class in compact mode with imported FooBar 1`] = `
 "import type { FooBar } from "./foo-bar";
 
-export type Record1 = {
+export type RecordType = {
   foobar: InstanceType<typeof FooBar>;
 };
 "
 `;
 
 exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with global FooBar 1`] = `
-"type ClassInstance1 = InstanceType<typeof FooBar>
+"type ClassInstance = InstanceType<typeof FooBar>
 
 
-export type Record1 = {
-  foobar: ClassInstance1;
+type RecordType = {
+  foobar: ClassInstance;
 };
+
+export { RecordType };
 "
 `;
 
@@ -522,7 +532,7 @@ exports[`toTsType should correctly generate a type referencing a class in fully-
 "type AliasFooBar = InstanceType<typeof FooBar>
 
 
-export type Record1 = {
+export type RecordType = {
   foobar: AliasFooBar;
 };
 "
@@ -531,12 +541,14 @@ export type Record1 = {
 exports[`toTsType should correctly generate a type referencing a class in fully-expanded mode with imported FooBar 1`] = `
 "import type { FooBar } from "./foo-bar";
 
-type ClassInstance1 = InstanceType<typeof FooBar>
+type ClassInstance = InstanceType<typeof FooBar>
 
 
-export type Record1 = {
-  foobar: ClassInstance1;
+type RecordType = {
+  foobar: ClassInstance;
 };
+
+export { RecordType };
 "
 `;
 
@@ -546,8 +558,179 @@ exports[`toTsType should correctly generate a type referencing a class in fully-
 type AliasFooBar = InstanceType<typeof FooBar>
 
 
-export type Record1 = {
+export type RecordType = {
   foobar: AliasFooBar;
 };
+"
+`;
+
+exports[`toTsType should work correctly with circular type deeply nested circular types 1`] = `
+"type ArrayType = Array<RecordType | {
+  nested: true;
+  items: ArrayType;
+}>;
+
+
+type RecordType = {
+  name: string;
+  children: ArrayType;
+};
+
+export { RecordType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type deeply nested structure 1`] = `
+"type Node = {
+  name: string;
+  children: {
+    type: string;
+    container: {
+      name: string;
+      children: Array<Node>;
+    };
+  };
+};
+
+export { Node };
+"
+`;
+
+exports[`toTsType should work correctly with circular type deeply nested structure of named types 1`] = `
+"type SpanNode = {
+  name: "span";
+  children: Array<Node>;
+};
+
+
+type SpanNodeList = Array<SpanNode>;
+
+
+type Node = {
+  name: string;
+  children: SpanNodeList;
+};
+
+export { Node };
+"
+`;
+
+exports[`toTsType should work correctly with circular type immediately self-referencing record 1`] = `
+"type SelfReferencingRecord = {
+  name: string;
+  self?: SelfReferencingRecord;
+};
+
+export { SelfReferencingRecord };
+"
+`;
+
+exports[`toTsType should work correctly with circular type simple circular array 1`] = `
+"type ArrayType = Array<string | ArrayType>;
+
+export { ArrayType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type simple circular named record 1`] = `
+"type Node = {
+  name: string;
+  children: Array<Node>;
+};
+
+export { Node };
+"
+`;
+
+exports[`toTsType should work correctly with circular type simple circular record 1`] = `
+"type RecordType = {
+  name: string;
+  children: Array<RecordType>;
+};
+
+export { RecordType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with dicts 1`] = `
+"type RecordType = {
+  name: string;
+  children: Record<string | number, RecordType>;
+};
+
+export { RecordType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with direct dicts 1`] = `
+"type Dictionary = Record<string | number, Dictionary | string>
+
+export { Dictionary };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with direct sets 1`] = `
+"type SetOf = Set<SetOf | string>;
+
+export { SetOf };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with direct tuples 1`] = `
+"type Tuple = [Tuple, string];
+
+export { Tuple };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with direct unions 1`] = `
+"type OneOf = OneOf | string;
+
+export { OneOf };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with intersections 1`] = `
+"type RecordType = {
+  name: string;
+  children?: RecordType & {
+    type: string;
+  };
+};
+
+export { RecordType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with sets 1`] = `
+"type RecordType = {
+  name: string;
+  children: Set<RecordType>;
+};
+
+export { RecordType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with tuples 1`] = `
+"type RecordType = {
+  name: string;
+  children?: [RecordType] | [RecordType, RecordType] | [RecordType, RecordType, RecordType];
+};
+
+export { RecordType };
+"
+`;
+
+exports[`toTsType should work correctly with circular type works with unions 1`] = `
+"type RecordType = {
+  name: string;
+  children?: RecordType | {
+    name: string;
+    children: RecordType;
+  };
+};
+
+export { RecordType };
 "
 `;
