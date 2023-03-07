@@ -1,5 +1,12 @@
-import type { InstanceOf, StringMatching, Tuple } from "@DataTypes/data-types";
+import type {
+  Circular,
+  CircularRef,
+  InstanceOf,
+  StringMatching,
+  Tuple,
+} from "@DataTypes/data-types";
 import { BaseDataType, DataType } from "@DataTypes/data-types";
+import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
   AllOf,
   AnyDataType,
@@ -17,7 +24,8 @@ import type {
   SetOf,
 } from "@DataTypes/types";
 import { isDefined } from "@JSONSchemaParser/is-defined";
-import type { JSONSchema6 } from "json-schema";
+import { NameGenerator } from "@TsTypeGenerator/name-generator";
+import type { JSONSchema6, JSONSchema6Definition } from "json-schema";
 
 export type ParseToJsonSchemaOptions = {
   /**
@@ -89,6 +97,8 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     ParseToJsonSchemaOptions["customParser"],
     undefined
   >;
+  private definitionNames: Map<AnyDataType, string> = new Map();
+  definitions: Map<string, JSONSchema6Definition> = new Map();
 
   constructor(private options: ParseToJsonSchemaOptions) {
     this.incompatibleTypes = options.incompatibleTypes ?? "throw";
@@ -420,6 +430,54 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
+  private parseCircular(circular: Circular, children: R[]): R {
+    const [childSchema] = children;
+    const child = circular.type;
+
+    if (this.definitionNames.has(child)) {
+      const definitionName = this.definitionNames.get(child)!;
+      this.definitions.set(definitionName, childSchema ?? { type: "null" });
+      return {
+        allOf: [
+          {
+            $ref: `#/definitions/${definitionName}`,
+          },
+        ],
+      };
+    }
+
+    return childSchema;
+  }
+
+  private parseCircularRef(type: CircularRef): R {
+    const referencedType = type._getReferencedType();
+
+    if (this.definitionNames.has(referencedType)) {
+      return {
+        $ref: `#/definitions/${this.definitionNames.get(referencedType)}`,
+      };
+    }
+
+    const metadata = BaseDataType.getOriginalMetadata(referencedType);
+    const title = metadata.title;
+
+    if (title) {
+      const typeName = NameGenerator.generate(title);
+      this.definitionNames.set(referencedType, typeName);
+      return {
+        $ref: `#/definitions/${typeName}`,
+      };
+    }
+
+    const typeName = NameGenerator.generate(
+      TypeKindNames.get(referencedType.kind) ?? "Circular"
+    );
+    this.definitionNames.set(referencedType, typeName);
+    return {
+      $ref: `#/definitions/${typeName}`,
+    };
+  }
+
   visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
   visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
   visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
@@ -452,6 +510,10 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
         return this.parseCustom(type);
       case "stringMatching":
         return this.parseStringMatching(type);
+      case "circular":
+        return this.parseCircular(type, children as R[]);
+      case "circularRef":
+        return this.parseCircularRef(type);
     }
   }
 }
@@ -462,13 +524,21 @@ export const toJsonSchema = (
   options: ParseToJsonSchemaOptions = {},
   include$schemaProperty = true
 ): JSONSchema6 | undefined => {
-  const visitor = new DataTypeJsonSchemaGenerator(options);
+  try {
+    const visitor = new DataTypeJsonSchemaGenerator(options);
 
-  const schema = type._acceptVisitor(visitor);
+    const schema = type._acceptVisitor(visitor);
 
-  if (include$schemaProperty && schema) {
-    schema.$schema = "http://json-schema.org/draft-06/schema#";
+    if (schema && visitor.definitions.size > 0) {
+      schema.definitions = Object.fromEntries(visitor.definitions.entries());
+    }
+
+    if (include$schemaProperty && schema) {
+      schema.$schema = "http://json-schema.org/draft-06/schema#";
+    }
+
+    return schema;
+  } finally {
+    NameGenerator.clear();
   }
-
-  return schema;
 };

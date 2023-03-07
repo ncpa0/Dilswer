@@ -1,4 +1,6 @@
 import type {
+  Circular,
+  CircularRef,
   InstanceOf,
   SimpleDataType,
   StringMatching,
@@ -70,7 +72,9 @@ export type ComplexDataType =
   | EnumMember
   | InstanceOf
   | Custom
-  | StringMatching;
+  | StringMatching
+  | Circular
+  | CircularRef;
 
 export type DataTypeKind =
   | "simple"
@@ -86,7 +90,9 @@ export type DataTypeKind =
   | "enumMember"
   | "instanceOf"
   | "custom"
-  | "stringMatching";
+  | "stringMatching"
+  | "circular"
+  | "circularRef";
 
 export type AnyDataType = BasicDataType | ComplexDataType;
 

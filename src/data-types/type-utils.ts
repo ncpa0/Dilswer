@@ -1,3 +1,4 @@
+import type { GetTypeFromCircular } from "@DataTypes/circular-type-utils";
 import type { InstanceOf, StringMatching, Tuple } from "@DataTypes/data-types";
 import type {
   AllOf,
@@ -24,8 +25,8 @@ type ParseDataTypeIntersectionTuple<
   ? ParseDataTypeIntersectionTuple<B, U & ParseDataType<A>>
   : U;
 
-type GetDescriptorType<T extends AnyDataType | FieldDescriptor> =
-  T extends FieldDescriptor ? T["type"] : T;
+export type GetDescriptorType<T extends AnyDataType | FieldDescriptor> =
+  T extends { kind: any } ? T : T extends FieldDescriptor ? T["type"] : T;
 
 type IsRequiredDescriptor<T extends AnyDataType | FieldDescriptor> =
   T extends FieldDescriptor ? T["required"] : true;
@@ -148,6 +149,7 @@ type TypeMap<D extends ComplexDataType> = {
   instanceOf: GetTypeFromInstanceOf<D>;
   custom: GetTypeFromCustom<D>;
   stringMatching: GetTypeFromStringMatching<D>;
+  circular: GetTypeFromCircular<D>;
 };
 
 export type ParseComplexType<D extends ComplexDataType> =

@@ -1,5 +1,10 @@
 import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
-import { DataType, getMetadata, toTsType } from "../../src/index";
+import {
+  DataType,
+  getMetadata,
+  OptionalField,
+  toTsType,
+} from "../../src/index";
 
 enum Enum {
   A = "A",
@@ -469,6 +474,241 @@ describe("toTsType", () => {
           }
         },
       });
+
+      expect(tsType).toMatchSnapshot();
+    });
+  });
+
+  describe("should work correctly with circular type", () => {
+    it("simple circular record", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.ArrayOf(self),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("simple circular named record", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.ArrayOf(self),
+        }).setTitle("Node")
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("immediately self-referencing record", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          self: OptionalField(self),
+        }).setTitle("SelfReferencingRecord")
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("simple circular array", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.ArrayOf(DataType.String, self)
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("deeply nested structure", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.RecordOf({
+            type: DataType.String,
+            container: DataType.RecordOf({
+              name: DataType.String,
+              children: DataType.ArrayOf(self),
+            }),
+          }),
+        }).setTitle("Node")
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("deeply nested structure of named types", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.ArrayOf(
+            DataType.RecordOf({
+              name: DataType.Literal("span"),
+              children: DataType.ArrayOf(self),
+            }).setTitle("SpanNode")
+          ).setTitle("SpanNodeList"),
+        }).setTitle("Node")
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("deeply nested circular types", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.Circular((self2) =>
+            DataType.ArrayOf(
+              self,
+              DataType.RecordOf({
+                nested: DataType.Literal(true),
+                items: self2,
+              })
+            )
+          ),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with sets", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.SetOf(self),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with direct sets", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.SetOf(self, DataType.String)
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with dicts", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.Dict(self),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with direct dicts", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.Dict(self, DataType.String)
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with tuples", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: OptionalField(
+            DataType.OneOf(
+              DataType.Tuple(self),
+              DataType.Tuple(self, self),
+              DataType.Tuple(self, self, self)
+            )
+          ),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with direct tuples", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.Tuple(self, DataType.String)
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with unions", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: OptionalField(
+            DataType.OneOf(
+              self,
+              DataType.RecordOf({
+                name: DataType.String,
+                children: self,
+              })
+            )
+          ),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with direct unions", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.OneOf(self, DataType.String)
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
+
+      expect(tsType).toMatchSnapshot();
+    });
+
+    it("works with intersections", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: OptionalField(
+            DataType.AllOf(
+              self,
+              DataType.RecordOf({
+                type: DataType.String,
+              })
+            )
+          ),
+        })
+      );
+
+      const tsType = toTsType(typeDef, { mode: "named-expanded" });
 
       expect(tsType).toMatchSnapshot();
     });

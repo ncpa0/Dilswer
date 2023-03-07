@@ -219,4 +219,272 @@ describe("toJsonSchema", () => {
 
     expect(schema).toMatchSnapshot();
   });
+
+  describe("should work correctly with circular type", () => {
+    it("simple circular record", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.ArrayOf(self),
+        })
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("simple circular named record", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.ArrayOf(self),
+        }).setTitle("Node")
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("immediately self-referencing record", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          self: OptionalField(self),
+        }).setTitle("SelfReferencingRecord")
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("simple circular array", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.ArrayOf(DataType.String, self)
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("deeply nested structure", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.RecordOf({
+            type: DataType.String,
+            container: DataType.RecordOf({
+              name: DataType.String,
+              children: DataType.ArrayOf(self),
+            }),
+          }),
+        }).setTitle("Node")
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("deeply nested structure of named types", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.ArrayOf(
+            DataType.RecordOf({
+              name: DataType.Literal("span"),
+              children: DataType.ArrayOf(self),
+            }).setTitle("SpanNode")
+          ).setTitle("SpanNodeList"),
+        }).setTitle("Node")
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("deeply nested circular types", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.Circular((self2) =>
+            DataType.ArrayOf(
+              self,
+              DataType.RecordOf({
+                nested: DataType.Literal(true),
+                items: self2,
+              })
+            )
+          ),
+        })
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with dicts", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: DataType.Dict(self),
+        })
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with direct dicts", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.Dict(self, DataType.String)
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with tuples", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: OptionalField(
+            DataType.OneOf(
+              DataType.Tuple(self),
+              DataType.Tuple(self, self),
+              DataType.Tuple(self, self, self)
+            )
+          ),
+        })
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with direct tuples", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.Tuple(self, DataType.String)
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with unions", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: OptionalField(
+            DataType.OneOf(
+              self,
+              DataType.RecordOf({
+                name: DataType.String,
+                children: self,
+              })
+            )
+          ),
+        })
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with direct unions", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.OneOf(self, DataType.String)
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+
+    it("works with intersections", () => {
+      const typeDef = DataType.Circular((self) =>
+        DataType.RecordOf({
+          name: DataType.String,
+          children: OptionalField(
+            DataType.AllOf(
+              self,
+              DataType.RecordOf({
+                type: DataType.String,
+              })
+            )
+          ),
+        })
+      );
+
+      const schema = toJsonSchema(typeDef, {}, false);
+
+      expect(schema).toMatchSnapshot();
+
+      const isValid = new Ajv().validateSchema(schema!);
+
+      expect(isValid).toEqual(true);
+    });
+  });
 });

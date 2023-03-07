@@ -1131,6 +1131,7 @@ describe("createValidator", () => {
 
         expect(validate({ foo: "foo" })).toEqual(true);
         expect(validate({ foo: "foo", bar: 1 })).toEqual(true);
+        expect(validate({ foo: "", bar: undefined })).toEqual(true);
 
         expect(validate({ foo: "foo", bar: "1" })).toEqual(false);
         expect(validate({ bar: 1 })).toEqual(false);
@@ -1946,6 +1947,1093 @@ describe("createValidator", () => {
         expect(validate(() => {})).toEqual(false);
         expect(validate({})).toEqual(false);
         expect(validate([])).toEqual(false);
+      });
+    });
+
+    describe("for circular types, it correctly validates", () => {
+      describe("a record", () => {
+        it("scenario 1", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.RecordOf({
+              foo: DataType.String,
+              bar: DataType.ArrayOf(self),
+            })
+          );
+
+          type ExpectedType = {
+            foo: string;
+            bar: {
+              foo: string;
+              bar: {
+                foo: string;
+                bar: {
+                  foo: string;
+                  bar: any[];
+                }[];
+              }[];
+            }[];
+          };
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(
+            validate({
+              foo: "foo",
+              bar: [],
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              foo: "foo",
+              bar: [
+                {
+                  foo: "foo",
+                  bar: [],
+                },
+              ],
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              foo: "foo",
+              bar: [
+                {
+                  foo: "foo",
+                  bar: [
+                    {
+                      foo: "foo",
+                      bar: [],
+                    },
+                  ],
+                },
+                {
+                  foo: "foo",
+                  bar: [
+                    {
+                      foo: "foo",
+                      bar: [],
+                    },
+                  ],
+                },
+              ],
+            })
+          ).toEqual(true);
+
+          expect(
+            validate({
+              foo: "foo",
+              bar: [
+                {
+                  foo: "foo",
+                  bar: [
+                    {
+                      foo: "foo",
+                      bar: [],
+                    },
+                  ],
+                },
+                {
+                  foo: "foo",
+                  bar: [
+                    {
+                      foo: "foo",
+                      bar: [1],
+                    },
+                  ],
+                },
+              ],
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              foo: "foo",
+              bar: [
+                {
+                  foo: "foo",
+                  bar: [
+                    {
+                      foo: "foo",
+                      bar: [
+                        {
+                          foo: "foo",
+                          bar: [
+                            {
+                              foo: 1,
+                              bar: [],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              foo: "foo",
+              bar: [""],
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              foo: "foo",
+            })
+          ).toEqual(false);
+          expect(validate({})).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+
+        it("scenario 2", () => {
+          const typeDef = DataType.RecordOf({
+            foo: DataType.String,
+            bar: DataType.Circular((self) =>
+              DataType.RecordOf({
+                baz: DataType.Dict(self),
+              })
+            ),
+          });
+
+          type ExpectedType = {
+            foo: string;
+            bar: {
+              baz: Record<
+                string | number,
+                {
+                  baz: Record<
+                    string | number,
+                    {
+                      baz: Record<
+                        string | number,
+                        {
+                          baz: any;
+                        }
+                      >;
+                    }
+                  >;
+                }
+              >;
+            };
+          };
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(
+            validate({
+              foo: "foo",
+              bar: {
+                baz: {},
+              },
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              foo: "foo",
+              bar: {
+                baz: {
+                  foo: {
+                    baz: {
+                      foo: {
+                        baz: {
+                          a: { baz: {} },
+                          b: { baz: {} },
+                          c: { baz: {} },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            })
+          ).toEqual(true);
+
+          expect(validate({})).toEqual(false);
+          expect(validate({ foo: "" })).toEqual(false);
+          expect(validate({ bar: { baz: {} } })).toEqual(false);
+          expect(validate({ foo: "", bar: {} })).toEqual(false);
+          expect(
+            validate({
+              foo: "",
+              bar: {
+                baz: {
+                  foo: {
+                    baz: {
+                      foo: {
+                        baz: {
+                          a: 1,
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            })
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+
+        it("scenario 3", () => {
+          const typeDef = DataType.RecordOf({
+            foo: DataType.Circular((self) =>
+              DataType.SetOf(self, DataType.String)
+            ),
+          });
+
+          type ExpectedType = {
+            foo: Set<string | Set<string | Set<string | Set<any>>>>;
+          };
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(
+            validate({
+              foo: new Set(),
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              foo: new Set(["foo"]),
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              foo: new Set([
+                new Set([
+                  new Set([new Set([new Set([new Set([""]), ""]), ""]), ""]),
+                  "",
+                ]),
+                "",
+              ]),
+            })
+          ).toEqual(true);
+
+          expect(validate({})).toEqual(false);
+          expect(validate({ foo: new Set([1]) })).toEqual(false);
+          expect(
+            validate({
+              foo: new Set([
+                new Set([
+                  new Set([new Set([new Set([new Set([true]), ""]), ""]), ""]),
+                  "",
+                ]),
+                "",
+              ]),
+            })
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+
+        it("scenario 5", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.RecordOf({
+              a: OptionalField(
+                DataType.RecordOf({
+                  b: OptionalField(
+                    DataType.RecordOf({
+                      ref: OptionalField(self),
+                    })
+                  ),
+                })
+              ),
+            })
+          );
+
+          type ExpectedType = {
+            a?: {
+              b?: {
+                ref?: {
+                  a?: {
+                    b?: {
+                      ref?: {
+                        a?: {
+                          b?: {
+                            ref?: {
+                              a?: {
+                                b?: {
+                                  ref?: any;
+                                };
+                              };
+                            };
+                          };
+                        };
+                      };
+                    };
+                  };
+                };
+              };
+            };
+          };
+
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(validate({})).toEqual(true);
+          expect(validate({ a: {} })).toEqual(true);
+          expect(validate({ a: { b: {} } })).toEqual(true);
+          expect(validate({ a: { b: { ref: {} } } })).toEqual(true);
+          expect(validate({ a: { b: { ref: { a: {} } } } })).toEqual(true);
+          expect(validate({ a: { b: { ref: { a: { b: {} } } } } })).toEqual(
+            true
+          );
+          expect(
+            validate({ a: { b: { ref: { a: { b: { ref: {} } } } } } })
+          ).toEqual(true);
+          expect(validate({ a: { b: { ref: undefined } } })).toEqual(true);
+
+          expect(validate({ a: [] })).toEqual(false);
+          expect(validate({ a: { b: 1 } })).toEqual(false);
+          expect(validate({ a: { b: { ref: 0 } } })).toEqual(false);
+          expect(
+            validate({ a: { b: { ref: { a: { b: { ref: "" } } } } } })
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(0)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+      });
+
+      describe("a dict", () => {
+        it("scenario 1", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.Dict(DataType.Number, self, DataType.Symbol)
+          );
+
+          type ExpectedType = Record<
+            string | number,
+            | number
+            | Record<
+                string | number,
+                | number
+                | Record<
+                    string | number,
+                    | number
+                    | Record<string | number, number | never | symbol>
+                    | symbol
+                  >
+                | symbol
+              >
+            | symbol
+          >;
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(validate({})).toEqual(true);
+          expect(validate({ a: 1 })).toEqual(true);
+          expect(validate({ a: { b: 2 }, c: Symbol() })).toEqual(true);
+          expect(
+            validate({
+              a: {
+                b: {
+                  c: {
+                    d: {
+                      e: {
+                        f: Symbol("F"),
+                        g: 3,
+                        h: Symbol("H"),
+                        i: 5,
+                        j: 1e10,
+                        k: Symbol("K"),
+                      },
+                    },
+                  },
+                },
+              },
+            })
+          ).toEqual(true);
+
+          expect(validate({ a: "foo" })).toEqual(false);
+          expect(validate({ a: { b: "foo" } })).toEqual(false);
+          expect(
+            validate({
+              a: {
+                b: {
+                  c: {
+                    d: {
+                      e: {
+                        f: Symbol("F"),
+                        g: 3,
+                        h: Symbol("H"),
+                        i: 5,
+                        j: NaN,
+                        k: Symbol("K"),
+                      },
+                    },
+                  },
+                },
+              },
+            })
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+
+        it("scenario 2", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.Dict(
+              DataType.RecordOf({
+                foo: DataType.OneOf(DataType.String, DataType.ArrayOf(self)),
+              })
+            )
+          );
+
+          type ExpectedType = Record<
+            string | number,
+            {
+              foo:
+                | string
+                | Array<
+                    Record<
+                      string | number,
+                      {
+                        foo:
+                          | string
+                          | Array<
+                              Record<
+                                string | number,
+                                {
+                                  foo:
+                                    | string
+                                    | Array<
+                                        Record<
+                                          string | number,
+                                          { foo: string | Array<any> }
+                                        >
+                                      >;
+                                }
+                              >
+                            >;
+                      }
+                    >
+                  >;
+            }
+          >;
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(
+            validate({
+              a: {
+                foo: "1",
+              },
+              b: { foo: [] },
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              a: {
+                foo: "1",
+              },
+              b: {
+                foo: [
+                  {
+                    c: {
+                      foo: "2",
+                    },
+                    d: {
+                      foo: [],
+                    },
+                  },
+                ],
+              },
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              a: {
+                foo: [
+                  {
+                    b: {
+                      foo: [
+                        {
+                          c: { foo: [{ d: { foo: [{ e: { foo: "" } }] } }] },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            })
+          );
+
+          expect(
+            validate({
+              a: {},
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              a: {
+                foo: 1,
+              },
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              a: {
+                foo: "1",
+              },
+              b: {
+                foo: [
+                  {
+                    c: {
+                      foo: "2",
+                    },
+                    d: {
+                      foo: [null],
+                    },
+                  },
+                ],
+              },
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              a: {
+                foo: [
+                  {
+                    b: {
+                      foo: [
+                        {
+                          c: { foo: [{ d: { foo: [{ e: { foo: null } }] } }] },
+                        },
+                      ],
+                    },
+                  },
+                ],
+              },
+            })
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+      });
+
+      describe("a tuple", () => {
+        it("scenario 1", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.Tuple(
+              DataType.Number,
+              DataType.OneOf(DataType.Boolean, self),
+              DataType.String
+            )
+          );
+
+          type ExpectedType = [
+            number,
+            (
+              | boolean
+              | [
+                  number,
+                  boolean | [number, boolean | [number, any, string], string],
+                  string
+                ]
+            ),
+            string
+          ];
+
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(validate([1, true, "foo"])).toEqual(true);
+          expect(validate([1, [3, false, ""], "foo"])).toEqual(true);
+          expect(validate([1, [3, [5, true, "bar"], ""], "foo"])).toEqual(true);
+          expect(
+            validate([1, [3, [5, [7, true, "bar"], "bar"], ""], "foo"])
+          ).toEqual(true);
+
+          expect(validate([1, "foo", "foo"])).toEqual(false);
+          expect(validate([1, [3, "foo", ""], "foo"])).toEqual(false);
+          expect(validate([1, [3, [5, [7, true], "bar"], ""], "foo"])).toEqual(
+            false
+          );
+          expect(
+            validate([1, [3, [5, [7, [], ""], "bar"], ""], "foo"])
+          ).toEqual(false);
+          expect(
+            validate([1, [3, [5, [NaN, true, ""], "bar"], ""], "foo"])
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+          expect(validate([])).toEqual(false);
+          expect(validate({})).toEqual(false);
+        });
+
+        it("scenario 2", () => {
+          const typeDef = DataType.Tuple(
+            DataType.Circular((self) =>
+              DataType.SetOf(
+                DataType.Tuple(
+                  DataType.RecordOf({
+                    a: DataType.Boolean,
+                    b: OptionalField(self),
+                  })
+                )
+              )
+            )
+          );
+
+          type ExpectedType = [
+            Set<
+              [
+                {
+                  a: boolean;
+                  b?: Set<
+                    [
+                      {
+                        a: boolean;
+                        b?: Set<
+                          [
+                            {
+                              a: boolean;
+                              b?: Set<
+                                [
+                                  {
+                                    a: boolean;
+                                    b?: any;
+                                  }
+                                ]
+                              >;
+                            }
+                          ]
+                        >;
+                      }
+                    ]
+                  >;
+                }
+              ]
+            >
+          ];
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(validate([new Set()])).toEqual(true);
+          expect(validate([new Set([[{ a: true }]])])).toEqual(true);
+          expect(
+            validate([
+              new Set([
+                [
+                  {
+                    a: true,
+                    b: new Set([
+                      [
+                        {
+                          a: false,
+                          b: new Set([
+                            [{ a: true, b: new Set([[{ a: false }]]) }],
+                          ]),
+                        },
+                      ],
+                    ]),
+                  },
+                ],
+              ]),
+            ])
+          ).toEqual(true);
+
+          expect(validate([])).toEqual(false);
+          expect(validate([new Set([[{ a: 1 }]])])).toEqual(false);
+          expect(validate([new Set([[{ a: true, b: "" }]])])).toEqual(false);
+          expect(validate([new Set([[{ a: true, b: [] }]])])).toEqual(false);
+          expect(
+            validate([
+              new Set([
+                [
+                  {
+                    a: true,
+                    b: new Set([
+                      [
+                        {
+                          a: false,
+                          b: new Set([[{ a: true, b: new Set([[{}]]) }]]),
+                        },
+                      ],
+                    ]),
+                  },
+                ],
+              ]),
+            ])
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(true)).toEqual(false);
+          expect(validate(false)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+          expect(validate([])).toEqual(false);
+          expect(validate({})).toEqual(false);
+        });
+      });
+
+      describe("a union", () => {
+        it("scenario 1", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.OneOf(
+              DataType.Number,
+              DataType.Boolean,
+              DataType.String,
+              DataType.ArrayOf(self)
+            )
+          );
+
+          type ExpectedType =
+            | number
+            | boolean
+            | string
+            | Array<
+                | number
+                | boolean
+                | string
+                | Array<
+                    | number
+                    | boolean
+                    | string
+                    | Array<number | boolean | string | Array<any>>
+                  >
+              >;
+
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(validate(1)).toEqual(true);
+          expect(validate(true)).toEqual(true);
+          expect(validate("foo")).toEqual(true);
+          expect(validate([])).toEqual(true);
+          expect(validate([[[[[[[[[[[[]]]]]]]]]]]])).toEqual(true);
+          expect(validate([1, true, "foo"])).toEqual(true);
+          expect(validate([[1, true, "foo"]])).toEqual(true);
+          expect(validate([[[1, true, "foo"]]])).toEqual(true);
+          expect(validate([[[[1, true, "foo"]]]])).toEqual(true);
+          expect(
+            validate([
+              [[[1, true, "foo"], 2, false, "bar"], "baz", 3, 6],
+              "",
+              "",
+              12e21,
+            ])
+          ).toEqual(true);
+
+          expect(
+            validate([
+              [
+                [[1, true, "foo"], 2, false, "bar"],
+                "baz",
+                3,
+                6,
+                [[[[[() => {}]]]]],
+              ],
+              "",
+              "",
+              12e21,
+            ])
+          ).toEqual(false);
+          expect(validate([null])).toEqual(false);
+          expect(validate([[[[[[[[[[[[NaN]]]]]]]]]]]])).toEqual(false);
+          expect(validate({})).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+
+        it("scenario 2", () => {
+          const typeDef = DataType.OneOf(
+            DataType.Number,
+            DataType.Boolean,
+            DataType.String,
+            DataType.Circular((self) =>
+              DataType.ArrayOf(
+                DataType.OneOf(DataType.Number, DataType.StringNumeral, self)
+              )
+            )
+          );
+
+          type ExpectedType =
+            | number
+            | boolean
+            | string
+            | Array<
+                | number
+                | `${number}`
+                | Array<
+                    | number
+                    | `${number}`
+                    | Array<
+                        | number
+                        | `${number}`
+                        | Array<number | `${number}` | Array<any>>
+                      >
+                  >
+              >;
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(validate(1)).toEqual(true);
+          expect(validate(true)).toEqual(true);
+          expect(validate("foo")).toEqual(true);
+          expect(validate([])).toEqual(true);
+          expect(validate([[[[[[[[[[[[]]]]]]]]]]]])).toEqual(true);
+          expect(validate([1, "2"])).toEqual(true);
+          expect(validate([[3, "1.2"]])).toEqual(true);
+          expect(validate([[[5, "1234"]]])).toEqual(true);
+          expect(validate([[[[123, "12.345"]]]])).toEqual(true);
+          expect(
+            validate([[[[1, "0"], 2, "1"], "2", 3, 6], "3", "4", 12e21])
+          ).toEqual(true);
+
+          expect(
+            validate([
+              [[[1, "0"], 2, "1", [[[""]]]], "2", 3, 6],
+              "3",
+              "4",
+              12e21,
+            ])
+          ).toEqual(false);
+          expect(validate([null])).toEqual(false);
+          expect(validate([[[[[[[[[[[[NaN]]]]]]]]]]]])).toEqual(false);
+          expect(validate({})).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
+      });
+
+      describe("a intersection", () => {
+        it("scenario 1", () => {
+          const typeDef = DataType.Circular((self) =>
+            DataType.AllOf(
+              DataType.RecordOf({
+                type: DataType.OneOf(
+                  DataType.Literal("A"),
+                  DataType.Literal("B")
+                ),
+                children: DataType.ArrayOf(
+                  DataType.AllOf(
+                    self,
+                    DataType.RecordOf({ name: DataType.String })
+                  )
+                ),
+              })
+            )
+          );
+
+          type ExpectedType = {
+            type: "A" | "B";
+            children: Array<
+              { name: string } & {
+                type: "A" | "B";
+                children: Array<
+                  { name: string } & {
+                    type: "A" | "B";
+                    children: Array<
+                      { name: string } & {
+                        type: "A" | "B";
+                        children: Array<any>;
+                      }
+                    >;
+                  }
+                >;
+              }
+            >;
+          };
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = createValidator(typeDef);
+
+          assert<AssertValidator<ExpectedType, typeof validate>>();
+
+          expect(
+            validate({
+              type: "A",
+              children: [],
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              type: "B",
+              children: [
+                {
+                  name: "foo",
+                  type: "A",
+                  children: [],
+                },
+              ],
+            })
+          ).toEqual(true);
+          expect(
+            validate({
+              type: "A",
+              children: [
+                {
+                  name: "a",
+                  type: "B",
+                  children: [
+                    {
+                      name: "b",
+                      type: "A",
+                      children: [
+                        {
+                          name: "bb",
+                          type: "B",
+                          children: [
+                            {
+                              name: "aa",
+                              type: "A",
+                              children: [
+                                {
+                                  name: "bbb",
+                                  type: "B",
+                                  children: [
+                                    {
+                                      name: "aaa",
+                                      type: "A",
+                                      children: [],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            })
+          ).toEqual(true);
+
+          expect(
+            validate({
+              type: "A",
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              type: "A",
+              children: {},
+            })
+          ).toEqual(false);
+          expect(
+            validate({
+              type: "A",
+              children: [
+                {
+                  name: "a",
+                  type: "B",
+                  children: [
+                    {
+                      name: "b",
+                      type: "A",
+                      children: [
+                        {
+                          name: "bb",
+                          type: "B",
+                          children: [
+                            {
+                              name: "aa",
+                              type: "A",
+                              children: [
+                                {
+                                  name: "bbb",
+                                  type: "B",
+                                  children: [
+                                    {
+                                      name: "aaa",
+                                      type: "C",
+                                      children: [],
+                                    },
+                                  ],
+                                },
+                              ],
+                            },
+                          ],
+                        },
+                      ],
+                    },
+                  ],
+                },
+              ],
+            })
+          ).toEqual(false);
+          expect(validate(1)).toEqual(false);
+          expect(validate("{}")).toEqual(false);
+          expect(validate({})).toEqual(false);
+          expect(validate(null)).toEqual(false);
+          expect(validate(undefined)).toEqual(false);
+          expect(validate(Symbol())).toEqual(false);
+          expect(validate(() => {})).toEqual(false);
+        });
       });
     });
   });

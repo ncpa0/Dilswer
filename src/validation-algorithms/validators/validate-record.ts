@@ -8,22 +8,20 @@ export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
   if (typeof data !== "object" || data === null || Array.isArray(data))
     throw new ValidationError(path, type, data);
 
-  const keys = Object.keys(type.recordOf);
+  const keys = type.keys;
 
   for (let i = 0; i < keys.length; i++) {
     const key = keys[i];
     const fieldDescriptor = type.recordOf[key];
 
     const isADescriptor = isFieldDescriptor(fieldDescriptor);
-    const fieldType = isADescriptor ? fieldDescriptor.type : fieldDescriptor;
+    const descriptor = isADescriptor
+      ? { required: true, ...fieldDescriptor }
+      : { type: fieldDescriptor, required: true };
 
     if (!(key in data)) {
-      if (isADescriptor) {
-        if (fieldDescriptor.required === false) {
-          continue;
-        } else {
-          throw new ValidationError(path, type, data);
-        }
+      if (descriptor.required !== true) {
+        continue;
       } else {
         throw new ValidationError(path, type, data);
       }
@@ -32,9 +30,13 @@ export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
     // @ts-expect-error
     const value: unknown = data[key];
 
-    validatorsLookupMap.get(fieldType.kind)!(
+    if (value === undefined && descriptor.required !== true) {
+      continue;
+    }
+
+    validatorsLookupMap.get(descriptor.type.kind)!(
       path.concat(key),
-      fieldType,
+      descriptor.type,
       value
     );
   }

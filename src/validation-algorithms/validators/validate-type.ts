@@ -2,6 +2,10 @@ import type { DataTypeKind } from "@DataTypes/types";
 import type { Path } from "@Validation/path";
 import { validateAllOf } from "@Validation/validators/validate-all-of";
 import { validateArray } from "@Validation/validators/validate-array";
+import {
+  validateCircular,
+  validateCircularRef,
+} from "@Validation/validators/validate-circular";
 import { validateCustom } from "@Validation/validators/validate-custom";
 import { validateDict } from "@Validation/validators/validate-dict";
 import { validateEnum } from "@Validation/validators/validate-enum";
@@ -33,4 +37,6 @@ export const validatorsLookupMap = new Map<
   ["instanceOf", validateInstanceOf],
   ["custom", validateCustom],
   ["stringMatching", validateStringMatching],
+  ["circular", validateCircular],
+  ["circularRef", validateCircularRef],
 ]);
