@@ -27,28 +27,30 @@ both the runtime validation types and the TypeScript type definitions.
    6. [toTsType()](#totstype)
    7. [DataType](#datatype)
 3. [Data Types](#data-types)
-   1. [String](#datatypestring)
-   2. [Number](#datatypenumber)
-   3. [Int](#datatypeint)
+   1. [Number](#datatypenumber)
+   2. [Int](#datatypeint)
+   3. [String](#datatypestring)
    4. [StringNumeral](#datatypestringnumeral)
    5. [StringInt](#datatypestringint)
-   6. [Boolean](#datatypeboolean)
-   7. [Symbol](#datatypesymbol)
-   8. [Null](#datatypenull)
-   9. [Undefined](#datatypeundefined)
-   10. [Function](#datatypefunction)
-   11. [Unknown](#datatypeunknown)
-   12. [OneOf](#datatypeoneofdatatypes)
-   13. [AllOf](#datatypeallofdatatypes)
-   14. [ArrayOf](#datatypearrayofdatatypes)
-   15. [RecordOf](#datatyperecordofrecordstring-fielddescriptor)
-   16. [Dict](#datatypedictdatatypes)
-   17. [SetOf](#datatypesetofdatatypes)
-   18. [Literal](#datatypeliteralstring--number--boolean)
-   19. [InstanceOf](#datatypeinstanceofclass)
-   20. [Enum](#datatypeenumenum)
-   21. [EnumMember](#datatypeenummemberenum-member)
-   22. [Custom](#datatypecustomfunction)
+   6. [StringMatching](#datatypestringmatchingregex)
+   7. [Boolean](#datatypeboolean)
+   8. [Symbol](#datatypesymbol)
+   9. [Null](#datatypenull)
+   10. [Undefined](#datatypeundefined)
+   11. [Function](#datatypefunction)
+   12. [Unknown](#datatypeunknown)
+   13. [OneOf](#datatypeoneofdatatypes)
+   14. [AllOf](#datatypeallofdatatypes)
+   15. [ArrayOf](#datatypearrayofdatatypes)
+   16. [RecordOf](#datatyperecordofrecordstring-fielddescriptor)
+   17. [Dict](#datatypedictdatatypes)
+   18. [SetOf](#datatypesetofdatatypes)
+   19. [Literal](#datatypeliteralstring--number--boolean)
+   20. [InstanceOf](#datatypeinstanceofclass)
+   21. [Enum](#datatypeenumenum)
+   22. [EnumMember](#datatypeenummemberenum-member)
+   23. [Circular](#datatypecircularfunction)
+   24. [Custom](#datatypecustomfunction)
 4. [Utility Functions](#utility-functions)
    1. [And](#and)
    2. [Omit](#omit)
@@ -59,7 +61,7 @@ both the runtime validation types and the TypeScript type definitions.
 5. [Metadata](#metadata)
    1. [Assign Metadata](#assign-metadata)
    2. [Read Metadata](#read-metadata)
-   3. [Metadata in JSON Schema](#metadata-in-json-schema)
+   3. [Metadata and JSON Schema's](#metadata-and-json-schemas)
 6. [Parsing](#parsing)
 
 ## Quick Start
@@ -445,11 +447,6 @@ Object containing all the dilswer runtime type definitions (like `Number`,
 
 ## Data Types
 
-#### DataType.String
-
-will match any string values and translate to the standard `string` type in
-TypeScript.
-
 #### DataType.Number
 
 will match any number values and translate to the standard `number` type in
@@ -460,6 +457,11 @@ TypeScript.
 will match any integer values and translate to the standard `number` type in
 TypeScript. TypeScript does not have any way of distinguishing float and
 integers therefore both are assigned the same TypeScript type.
+
+#### DataType.String
+
+will match any string values and translate to the standard `string` type in
+TypeScript.
 
 #### DataType.StringNumeral
 
@@ -474,6 +476,11 @@ will match any string containing only numbers and translate to a
 `` `${number}` `` type in TypeScript. Strings with floating point numbers are
 not matched by this type. A value successfully validated with `StringInt` is
 safe to convert into a number and will never produce a `NaN` value.
+
+#### DataType.StringMatching(regex)
+
+will match any string matching the provided regular expression and translate to
+a the standard `string` type in TypeScript.
 
 #### DataType.Boolean
 
@@ -909,7 +916,7 @@ const userMetadata = getMetadata(User);
 // }
 ```
 
-### Metadata in JSON Schema
+### Metadata and JSON Schema's
 
 Metadata is also used when generating JSON Schema, if a DataType has a title,
 description or format, it will be included in the generated JSON Schema.
