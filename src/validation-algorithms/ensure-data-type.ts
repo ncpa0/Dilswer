@@ -1,6 +1,7 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
 import { Path } from "@Validation/path";
+import { validatedCircularValues } from "@Validation/validators/helper-validated-circ-values";
 import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 const DEFAULT_ROOT = Path.init("$");
@@ -16,4 +17,14 @@ export const ensureDataType: <DT extends AnyDataType>(
 ) => asserts data is ReWrap<ParseDataType<DT>> = (
   dataType: AnyDataType,
   data: unknown
-) => validatorsLookupMap.get(dataType.kind)!(DEFAULT_ROOT, dataType, data);
+) => {
+  try {
+    return validatorsLookupMap.get(dataType.kind)!(
+      DEFAULT_ROOT,
+      dataType,
+      data
+    );
+  } finally {
+    validatedCircularValues.clear();
+  }
+};

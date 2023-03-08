@@ -391,8 +391,15 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseCircular(_: Circular, children: R[]): R {
+  private parseCircular(type: Circular, children: R[]): R {
+    const childType = type.type;
     const [actualType] = children;
+
+    if (this.circulars.has(childType)) {
+      const name = this.circulars.get(childType)!;
+      actualType.setName(name);
+      return this.fileScope.addTypeExport(actualType as any, name);
+    }
 
     return actualType;
   }
@@ -425,66 +432,40 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
   visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
   visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
   visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
-    let result: R;
-
     switch (type.kind) {
       case "simple":
-        result = this.parsePrimitive(type);
-        break;
+        return this.parsePrimitive(type);
       case "array":
-        result = this.parseArrayOf(type, children as R[]);
-        break;
+        return this.parseArrayOf(type, children as R[]);
       case "tuple":
-        result = this.parseTuple(type, children as R[]);
-        break;
+        return this.parseTuple(type, children as R[]);
       case "record":
-        result = this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
-        break;
+        return this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
       case "dictionary":
-        result = this.parseDict(type, children as R[]);
-        break;
+        return this.parseDict(type, children as R[]);
       case "set":
-        result = this.parseSetOf(type, children as R[]);
-        break;
+        return this.parseSetOf(type, children as R[]);
       case "union":
-        result = this.parseOneOf(type, children as R[]);
-        break;
+        return this.parseOneOf(type, children as R[]);
       case "intersection":
-        result = this.parseAllOf(type, children as R[]);
-        break;
+        return this.parseAllOf(type, children as R[]);
       case "literal":
-        result = this.parseLiteral(type);
-        break;
+        return this.parseLiteral(type);
       case "enumUnion":
-        result = this.parseEnum(type);
-        break;
+        return this.parseEnum(type);
       case "enumMember":
-        result = this.parseEnumMember(type);
-        break;
+        return this.parseEnumMember(type);
       case "instanceOf":
-        result = this.parseInstanceOf(type);
-        break;
+        return this.parseInstanceOf(type);
       case "custom":
-        result = this.parseCustom(type);
-        break;
+        return this.parseCustom(type);
       case "stringMatching":
-        result = this.parseStringMatching(type);
-        break;
+        return this.parseStringMatching(type);
       case "circular":
-        result = this.parseCircular(type, children as R[]);
-        break;
+        return this.parseCircular(type, children as R[]);
       case "circularRef":
-        result = this.parseCircularRef(type);
-        break;
+        return this.parseCircularRef(type);
     }
-
-    if (this.circulars.has(type)) {
-      const name = this.circulars.get(type)!;
-      result.setName(name);
-      return this.fileScope.addTypeExport(result as any, name);
-    }
-
-    return result;
   }
 }
 

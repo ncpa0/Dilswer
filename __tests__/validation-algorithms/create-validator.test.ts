@@ -1,4 +1,8 @@
-import type { ParseDataType, UnknownFunction } from "@DataTypes/type-utils";
+import type {
+  GetDataType,
+  ParseDataType,
+  UnknownFunction,
+} from "@DataTypes/type-utils";
 import {
   AnyDataType,
   createValidator,
@@ -3034,6 +3038,63 @@ describe("createValidator", () => {
           expect(validate(Symbol())).toEqual(false);
           expect(validate(() => {})).toEqual(false);
         });
+      });
+
+      it("self referencing record shouldn't throw the 'Maximum call stack size exceeded' error", () => {
+        const typeDef = DataType.Circular((self) =>
+          DataType.RecordOf({
+            tag: DataType.String,
+            children: DataType.ArrayOf(self),
+          })
+        );
+
+        const validate = createValidator(typeDef);
+
+        const data: GetDataType<typeof typeDef> = {
+          tag: "div",
+          children: [
+            {
+              tag: "span",
+              children: [],
+            },
+          ],
+        };
+
+        data.children.push(data);
+        data.children[0]!.children.push(data);
+
+        const span = data.children[0]!;
+        span.children.push(span);
+
+        expect(() => validate(data)).not.toThrowError();
+        expect(validate(data)).toEqual(true);
+        expect(validate(data)).toEqual(true);
+
+        // @ts-expect-error
+        span.children.push({});
+
+        expect(validate(data)).toEqual(false);
+
+        const data2: GetDataType<typeof typeDef> = {
+          tag: "section",
+          children: [
+            {
+              tag: "div",
+              children: [
+                {
+                  tag: "span",
+                  children: [],
+                },
+              ],
+            },
+          ],
+        };
+
+        data2.children[0]!.children[0]!.children.push(data2);
+        data2.children[0]!.children.push(data2);
+
+        expect(() => validate(data2)).not.toThrowError();
+        expect(validate(data2)).toEqual(true);
       });
     });
   });

@@ -36,7 +36,7 @@ declare type Main = {
   foo: FooList;
 };
 
-export { Main };
+export type { Main };
 "
 `;
 
@@ -48,7 +48,7 @@ type Main = {
   foo: FooList;
 };
 
-export { Main };
+export type { Main };
 "
 `;
 
@@ -82,7 +82,7 @@ export type Main = {
 
 exports[`toTsType should correctly add external type import statements and export it directly if it's a root type 1`] = `
 "import type { IsStringFn } from "./is-string-fn.d.ts";
-export { IsStringFn };
+export type { IsStringFn };
 "
 `;
 
@@ -388,7 +388,7 @@ type TestRecord = {
   optionalSelfCopy?: OptionalTestRecord;
 };
 
-export { TestRecord };
+export type { TestRecord };
 "
 `;
 
@@ -496,7 +496,7 @@ type TestRecord = {
   optionalSelfCopy?: OptionalTestRecord;
 };
 
-export { TestRecord };
+export type { TestRecord };
 "
 `;
 
@@ -524,7 +524,7 @@ type RecordType = {
   foobar: ClassInstance;
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -548,7 +548,7 @@ type RecordType = {
   foobar: ClassInstance;
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -576,7 +576,7 @@ type RecordType = {
   children: ArrayType;
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -592,7 +592,7 @@ exports[`toTsType should work correctly with circular type deeply nested structu
   };
 };
 
-export { Node };
+export type { Node };
 "
 `;
 
@@ -611,7 +611,7 @@ type Node = {
   children: SpanNodeList;
 };
 
-export { Node };
+export type { Node };
 "
 `;
 
@@ -621,14 +621,14 @@ exports[`toTsType should work correctly with circular type immediately self-refe
   self?: SelfReferencingRecord;
 };
 
-export { SelfReferencingRecord };
+export type { SelfReferencingRecord };
 "
 `;
 
 exports[`toTsType should work correctly with circular type simple circular array 1`] = `
 "type ArrayType = Array<string | ArrayType>;
 
-export { ArrayType };
+export type { ArrayType };
 "
 `;
 
@@ -638,7 +638,7 @@ exports[`toTsType should work correctly with circular type simple circular named
   children: Array<Node>;
 };
 
-export { Node };
+export type { Node };
 "
 `;
 
@@ -648,7 +648,7 @@ exports[`toTsType should work correctly with circular type simple circular recor
   children: Array<RecordType>;
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -658,35 +658,35 @@ exports[`toTsType should work correctly with circular type works with dicts 1`] 
   children: Record<string | number, RecordType>;
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
 exports[`toTsType should work correctly with circular type works with direct dicts 1`] = `
 "type Dictionary = Record<string | number, Dictionary | string>
 
-export { Dictionary };
+export type { Dictionary };
 "
 `;
 
 exports[`toTsType should work correctly with circular type works with direct sets 1`] = `
 "type SetOf = Set<SetOf | string>;
 
-export { SetOf };
+export type { SetOf };
 "
 `;
 
 exports[`toTsType should work correctly with circular type works with direct tuples 1`] = `
 "type Tuple = [Tuple, string];
 
-export { Tuple };
+export type { Tuple };
 "
 `;
 
 exports[`toTsType should work correctly with circular type works with direct unions 1`] = `
 "type OneOf = OneOf | string;
 
-export { OneOf };
+export type { OneOf };
 "
 `;
 
@@ -698,7 +698,7 @@ exports[`toTsType should work correctly with circular type works with intersecti
   };
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -708,7 +708,7 @@ exports[`toTsType should work correctly with circular type works with sets 1`] =
   children: Set<RecordType>;
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -718,7 +718,7 @@ exports[`toTsType should work correctly with circular type works with tuples 1`]
   children?: [RecordType] | [RecordType, RecordType] | [RecordType, RecordType, RecordType];
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
 
@@ -731,6 +731,6 @@ exports[`toTsType should work correctly with circular type works with unions 1`]
   };
 };
 
-export { RecordType };
+export type { RecordType };
 "
 `;
