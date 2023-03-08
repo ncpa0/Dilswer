@@ -16,7 +16,6 @@ module.exports = {
     "^@UniversalParser/(.*)": "<rootDir>/src/universal-parser/$1",
     "^@UniversalParser": "<rootDir>/src/universal-parser/index",
   },
-  testEnvironment: "jsdom",
   roots: ["<rootDir>"],
   collectCoverageFrom: ["src/**/*.ts"],
   coverageReporters: ["html", "text"],
