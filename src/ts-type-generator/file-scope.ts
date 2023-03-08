@@ -150,10 +150,8 @@ export class TsFileScope {
         // eslint-disable-next-line
         switch (exportType) {
           case "export":
-            this.typeDefinitions.set(builder, `export { ${name} };`);
-            break;
           case "export/declare":
-            this.typeDefinitions.set(builder, `export declare { ${name} };`);
+            this.typeDefinitions.set(builder, `export type { ${name} };`);
             break;
         }
       }

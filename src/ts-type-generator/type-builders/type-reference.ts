@@ -40,7 +40,7 @@ export class TsTypeReference implements TsBuilder {
     switch (type) {
       case "export":
       case "export/declare":
-        return `export { ${this.name} };`;
+        return `export type { ${this.name} };`;
     }
 
     return undefined;
@@ -53,13 +53,12 @@ export class TsNamedReference {
 
   constructor(private name: string) {}
 
-  getDescription(indent: string): string {
+  getDescription(): string {
     return "";
   }
 
-  setName(name: string): void {
+  setName(): void {
     throw new Error("Cannot set name of a named reference.");
-    // no-op
   }
 
   getName(): string | undefined {
@@ -75,7 +74,7 @@ export class TsNamedReference {
     switch (type) {
       case "export":
       case "export/declare":
-        return `export { ${this.name} };`;
+        return `export type { ${this.name} };`;
     }
 
     return undefined;

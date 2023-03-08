@@ -2,6 +2,7 @@ import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
+import { validatedCircularValues } from "@Validation/validators/helper-validated-circ-values";
 import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 const DEFAULT_ROOT = Path.init("$");
@@ -22,6 +23,8 @@ export const createValidator = <DT extends AnyDataType>(
     } catch (e) {
       if (!ValidationError.isValidationError(e)) throw e;
       return false;
+    } finally {
+      validatedCircularValues.clear();
     }
   };
 

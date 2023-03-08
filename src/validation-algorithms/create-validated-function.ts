@@ -2,6 +2,7 @@ import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyDataType } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import type { ValidationError } from "@Validation/validation-error/validation-error";
+import { validatedCircularValues } from "@Validation/validators/helper-validated-circ-values";
 import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 const DEFAULT_ROOT = Path.init("$");
@@ -30,6 +31,8 @@ export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
       return onValidationError
         ? onValidationError(e as ValidationError, data)
         : void 0;
+    } finally {
+      validatedCircularValues.clear();
     }
   };
 
