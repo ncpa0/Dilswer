@@ -19,3 +19,4 @@ src
 tsconfig.build.json
 tsconfig.json
 yarn-error.log
+git-hook-tasks.config.json
