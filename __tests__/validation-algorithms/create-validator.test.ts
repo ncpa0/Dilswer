@@ -3096,6 +3096,62 @@ describe("createValidator", () => {
         expect(() => validate(data2)).not.toThrowError();
         expect(validate(data2)).toEqual(true);
       });
+
+      it("multiple neighboring circular types should correctly validate", () => {
+        const typeDef = DataType.RecordOf({
+          a: DataType.Circular((self) =>
+            DataType.RecordOf({
+              tag: DataType.String,
+              children: DataType.ArrayOf(self),
+            })
+          ),
+          b: DataType.Circular((self) =>
+            DataType.RecordOf({
+              tag: DataType.Number,
+            })
+          ),
+        });
+
+        const validate = createValidator(typeDef);
+
+        const a = {
+          tag: "div",
+          children: [],
+        };
+
+        const data = {
+          a: a,
+          b: a,
+        };
+
+        expect(validate(data)).toEqual(false);
+
+        const typeDef2 = DataType.RecordOf({
+          a: DataType.Circular((self) =>
+            DataType.RecordOf({
+              tag: DataType.String,
+              children: DataType.ArrayOf(self),
+              notSelf: DataType.Circular((s) =>
+                DataType.RecordOf({ foo: DataType.String })
+              ),
+            })
+          ),
+        });
+
+        const validate2 = createValidator(typeDef2);
+
+        const data2 = {
+          a: {
+            tag: "div",
+            children: [],
+            notSelf: {},
+          },
+        };
+
+        data2.a.notSelf = data2.a;
+
+        expect(validate2(data2)).toEqual(false);
+      });
     });
   });
 });
