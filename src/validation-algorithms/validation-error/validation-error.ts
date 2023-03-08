@@ -1,6 +1,6 @@
 import type { AnyDataType } from "@DataTypes/types";
-import { concatPath } from "../../utilities/concat-object-path";
-import type { Path } from "../path";
+import { concatPath } from "@Utilities/concat-object-path";
+import type { Path } from "@Validation/path";
 
 const ValidationErrorSymbol = Symbol("ValidationError");
 

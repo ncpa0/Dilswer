@@ -23,7 +23,7 @@ export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
       if (descriptor.required !== true) {
         continue;
       } else {
-        throw new ValidationError(path, type, data);
+        throw new ValidationError(path.concat(key), type, undefined);
       }
     }
 
