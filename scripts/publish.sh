@@ -15,7 +15,7 @@ if [ "$issemver" -eq "1" ]; then
         echo "Branch tag is different than packge.json version. Updating package.json version to $TAG_NAME"
         npm version "$TAG_NAME"
         echo "Requesting GithubBot to bump the package.json version on the remote"
-        node ./bump-remote.mjs "$TAG_NAME"
+        node ./scripts/bump-remote.mjs "$TAG_NAME"
     fi
     echo "Publishing to npm"
     npm publish --access public
