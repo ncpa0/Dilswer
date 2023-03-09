@@ -15,14 +15,18 @@ const getEnv = (key) => {
 };
 
 export function encrypt(text) {
+  const iv = crypto.randomBytes(16);
   const cipher = crypto.createCipheriv(
     "aes-256-cbc",
     getEnv("GH_BOT_ENCRYPTION_SECRET"),
-    null
+    iv
   );
   let crypted = cipher.update(text, "utf8", "hex");
   crypted += cipher.final("hex");
-  return crypted;
+  return {
+    iv: iv.toString("hex"),
+    content: crypted,
+  };
 }
 
 async function main() {
@@ -47,9 +51,7 @@ async function main() {
 
     await fetch(`${apiUrl}/bump-version`, {
       method: "POST",
-      body: JSON.stringify({
-        data,
-      }),
+      body: JSON.stringify(data),
     });
   } catch (err) {
     console.error(err);
