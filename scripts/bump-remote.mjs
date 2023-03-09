@@ -1,4 +1,5 @@
 import crypto from "crypto";
+import fetch from "node-fetch";
 
 const getRandomString = (length) => {
   return crypto.randomBytes(Math.ceil(length / 2)).toString("hex");
