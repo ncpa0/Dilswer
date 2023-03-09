@@ -17,6 +17,7 @@ import {
 } from "@Validation/create-validated-function";
 import { createChecker, createValidator } from "@Validation/create-validator";
 import { ensureDataType } from "@Validation/ensure-data-type";
+import { ValidationError } from "@Validation/validation-error/validation-error";
 
 const assertDataType = ensureDataType;
 const Type = DataType;
@@ -57,6 +58,7 @@ export {
   createTypeGuardedFunction,
   createValidatedFunction,
   createValidator,
+  ValidationError,
   DataType,
   Type,
   ensureDataType,
@@ -79,6 +81,7 @@ export default {
   createTypeGuardedFunction,
   createValidatedFunction,
   createValidator,
+  ValidationError,
   DataType,
   Type,
   ensureDataType,
