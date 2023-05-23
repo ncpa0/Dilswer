@@ -145,7 +145,7 @@ export class RecordOf<
       const key = this.keys[i];
       const entry = this.recordOf[key];
       const descriptor = isFieldDescriptor(entry)
-        ? entry
+        ? { required: true, ...entry }
         : { type: entry, required: true };
 
       children.push({

@@ -11,6 +11,7 @@ import {
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
 import { parseWith } from "@UniversalParser/universal-parser";
+import { compileFastValidator } from "@Validation/compile-fast-validator";
 import {
   createTypeGuardedFunction,
   createValidatedFunction,
@@ -58,6 +59,7 @@ export {
   createTypeGuardedFunction,
   createValidatedFunction,
   createValidator,
+  compileFastValidator,
   ValidationError,
   DataType,
   Type,
@@ -81,6 +83,7 @@ export default {
   createTypeGuardedFunction,
   createValidatedFunction,
   createValidator,
+  compileFastValidator,
   ValidationError,
   DataType,
   Type,

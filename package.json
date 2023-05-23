@@ -33,7 +33,8 @@
     "build": "node ./scripts/build.cjs",
     "test:tsc": "tsc --noEmit",
     "test:lint": "eslint ./src/**/*.ts",
-    "test:unit": "jest --coverage"
+    "test:unit": "jest --coverage",
+    "benchmark": "NODE_PATH=/usr/local/lib/node_modules node ./benchmark/fast-validator.js"
   },
   "devDependencies": {
     "@ncpa0cpl/nodepack": "^2.1.3",
