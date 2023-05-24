@@ -21,11 +21,12 @@ both the runtime validation types and the TypeScript type definitions.
 2. [Available Functions](#available-functions)
    1. [assertDataType()](#assertdatatype)
    2. [createValidator()](#createvalidator)
-   3. [createTypeGuardedFunction()](#createtypeguardedfunction)
-   4. [createValidatedFunction()](#createvalidatedfunction)
-   5. [toJsonSchema()](#tojsonschema)
-   6. [toTsType()](#totstype)
-   7. [DataType](#datatype)
+   3. [compileFastValidator()](#compilefastvalidator)
+   4. [createTypeGuardedFunction()](#createtypeguardedfunction)
+   5. [createValidatedFunction()](#createvalidatedfunction)
+   6. [toJsonSchema()](#tojsonschema)
+   7. [toTsType()](#totstype)
+   8. [DataType](#datatype)
 3. [Data Types](#data-types)
    1. [Number](#datatypenumber)
    2. [Int](#datatypeint)
@@ -193,6 +194,19 @@ const createValidator: <DT extends AllDataTypes>(
 Higher order function that generates a validator which will check the provided
 `data` against the `dataType` type structure definition and returns a boolean
 indicating if the check was successful.
+
+#### compileFastValidator()
+
+```ts
+const compileFastValidator: <DT extends AllDataTypes>(
+  dataType: DT
+) => (data: unknown) => data is ParseDataType<DT>;
+```
+
+Produces a highly optimized validator function by leveraging Just-In-Time
+compilation and the `eval()` function. This validation method cannot give
+detailed error messages like `assertDataType()` or
+`createTypeGuardedFunction()`.
 
 #### createTypeGuardedFunction()
 
