@@ -12,7 +12,7 @@
   },
   "license": "MIT",
   "repository": {
-    "url": "https://github.com/ncpa0cpl/Dilswer"
+    "url": "https://github.com/ncpa0/Dilswer"
   },
   "author": {
     "name": "Szymon Bretner (ncpa0cpl)",
@@ -53,6 +53,7 @@
     "git-hook-tasks": "ncpa0cpl/git-hook-tasks",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
+    "pr-changelog-gen": "^1.1.0",
     "prettier": "^2.8.8",
     "prettier-plugin-jsdoc": "^0.4.2",
     "typescript": "^5.0.4"
