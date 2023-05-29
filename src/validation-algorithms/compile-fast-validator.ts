@@ -760,7 +760,5 @@ export const compileFastValidator = <DT extends AnyDataType>(
 
   const validator = e(validatorStr)(_$getDependency);
 
-  console.log(validator.toString());
-
   return validator;
 };
