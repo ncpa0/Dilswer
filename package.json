@@ -37,7 +37,7 @@
     "benchmark": "NODE_PATH=/usr/local/lib/node_modules node ./benchmark/fast-validator.js"
   },
   "devDependencies": {
-    "@ncpa0cpl/nodepack": "^2.2.1",
+    "@ncpa0cpl/nodepack": "^2.2.2",
     "@swc/core": "^1.3.67",
     "@swc/jest": "^0.2.26",
     "@types/jest": "^29.5.2",
