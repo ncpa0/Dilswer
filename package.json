@@ -46,7 +46,7 @@
     "ajv": "^8.12.0",
     "axios": "^1.4.0",
     "crypto": "^1.0.1",
-    "esbuild": "0.18.17",
+    "esbuild": "0.18.19",
     "eslint": "^8.46.0",
     "eslint-config-prettier": "^8.9.0",
     "eslint-plugin-prettier": "^5.0.0",
