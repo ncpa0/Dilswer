@@ -17,7 +17,7 @@ describe("Required utility", () => {
         baz: { type: DataType.Boolean, required: true },
         qux: { type: DataType.Symbol, required: true },
         coorg: { type: DataType.Null, required: true },
-      })
+      }),
     );
   });
 });

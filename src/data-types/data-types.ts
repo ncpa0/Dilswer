@@ -8,6 +8,22 @@ import type {
   TypeMetadata,
 } from "@DataTypes/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
+import { compileFastValidator } from "@Validation/compile-fast-validator";
+import { Path } from "@Validation/path";
+import { ValidationError } from "@Validation/validation-error/validation-error";
+import { validatorsLookupMap } from "@Validation/validators/validate-type";
+import { StandardSchemaV1 } from "../standard-schema";
+import { CircularType } from "./circular-type-utils";
+import {
+  GetDataType,
+  GetFnAssertType,
+  ParseBasicDataType,
+  ParseDataType,
+  ParseDataTypeIntersectionTuple,
+  ParseRecordType,
+  RepackTuple,
+  ReWrap,
+} from "./type-utils";
 
 export const DataTypeSymbol: unique symbol = Symbol();
 export const MetadataSymbol = Symbol("metadata");
@@ -29,7 +45,7 @@ export const BasicDataTypes = {
 export abstract class BaseDataType {
   /** Will return a copy. */
   static getMetadata<T extends Record<any, any>>(
-    dt: BaseDataType
+    dt: BaseDataType,
   ): TypeMetadata<T> {
     return {
       ...dt[MetadataSymbol],
@@ -44,6 +60,11 @@ export abstract class BaseDataType {
   protected [MetadataSymbol]: TypeMetadata = {};
   protected [DataTypeSymbol] = true;
   readonly kind!: DataTypeKind;
+  private compiledValidatorRef: {
+    fn?: (
+      value: any,
+    ) => StandardSchemaV1.Result<any>;
+  } = {};
 
   protected copy<T extends BaseDataType>(this: T): T {
     const proto = Object.getPrototypeOf(this);
@@ -97,6 +118,59 @@ export abstract class BaseDataType {
 
   /** @internal */
   abstract _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R;
+
+  /** @internal */
+  getStandardSchemaProps<Self extends AnyDataType>(): StandardSchemaV1.Props<
+    any,
+    GetDataType<Self>
+  > {
+    const validateFn = validatorsLookupMap.get(this.kind)!;
+    const root = Path.init("$");
+
+    let validate = this.compiledValidatorRef.fn ?? ((value: any) => {
+      try {
+        validateFn(root, this, value);
+        return { value: value as any };
+      } catch (error) {
+        if (ValidationError.isValidationError(error)) {
+          return {
+            issues: [{ path: error.pathSegments, message: error.message }],
+          };
+        }
+        throw error;
+      }
+    });
+
+    return {
+      version: 1,
+      vendor: "Dilswer",
+      validate,
+    };
+  }
+
+  /**
+   * Compiles a fast validator to be used via interfaces that support the Standard Schema
+   * (through the `~standard` property.)
+   *
+   * Compiled validator is much faster than default, but provides less informations in
+   * case of validation failure.
+   */
+  compileStd() {
+    const fastValidator = compileFastValidator(this as any);
+    this.compiledValidatorRef.fn = (value: any) => {
+      if (fastValidator(value)) {
+        return { value };
+      } else {
+        return {
+          issues: [{
+            message:
+              "Value does not conform the data type structure definition.",
+          }],
+        };
+      }
+    };
+    return this;
+  }
 }
 
 export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
@@ -110,10 +184,17 @@ export class SimpleDataType<DT extends BasicTypeNames> extends BaseDataType {
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     return visitor.visit(this);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    ParseBasicDataType<DT>
+  > {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class RecordOf<
-  TS extends RecordTypeSchema = RecordTypeSchema
+  TS extends RecordTypeSchema = RecordTypeSchema,
 > extends BaseDataType {
   /** @internal */
   readonly keys: string[];
@@ -158,6 +239,13 @@ export class RecordOf<
 
     return visitor.visit(this, children);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    ReWrap<ParseRecordType<TS>>
+  > {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class ArrayOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
@@ -177,6 +265,13 @@ export class ArrayOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
     }
 
     return visitor.visit(this, children);
+  }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    Array<ReWrap<ParseDataType<DT[number]>>>
+  > {
+    return this.getStandardSchemaProps();
   }
 }
 
@@ -198,6 +293,10 @@ export class Tuple<DT extends AnyDataType[] = any[]> extends BaseDataType {
 
     return visitor.visit(this, children);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<any, RepackTuple<DT>> {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class Dict<DT extends AnyDataType[] = any[]> extends BaseDataType {
@@ -217,6 +316,13 @@ export class Dict<DT extends AnyDataType[] = any[]> extends BaseDataType {
     }
 
     return visitor.visit(this, children);
+  }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    Record<string | number, ReWrap<ParseDataType<DT[number]>>>
+  > {
+    return this.getStandardSchemaProps();
   }
 }
 
@@ -238,6 +344,13 @@ export class SetOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
 
     return visitor.visit(this, children);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    Set<ReWrap<ParseDataType<DT[number]>>>
+  > {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class OneOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
@@ -257,6 +370,13 @@ export class OneOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
     }
 
     return visitor.visit(this, children);
+  }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    ReWrap<ParseDataType<DT[number]>>
+  > {
+    return this.getStandardSchemaProps();
   }
 }
 
@@ -278,10 +398,17 @@ export class AllOf<DT extends AnyDataType[] = any[]> extends BaseDataType {
 
     return visitor.visit(this, children);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    ReWrap<ParseDataTypeIntersectionTuple<DT>>
+  > {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class Literal<
-  DT extends string | number | boolean = string | number | boolean
+  DT extends string | number | boolean = string | number | boolean,
 > extends BaseDataType {
   readonly kind = "literal";
   constructor(public literal: DT) {
@@ -293,10 +420,14 @@ export class Literal<
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     return visitor.visit(this);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<any, DT> {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class Enum<
-  TEnumValue extends string | number = any
+  TEnumValue extends string | number = any,
 > extends BaseDataType {
   /** @internal */
   static getOriginalMetadata(dt: Enum): TypeMetadata & { enumName?: string } {
@@ -328,6 +459,13 @@ export class Enum<
   /** @internal */
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     return visitor.visit(this);
+  }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    TEnumValue
+  > {
+    return this.getStandardSchemaProps();
   }
 }
 
@@ -372,10 +510,17 @@ export class EnumMember<DT = any> extends BaseDataType {
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     return visitor.visit(this);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    DT
+  > {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class InstanceOf<
-  DT extends new (...args: any[]) => any = any
+  DT extends new(...args: any[]) => any = any,
 > extends BaseDataType {
   readonly kind = "instanceOf";
   constructor(public instanceOf: DT) {
@@ -387,10 +532,17 @@ export class InstanceOf<
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     return visitor.visit(this);
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    InstanceType<DT>
+  > {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class Custom<
-  VF extends (v: any) => v is any = (v: any) => v is unknown
+  VF extends (v: any) => v is any = (v: any) => v is unknown,
 > extends BaseDataType {
   readonly kind = "custom";
   constructor(public custom: VF) {
@@ -401,6 +553,10 @@ export class Custom<
   /** @internal */
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     return visitor.visit(this);
+  }
+
+  get ["~standard"](): StandardSchemaV1.Props<any, GetFnAssertType<VF>> {
+    return this.getStandardSchemaProps();
   }
 }
 
@@ -444,6 +600,10 @@ export class StringMatching<T extends string = string> extends BaseDataType {
 
     return this;
   }
+
+  get ["~standard"](): StandardSchemaV1.Props<any, T> {
+    return this.getStandardSchemaProps();
+  }
 }
 
 export class CircularRef extends BaseDataType {
@@ -481,6 +641,13 @@ export class Circular<DT extends AnyDataType = any> extends BaseDataType {
   _acceptVisitor<R>(visitor: DataTypeVisitor<R>): R {
     const c = this.type._acceptVisitor(visitor);
     return visitor.visit(this, [c]);
+  }
+
+  get ["~standard"](): StandardSchemaV1.Props<
+    any,
+    ReWrap<CircularType<DT>>
+  > {
+    return this.getStandardSchemaProps();
   }
 }
 
@@ -545,12 +712,14 @@ export const DataType = {
   EnumMember<M extends number | string>(enumMember: M) {
     return new EnumMember(enumMember);
   },
-  Enum<T extends string, TEnumValue extends string | number>(enumInstance: {
-    [key in T]: TEnumValue;
-  }) {
+  Enum<T extends string, TEnumValue extends string | number>(
+    enumInstance: {
+      [key in T]: TEnumValue;
+    },
+  ) {
     return new Enum<TEnumValue>(enumInstance);
   },
-  InstanceOf<DT extends new (...args: any[]) => any>(instanceOf: DT) {
+  InstanceOf<DT extends new(...args: any[]) => any>(instanceOf: DT) {
     return new InstanceOf(instanceOf);
   },
   Custom<VF extends (v: any) => v is any>(validateFunction: VF) {

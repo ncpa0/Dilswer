@@ -53,11 +53,11 @@ class ConditionBuilder {
     const separator = this.type === "||" ? " || " : " && ";
 
     return (
-      "(" +
-      this.conditions
+      "("
+      + this.conditions
         .map((c): string => (typeof c === "string" ? c : c.build()))
-        .join(separator) +
-      ")"
+        .join(separator)
+      + ")"
     );
   }
 }
@@ -73,7 +73,7 @@ const $type = (
     | "symbol"
     | "undefined"
     | "object"
-    | "function"
+    | "function",
 ) => {
   return `typeof ${varname} === "${type}"`;
 };
@@ -97,9 +97,11 @@ const $iife = (passedArg: string, argName: string, body: string) => {
 
 const $defineRegexp = (name: string, regexp: RegExp) => {
   return {
-    declaration: `const ${name} = new RegExp(${JSON.stringify(
-      regexp.source
-    )}, ${JSON.stringify(regexp.flags)});`,
+    declaration: `const ${name} = new RegExp(${
+      JSON.stringify(
+        regexp.source,
+      )
+    }, ${JSON.stringify(regexp.flags)});`,
     $test(varname: string) {
       return `${name}.test(${varname})`;
     },
@@ -108,21 +110,21 @@ const $defineRegexp = (name: string, regexp: RegExp) => {
 
 const $equal = (
   varname: string,
-  value: string | number | boolean | null | undefined
+  value: string | number | boolean | null | undefined,
 ) => {
   return `${varname} === ${_serialize(value)}`;
 };
 
 const $notEqual = (
   varname: string,
-  value: string | number | boolean | null | undefined
+  value: string | number | boolean | null | undefined,
 ) => {
   return `${varname} !== ${_serialize(value)}`;
 };
 
 const $laxNotEqual = (
   varname: string,
-  value: string | number | boolean | null | undefined
+  value: string | number | boolean | null | undefined,
 ) => {
   return `${varname} != ${_serialize(value)}`;
 };
@@ -177,8 +179,8 @@ class ValidateGenerator {
     children: ValidateGenerator[] | undefined | null,
     private get$validate: (
       varname: string,
-      self: ValidateGenerator
-    ) => ConditionBuilder
+      self: ValidateGenerator,
+    ) => ConditionBuilder,
   ) {
     this.addChildren(children ?? []);
   }
@@ -248,48 +250,64 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
   private visitPrimitive(type: BasicDataType): R {
     switch (type.simpleType) {
       case "boolean":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "boolean"))
+        return new ValidateGenerator(
+          null,
+          (varname) => condition("&&").add($type(varname, "boolean")),
         );
       case "integer":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "number")).add($isInteger(varname))
+        return new ValidateGenerator(
+          null,
+          (varname) =>
+            condition("&&").add($type(varname, "number")).add(
+              $isInteger(varname),
+            ),
         );
       case "null":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($equal(varname, null))
+        return new ValidateGenerator(
+          null,
+          (varname) => condition("&&").add($equal(varname, null)),
         );
       case "number":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "number")).add($notNaN(varname))
+        return new ValidateGenerator(
+          null,
+          (varname) =>
+            condition("&&").add($type(varname, "number")).add($notNaN(varname)),
         );
       case "string":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "string"))
+        return new ValidateGenerator(
+          null,
+          (varname) => condition("&&").add($type(varname, "string")),
         );
       case "stringinteger":
         this.includes.stringInteger = true;
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add(`_$validateStringInteger(${varname})`)
+        return new ValidateGenerator(
+          null,
+          (varname) =>
+            condition("&&").add(`_$validateStringInteger(${varname})`),
         );
       case "stringnumeral":
         this.includes.stringNumeral = true;
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add(`_$validateStringNumeral(${varname})`)
+        return new ValidateGenerator(
+          null,
+          (varname) =>
+            condition("&&").add(`_$validateStringNumeral(${varname})`),
         );
       case "unknown":
         return new ValidateGenerator(null, () => condition("&&"));
       case "function":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "function"))
+        return new ValidateGenerator(
+          null,
+          (varname) => condition("&&").add($type(varname, "function")),
         );
       case "symbol":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "symbol"))
+        return new ValidateGenerator(
+          null,
+          (varname) => condition("&&").add($type(varname, "symbol")),
         );
       case "undefined":
-        return new ValidateGenerator(null, (varname) =>
-          condition("&&").add($type(varname, "undefined"))
+        return new ValidateGenerator(
+          null,
+          (varname) => condition("&&").add($type(varname, "undefined")),
         );
     }
   }
@@ -307,12 +325,12 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
       return new ValidateGenerator([oneof], (varname) =>
         condition("&&")
           .add($isArray(varname))
-          .add(`_$every(${varname}, (${itemName}) => ${v})`)
-      );
+          .add(`_$every(${varname}, (${itemName}) => ${v})`));
     }
 
-    return new ValidateGenerator(children, (varname) =>
-      condition("&&").add($isArray(varname))
+    return new ValidateGenerator(
+      children,
+      (varname) => condition("&&").add($isArray(varname)),
     );
   }
 
@@ -329,7 +347,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
           const argName = generator.getUniqueVarName();
 
           cond.add(
-            $iife(`${varname}[${index}]`, argName, c.$validate(argName))
+            $iife(`${varname}[${index}]`, argName, c.$validate(argName)),
           );
 
           v.addChildren([c]);
@@ -342,7 +360,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
 
   private visitRecordOf(
     type: RecordOf,
-    children: RecordOfVisitChild<R>[] = []
+    children: RecordOfVisitChild<R>[] = [],
   ): R {
     const getRecordConditions = (varName: string, v: ValidateGenerator) => {
       const cond = condition("&&")
@@ -361,10 +379,10 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
               $ternary(
                 condition("&&")
                   .add($has(varName, c.propertyName))
-                  .add($notEqual(nextName, undefined))
+                  .add($notEqual(nextName, undefined)),
               )
                 .then(c.child.$validate(nextName))
-                .else("true")
+                .else("true"),
             );
           } else {
             cond.add($has(varName, c.propertyName));
@@ -386,7 +404,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
         const validateFn = $defineFn(
           fnName,
           argName,
-          getRecordConditions(argName, v).build()
+          getRecordConditions(argName, v).build(),
         );
         v.addDeclare(validateFn.declaration);
 
@@ -415,14 +433,17 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
 
       const v = oneof.$validate(itemName);
 
-      return new ValidateGenerator([oneof], (varname) =>
-        getBaseDictConditions(varname).add(
-          `_$everyObjectValue(${varname}, (${itemName}) => ${v})`
-        )
+      return new ValidateGenerator(
+        [oneof],
+        (varname) =>
+          getBaseDictConditions(varname).add(
+            `_$everyObjectValue(${varname}, (${itemName}) => ${v})`,
+          ),
       );
     } else {
-      return new ValidateGenerator(children, (varname) =>
-        getBaseDictConditions(varname)
+      return new ValidateGenerator(
+        children,
+        (varname) => getBaseDictConditions(varname),
       );
     }
   }
@@ -444,15 +465,18 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
 
       const v = oneof.$validate(itemName);
 
-      return new ValidateGenerator([oneof], (varname) =>
-        getBaseSetConditions(varname).add(
-          `_$everyInSet(${varname}, (${itemName}) => ${v})`
-        )
+      return new ValidateGenerator(
+        [oneof],
+        (varname) =>
+          getBaseSetConditions(varname).add(
+            `_$everyInSet(${varname}, (${itemName}) => ${v})`,
+          ),
       );
     }
 
-    return new ValidateGenerator(children, (varname) =>
-      getBaseSetConditions(varname)
+    return new ValidateGenerator(
+      children,
+      (varname) => getBaseSetConditions(varname),
     );
   }
 
@@ -485,8 +509,9 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
   }
 
   private visitLiteral(type: Literal): R {
-    return new ValidateGenerator(null, (varname) =>
-      condition("&&").add($equal(varname, type.literal))
+    return new ValidateGenerator(
+      null,
+      (varname) => condition("&&").add($equal(varname, type.literal)),
     );
   }
 
@@ -508,8 +533,9 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
   }
 
   private visitEnumMember(type: EnumMember): R {
-    return new ValidateGenerator(null, (varname) =>
-      condition("&&").add($equal(varname, type.enumMember))
+    return new ValidateGenerator(
+      null,
+      (varname) => condition("&&").add($equal(varname, type.enumMember)),
     );
   }
 
@@ -518,24 +544,29 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
 
     return new ValidateGenerator(null, (varname) =>
       condition("&&").add(
-        `${varname} instanceof _$getDependency("${classDepName}")`
-      )
-    ).addDependency(classDepName, type.instanceOf);
+        `${varname} instanceof _$getDependency("${classDepName}")`,
+      )).addDependency(classDepName, type.instanceOf);
   }
 
   private visitCustom(type: Custom): R {
     const customDepName = this.getUniqueVarName();
 
-    return new ValidateGenerator(null, (varname) =>
-      condition("&&").add(`_$getDependency("${customDepName}")(${varname})`)
+    return new ValidateGenerator(
+      null,
+      (varname) =>
+        condition("&&").add(`_$getDependency("${customDepName}")(${varname})`),
     ).addDependency(customDepName, type.custom);
   }
 
   private visitStringMatching(type: StringMatching): R {
     const regexp = $defineRegexp(this.getUniqueVarName(), type.pattern);
 
-    return new ValidateGenerator(null, (varname) =>
-      condition("&&").add($type(varname, "string")).add(regexp.$test(varname))
+    return new ValidateGenerator(
+      null,
+      (varname) =>
+        condition("&&").add($type(varname, "string")).add(
+          regexp.$test(varname),
+        ),
     ).addDeclare(regexp.declaration);
   }
 
@@ -552,16 +583,17 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
         validatorFnName,
         argName,
         $ternary(
-          `_$wasCircValidated(${_serialize(typeUniqueName)}, ${argName})`
+          `_$wasCircValidated(${_serialize(typeUniqueName)}, ${argName})`,
         )
           .then("true")
-          .else(childSchema.$validate(argName))
+          .else(childSchema.$validate(argName)),
       );
 
       this.includes.circular = true;
 
-      return new ValidateGenerator(children, (varname) =>
-        condition("&&").add(validateFn.$invokeWith(varname))
+      return new ValidateGenerator(
+        children,
+        (varname) => condition("&&").add(validateFn.$invokeWith(varname)),
       ).addDeclare(validateFn.declaration);
     }
 
@@ -574,8 +606,9 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     if (this.circValidationFnNames.has(referencedType)) {
       const validatorFnName = this.circValidationFnNames.get(referencedType)!;
 
-      return new ValidateGenerator(null, (varname) =>
-        condition("&&").add(`${validatorFnName}(${varname})`)
+      return new ValidateGenerator(
+        null,
+        (varname) => condition("&&").add(`${validatorFnName}(${varname})`),
       );
     }
 
@@ -583,8 +616,9 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
 
     this.circValidationFnNames.set(referencedType, validatorFnName);
 
-    return new ValidateGenerator(null, (varname) =>
-      condition("&&").add(`${validatorFnName}(${varname})`)
+    return new ValidateGenerator(
+      null,
+      (varname) => condition("&&").add(`${validatorFnName}(${varname})`),
     );
   }
 
@@ -704,8 +738,8 @@ const circTracker = /* js */ `
  * ahead-of-time and reuse it.
  */
 export const compileFastValidator = <DT extends AnyDataType>(
-  dataType: DT
-): ((data: unknown) => data is ReWrap<ParseDataType<DT>>) => {
+  dataType: DT,
+): (data: unknown) => data is ReWrap<ParseDataType<DT>> => {
   const visitor = new DataTypeValidatorVisitor();
 
   const generator = dataType._acceptVisitor(visitor);
@@ -715,9 +749,9 @@ export const compileFastValidator = <DT extends AnyDataType>(
   const declarations = [];
 
   if (
-    visitor.includes.array ||
-    visitor.includes.stringInteger ||
-    visitor.includes.stringNumeral
+    visitor.includes.array
+    || visitor.includes.stringInteger
+    || visitor.includes.stringNumeral
   ) {
     declarations.push(every);
   }

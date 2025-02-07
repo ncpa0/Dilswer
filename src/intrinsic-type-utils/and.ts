@@ -9,20 +9,20 @@ import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
  */
 export const And = <R1 extends RecordTypeSchema, R2 extends RecordTypeSchema>(
   recordDataTypeA: RecordOf<R1>,
-  recordDataTypeB: RecordOf<R2>
+  recordDataTypeB: RecordOf<R2>,
 ): SumRecord<R1, R2> => {
   return new RecordOf({
     ...(Object.fromEntries(
       Object.entries(recordDataTypeA.recordOf).map(([key, desc]) => [
         key,
         isFieldDescriptor(desc) ? desc : desc["copy"](),
-      ])
+      ]),
     ) as R1),
     ...(Object.fromEntries(
       Object.entries(recordDataTypeB.recordOf).map(([key, desc]) => [
         key,
         isFieldDescriptor(desc) ? desc : desc["copy"](),
-      ])
+      ]),
     ) as R2),
   });
 };

@@ -8,7 +8,7 @@ import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
  * Similar to the Typescript's `Partial<>` utility type.
  */
 export const Partial = <R extends RecordTypeSchema>(
-  recordDataType: RecordOf<R>
+  recordDataType: RecordOf<R>,
 ): PartialRecord<R> => {
   return new RecordOf(
     Object.fromEntries(
@@ -17,7 +17,7 @@ export const Partial = <R extends RecordTypeSchema>(
         isFieldDescriptor(descriptor)
           ? { ...descriptor, required: false }
           : { type: descriptor, required: false },
-      ])
-    ) as any
+      ]),
+    ) as any,
   );
 };

@@ -168,7 +168,7 @@ const processPerson = createValidatedFunction(
     // handle the validation failure
 
     return "Failure";
-  }
+  },
 );
 
 // Result:
@@ -187,7 +187,7 @@ const result = processPerson(person); // => "Success!" or "Failure"
 
 ```ts
 const createValidator: <DT extends AllDataTypes>(
-  dataType: DT
+  dataType: DT,
 ) => (data: unknown) => data is ParseDataType<DT>;
 ```
 
@@ -199,7 +199,7 @@ indicating if the check was successful.
 
 ```ts
 const compileFastValidator: <DT extends AllDataTypes>(
-  dataType: DT
+  dataType: DT,
 ) => (data: unknown) => data is ParseDataType<DT>;
 ```
 
@@ -214,7 +214,7 @@ detailed error messages like `assertDataType()` or
 const createTypeGuardedFunction: <DT extends AllDataTypes, R, ER = void>(
   dataType: DT,
   onValidationSuccess: (data: ReWrap<ParseDataType<DT>>) => R,
-  onValidationError?: (error: ValidationError, data: unknown) => ER
+  onValidationError?: (error: ValidationError, data: unknown) => ER,
 ) => (data: unknown) => R | ER;
 ```
 
@@ -236,7 +236,7 @@ _Also available under an alias `dilswer.ensureDataType()`_
 ```ts
 const assertDataType: <DT extends AllDataTypes>(
   dataType: DT,
-  data: unknown
+  data: unknown,
 ) => asserts data is ParseDataType<DT>;
 ```
 
@@ -289,24 +289,24 @@ type ParseToJsonSchemaOptions = {
     Set?: (
       setItemsSchemas: JSONSchema6[],
       original: Set<AnyDataType[]>,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Custom?: (
       validateFunction: Custom["custom"],
       original: Custom,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Undefined?: (
       dataType: BasicDataType,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Symbol?: (
       dataType: BasicDataType,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Function?: (
       dataType: BasicDataType,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
   };
 };
@@ -321,7 +321,7 @@ JSDoc comments that can be bundled with libraries.
 ```ts
 const toTsType: (
   dataType: AnyDataType,
-  options?: Partial<TsParsingOptions>
+  options?: Partial<TsParsingOptions>,
 ) => string;
 ```
 
@@ -418,7 +418,7 @@ type TsParsingOptions = {
    *   //"
    */
   getExternalTypeImport?: (
-    type: Enum | EnumMember | InstanceOf | Custom | SimpleDataType<"function">
+    type: Enum | EnumMember | InstanceOf | Custom | SimpleDataType<"function">,
   ) => ExternalTypeImport | undefined;
 };
 
@@ -874,7 +874,7 @@ const typeDefRequired = Required(typeDefOne);
 const typeDefOne = DataType.OneOf(
   DataType.String,
   DataType.Number,
-  DataType.Boolean
+  DataType.Boolean,
 );
 
 const typeDefExcluded = Exclude(typeDefOne, DataType.Number);
@@ -894,19 +894,20 @@ a description to a data type, or a title, or format.
 ```ts
 import { DataType } from "dilswer";
 
-const UserNameDT =
-  DataType.String.setTitle("User Name").setDescription("The user's name.");
+const UserNameDT = DataType.String.setTitle("User Name").setDescription(
+  "The user's name.",
+);
 
 const User = DataType.RecordOf({
   name: UserNameDT,
   id: DataType.String.setTitle("User ID").setFormat("uuid"),
   friends: DataType.ArrayOf(DataType.String).setDescription(
-    "A list of the user's friends names."
+    "A list of the user's friends names.",
   ),
 })
   .setTitle("User")
   .setDescription(
-    "A user object. Contains the user's name, id and friends list."
+    "A user object. Contains the user's name, id and friends list.",
   );
 ```
 
@@ -940,16 +941,16 @@ import { DataType, toJsonSchema } from "dilswer";
 
 const UserDT = DataType.RecordOf({
   name: DataType.String.setTitle("User Name").setDescription(
-    "The user's name."
+    "The user's name.",
   ),
   id: DataType.String.setTitle("User ID").setFormat("uuid"),
   friends: DataType.ArrayOf(DataType.String).setDescription(
-    "A list of the user's friends names."
+    "A list of the user's friends names.",
   ),
 })
   .setTitle("User")
   .setDescription(
-    "A user object. Contains the user's name, id and friends list."
+    "A user object. Contains the user's name, id and friends list.",
   );
 
 const jsonSchema = toJsonSchema(UserDT);
@@ -995,7 +996,7 @@ You can see the implementation of these functions in the source code
 #### Example
 
 ```ts
-import { DataType, parseWith, AnyDataType } from "dilswer";
+import { AnyDataType, DataType, parseWith } from "dilswer";
 
 // Define how the new structure should look like
 type Node = {
@@ -1007,7 +1008,7 @@ type Node = {
 const visitor = {
   visit(
     type: AnyDataType,
-    children?: Node[] | RecordOfVisitChild<Node>[]
+    children?: Node[] | RecordOfVisitChild<Node>[],
   ): Node {
     switch (type.kind) {
       case "simple":
@@ -1017,10 +1018,10 @@ const visitor = {
           typeName: "record",
           children: children
             ? Object.fromEntries(
-                (children as RecordOfVisitChild<Node>[]).map(
-                  ({ propertyName, child }) => [propertyName, child]
-                )
-              )
+              (children as RecordOfVisitChild<Node>[]).map(
+                ({ propertyName, child }) => [propertyName, child],
+              ),
+            )
             : undefined,
         };
       default:

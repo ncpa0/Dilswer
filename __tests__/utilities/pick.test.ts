@@ -14,7 +14,7 @@ describe("Pick utility", () => {
       DataType.RecordOf({
         bar: { type: DataType.String },
         qux: { type: DataType.Symbol },
-      })
+      }),
     );
   });
 });

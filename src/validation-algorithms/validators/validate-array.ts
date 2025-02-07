@@ -7,7 +7,7 @@ import { validateOneOf } from "@Validation/validators/validate-one-of";
 export const validateArray = (
   path: Path,
   type: ArrayOf<AnyDataType[]>,
-  data: unknown
+  data: unknown,
 ) => {
   if (!Array.isArray(data)) throw new ValidationError(path, type, data);
 

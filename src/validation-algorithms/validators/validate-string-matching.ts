@@ -5,7 +5,7 @@ import { ValidationError } from "@Validation/validation-error/validation-error";
 export const validateStringMatching = (
   path: Path,
   type: StringMatching,
-  data: unknown
+  data: unknown,
 ) => {
   if (typeof data !== "string" || !type.pattern.test(data)) {
     throw new ValidationError(path, type, data);

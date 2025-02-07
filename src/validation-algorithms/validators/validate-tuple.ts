@@ -7,10 +7,11 @@ import { validatorsLookupMap } from "@Validation/validators/validate-type";
 export const validateTuple = (
   path: Path,
   type: Tuple<AnyDataType[]>,
-  data: unknown
+  data: unknown,
 ) => {
-  if (!Array.isArray(data) || data.length !== type.tuple.length)
+  if (!Array.isArray(data) || data.length !== type.tuple.length) {
     throw new ValidationError(path, type, data);
+  }
 
   for (let index = 0; index < type.tuple.length; index++) {
     const elem = data[index];
@@ -18,7 +19,7 @@ export const validateTuple = (
     validatorsLookupMap.get(elemtType.kind)!(
       path.concat(index),
       elemtType,
-      elem
+      elem,
     );
   }
 };

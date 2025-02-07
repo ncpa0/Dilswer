@@ -7,17 +7,18 @@ import { validateOneOf } from "@Validation/validators/validate-one-of";
 export const validateSet = (
   path: Path,
   type: SetOf<AnyDataType[]>,
-  data: unknown
+  data: unknown,
 ) => {
   if (
     !(
-      typeof data === "object" &&
-      data !== null &&
+      typeof data === "object"
+      && data !== null
       // @ts-expect-error
-      data[Symbol.toStringTag] === "Set"
+      && data[Symbol.toStringTag] === "Set"
     )
-  )
+  ) {
     throw new ValidationError(path, type, data);
+  }
 
   const elemType = DataType.OneOf(...type.setOf);
 

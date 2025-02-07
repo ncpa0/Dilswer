@@ -41,7 +41,7 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
       properties.push(
         `${description}${description ? "\n" : ""}${indent}${name}${
           isRequired ? "" : "?"
-        }: ${type};`
+        }: ${type};`,
       );
     }
 
@@ -64,7 +64,7 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
           extends: this.extend,
           properties: properties.join("\n"),
         }),
-        indent
+        indent,
       );
     }
 
@@ -72,7 +72,7 @@ export class TsRecordBuilder extends TsBaseBuilder implements TsBuilder {
       RECORD_TEMPLATE.build({
         properties: properties.join("\n"),
       }),
-      indent
+      indent,
     );
   }
 

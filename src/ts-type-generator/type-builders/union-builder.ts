@@ -6,7 +6,7 @@ const UNION_TEMPLATE = new TemplateBuilder("{{types}}");
 
 const EXPORT_UNION_TEMPLATE = new TemplateBuilder(
   `{{description}}
-{{export}}type {{name}} = {{types}};`
+{{export}}type {{name}} = {{types}};`,
 );
 
 export class TsUnionBuilder extends TsBaseBuilder implements TsBuilder {

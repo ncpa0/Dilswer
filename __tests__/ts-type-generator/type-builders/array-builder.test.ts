@@ -18,7 +18,7 @@ describe("TsArrayBuilder", () => {
     const tsType = toTsType(dt);
 
     expect(tsType).toBe(
-      `/**\n * My array description\n */\nexport type MyArray = Array<number>;\n`
+      `/**\n * My array description\n */\nexport type MyArray = Array<number>;\n`,
     );
   });
 });

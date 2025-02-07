@@ -8,7 +8,7 @@ import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
  * Similar to the Typescript's `Required<>` utility type.
  */
 export const Required = <R extends RecordTypeSchema>(
-  recordDataType: RecordOf<R>
+  recordDataType: RecordOf<R>,
 ): RequiredRecord<R> => {
   return new RecordOf(
     Object.fromEntries(
@@ -17,7 +17,7 @@ export const Required = <R extends RecordTypeSchema>(
         isFieldDescriptor(descriptor)
           ? { ...descriptor, required: true }
           : { type: descriptor, required: true },
-      ])
-    ) as any
+      ]),
+    ) as any,
   );
 };

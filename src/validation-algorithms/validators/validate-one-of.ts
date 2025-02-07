@@ -6,7 +6,7 @@ import { validatorsLookupMap } from "@Validation/validators/validate-type";
 export const validateOneOf = (
   path: Path,
   type: OneOf<AnyDataType[]>,
-  data: unknown
+  data: unknown,
 ): void => {
   if (type.oneOf.length === 1) {
     const oneOfType = type.oneOf[0];

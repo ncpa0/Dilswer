@@ -15,7 +15,7 @@ describe("Omit utility", () => {
         foo: { type: DataType.Number },
         baz: { type: DataType.Boolean },
         coorg: { type: DataType.Null },
-      })
+      }),
     );
   });
 });

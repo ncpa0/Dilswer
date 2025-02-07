@@ -16,7 +16,7 @@ export class TsTypeReference implements TsBuilder {
   constructor(
     private fileScope: TsFileScope,
     private type: TsBuilder,
-    public name: string
+    public name: string,
   ) {}
 
   getDescription(indent: string): string {

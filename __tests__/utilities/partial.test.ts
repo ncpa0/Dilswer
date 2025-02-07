@@ -17,7 +17,7 @@ describe("Partial utility", () => {
         baz: { type: DataType.Boolean, required: false },
         qux: { type: DataType.Symbol, required: false },
         coorg: { type: DataType.Null, required: false },
-      })
+      }),
     );
   });
 });

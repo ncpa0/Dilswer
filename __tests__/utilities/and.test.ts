@@ -17,7 +17,7 @@ describe("And utility", () => {
         foo: { type: DataType.Number },
         bar: { type: DataType.Boolean },
         baz: { type: DataType.Symbol },
-      })
+      }),
     );
   });
 });

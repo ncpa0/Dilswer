@@ -1,7 +1,7 @@
 {
-  "compilerOptions": { 
+  "compilerOptions": {
     "rootDirs": ["./src"],
-    "stripInternal": true 
+    "stripInternal": true
   },
   "extends": "./tsconfig.json",
   "exclude": ["./__tests__", "./dist"]

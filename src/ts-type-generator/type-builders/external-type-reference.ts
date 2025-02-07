@@ -5,8 +5,7 @@ import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 const EXTERNAL_TYPE_REF_EXPORT_TEMPLATE = new TemplateBuilder(`{{description}}
 {{export}}type {{alias}} = {{refName}};`);
 
-export class TsExternalTypeReference
-  extends TsBaseBuilder
+export class TsExternalTypeReference extends TsBaseBuilder
   implements TsBuilder
 {
   constructor(private referenceName: string) {

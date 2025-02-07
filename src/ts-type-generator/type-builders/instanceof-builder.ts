@@ -3,7 +3,7 @@ import type { ExportType, TsBuilder } from "@TsTypeGenerator/ts-builder";
 import { TsBaseBuilder } from "@TsTypeGenerator/type-builders/base-builder";
 
 const INSTANCEOF_TEMPLATE = new TemplateBuilder(
-  "InstanceType<typeof {{type}}>"
+  "InstanceType<typeof {{type}}>",
 );
 
 const EXPORTED_INSTANCEOF_TEMPLATE = new TemplateBuilder(`{{description}}

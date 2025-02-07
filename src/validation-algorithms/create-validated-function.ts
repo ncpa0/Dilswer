@@ -19,7 +19,7 @@ const DEFAULT_ROOT = Path.init("$");
 export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
   dataType: DT,
   onValidationSuccess: (data: ReWrap<ParseDataType<DT>>) => R,
-  onValidationError?: (error: ValidationError, passedData: unknown) => ER
+  onValidationError?: (error: ValidationError, passedData: unknown) => ER,
 ) => {
   const caller = (data: unknown): R | ER => {
     try {

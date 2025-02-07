@@ -15,7 +15,7 @@ const testDt = DataType.RecordOf({
   stringArray: DataType.ArrayOf(DataType.String),
   unionArray: DataType.ArrayOf(
     DataType.RecordOf({ foo: DataType.String }),
-    DataType.RecordOf({ bar: DataType.String })
+    DataType.RecordOf({ bar: DataType.String }),
   ),
   tuple: DataType.Tuple(DataType.String, DataType.Number),
   literalString: DataType.Literal("literal"),
@@ -29,12 +29,12 @@ const testDt = DataType.RecordOf({
     }),
     DataType.RecordOf({
       b: DataType.Number,
-    })
+    }),
   ),
   dict: DataType.Dict(DataType.String),
   oneof: DataType.OneOf(
     DataType.RecordOf({ foo: DataType.String }),
-    DataType.RecordOf({ bar: DataType.String })
+    DataType.RecordOf({ bar: DataType.String }),
   ),
   symbol: DataType.Symbol,
   undef: DataType.Undefined,
@@ -52,7 +52,7 @@ const testDt = DataType.RecordOf({
         required: false,
         type: DataType.ArrayOf(
           DataType.RecordOf({ foo: DataType.String }),
-          DataType.RecordOf({ bar: DataType.String })
+          DataType.RecordOf({ bar: DataType.String }),
         ),
       },
       tuple: {
@@ -62,7 +62,7 @@ const testDt = DataType.RecordOf({
             id: { required: false, type: DataType.String },
           }),
           DataType.Literal("separator"),
-          DataType.Boolean
+          DataType.Boolean,
         ),
       },
       literalString: { required: false, type: DataType.Literal("literal") },
@@ -78,7 +78,7 @@ const testDt = DataType.RecordOf({
           }),
           DataType.RecordOf({
             b: DataType.Number,
-          })
+          }),
         ),
       },
       dict: { required: false, type: DataType.Dict(DataType.String) },
@@ -86,7 +86,7 @@ const testDt = DataType.RecordOf({
         required: false,
         type: DataType.OneOf(
           DataType.RecordOf({ foo: DataType.String }),
-          DataType.RecordOf({ bar: DataType.String })
+          DataType.RecordOf({ bar: DataType.String }),
         ),
       },
       stringMatching: {
@@ -113,7 +113,7 @@ describe("toJsonSchema", () => {
     const schema = toJsonSchema(
       testDt,
       { incompatibleTypes: "set-as-any" },
-      false
+      false,
     );
 
     expect(schema).toBeDefined();
@@ -125,16 +125,15 @@ describe("toJsonSchema", () => {
   });
 
   it("should throw an error when attempting to parse incompatible types when set to 'throw'", () => {
-    expect(() =>
-      toJsonSchema(testDt, { incompatibleTypes: "throw" })
-    ).toThrow();
+    expect(() => toJsonSchema(testDt, { incompatibleTypes: "throw" }))
+      .toThrow();
   });
 
   it("should set the specified additionalProperty", () => {
     const schema = toJsonSchema(
       testDt,
       { incompatibleTypes: "omit", additionalProperties: false },
-      false
+      false,
     );
 
     expect(schema).toMatchSnapshot();
@@ -185,7 +184,7 @@ describe("toJsonSchema", () => {
           },
         },
       },
-      false
+      false,
     );
 
     expect(schema).toMatchSnapshot();
@@ -199,15 +198,14 @@ describe("toJsonSchema", () => {
   it("should copy the properties from metadata", () => {
     const dt = DataType.RecordOf({
       date: DataType.String.setFormat("date-time"),
-      timestamp:
-        DataType.Int.setDescription("UNIX timestamp.").setTitle(
-          "Creation Timestamp"
-        ),
+      timestamp: DataType.Int.setDescription("UNIX timestamp.").setTitle(
+        "Creation Timestamp",
+      ),
       list: DataType.ArrayOf(DataType.String),
       dictionary: OptionalField(
         DataType.RecordOf({ foo: DataType.Unknown }).setDescription(
-          "This field is optional."
-        )
+          "This field is optional.",
+        ),
       ),
     }).setTitle("Top Record");
 
@@ -317,7 +315,7 @@ describe("toJsonSchema", () => {
             DataType.RecordOf({
               name: DataType.Literal("span"),
               children: DataType.ArrayOf(self),
-            }).setTitle("SpanNode")
+            }).setTitle("SpanNode"),
           ).setTitle("SpanNodeList"),
         }).setTitle("Node")
       );
@@ -341,7 +339,7 @@ describe("toJsonSchema", () => {
               DataType.RecordOf({
                 nested: DataType.Literal(true),
                 items: self2,
-              })
+              }),
             )
           ),
         })
@@ -395,8 +393,8 @@ describe("toJsonSchema", () => {
             DataType.OneOf(
               DataType.Tuple(self),
               DataType.Tuple(self, self),
-              DataType.Tuple(self, self, self)
-            )
+              DataType.Tuple(self, self, self),
+            ),
           ),
         })
       );
@@ -434,8 +432,8 @@ describe("toJsonSchema", () => {
               DataType.RecordOf({
                 name: DataType.String,
                 children: self,
-              })
-            )
+              }),
+            ),
           ),
         })
       );
@@ -472,8 +470,8 @@ describe("toJsonSchema", () => {
               self,
               DataType.RecordOf({
                 type: DataType.String,
-              })
-            )
+              }),
+            ),
           ),
         })
       );

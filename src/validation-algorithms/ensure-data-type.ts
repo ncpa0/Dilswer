@@ -13,16 +13,16 @@ const DEFAULT_ROOT = Path.init("$");
  */
 export const ensureDataType: <DT extends AnyDataType>(
   dataType: DT,
-  data: unknown
+  data: unknown,
 ) => asserts data is ReWrap<ParseDataType<DT>> = (
   dataType: AnyDataType,
-  data: unknown
+  data: unknown,
 ) => {
   try {
     return validatorsLookupMap.get(dataType.kind)!(
       DEFAULT_ROOT,
       dataType,
-      data
+      data,
     );
   } finally {
     validatedCircularValues.clear();

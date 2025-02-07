@@ -6,18 +6,16 @@ import { escapeCharacter } from "@Utilities/escape-character";
 const STRING_EXPORT_TEMPLATE = new TemplateBuilder(`{{description}}
 {{export}}type {{name}} = {{type}};`);
 
-export class TsStringMatchingBuilder
-  extends TsBaseBuilder
+export class TsStringMatchingBuilder extends TsBaseBuilder
   implements TsBuilder
 {
   private tsPattern: string;
   constructor(tsPattern?: string) {
     super();
 
-    this.tsPattern =
-      tsPattern != null
-        ? "'" + escapeCharacter(tsPattern, "'") + "'"
-        : "string";
+    this.tsPattern = tsPattern != null
+      ? "'" + escapeCharacter(tsPattern, "'") + "'"
+      : "string";
   }
 
   build(): string {

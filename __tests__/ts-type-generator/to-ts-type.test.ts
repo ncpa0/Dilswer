@@ -20,12 +20,12 @@ const testDt = DataType.RecordOf({
   stringArray: DataType.ArrayOf(DataType.String),
   unionArray: DataType.ArrayOf(
     DataType.RecordOf({ foo: DataType.String }),
-    DataType.RecordOf({ bar: DataType.String })
+    DataType.RecordOf({ bar: DataType.String }),
   ).setDescription("Array of two possible record types"),
   tuple: DataType.Tuple(DataType.String, DataType.Number),
   namedTuple: DataType.Tuple(
     DataType.ArrayOf(DataType.String),
-    DataType.Enum(Enum).setEnumName("Enum")
+    DataType.Enum(Enum).setEnumName("Enum"),
   )
     .setTitle("A Tuple")
     .setDescription("A tuple with a named type"),
@@ -40,12 +40,12 @@ const testDt = DataType.RecordOf({
     }),
     DataType.RecordOf({
       b: DataType.Number,
-    })
+    }),
   ),
   dict: DataType.Dict(DataType.String),
   oneof: DataType.OneOf(
     DataType.RecordOf({ foo: DataType.String }).setTitle("Foo Container"),
-    DataType.RecordOf({ bar: DataType.String }).setTitle("Bar Container")
+    DataType.RecordOf({ bar: DataType.String }).setTitle("Bar Container"),
   ),
   symbol: DataType.Symbol,
   undef: DataType.Undefined,
@@ -69,7 +69,7 @@ const testDt = DataType.RecordOf({
         required: false,
         type: DataType.ArrayOf(
           DataType.RecordOf({ foo: DataType.String }).setTitle("Foo Container"),
-          DataType.RecordOf({ bar: DataType.String })
+          DataType.RecordOf({ bar: DataType.String }),
         ),
       },
       tuple: {
@@ -97,7 +97,7 @@ const testDt = DataType.RecordOf({
           }),
           DataType.RecordOf({
             b: DataType.Number,
-          })
+          }),
         ).setTitle("SomeIntersection"),
       },
       dict: { required: false, type: DataType.Dict(DataType.String) },
@@ -105,13 +105,13 @@ const testDt = DataType.RecordOf({
         required: false,
         type: DataType.OneOf(
           DataType.RecordOf({ foo: DataType.String }),
-          DataType.RecordOf({ bar: DataType.String })
+          DataType.RecordOf({ bar: DataType.String }),
         ),
       },
     })
       .setTitle("Optional Test Record")
       .setDescription(
-        "A record identical to the parent record, but with all fields optional"
+        "A record identical to the parent record, but with all fields optional",
       ),
   },
 }).setTitle("Test Record");
@@ -350,11 +350,13 @@ describe("toTsType", () => {
     it("with regular Custom validator", () => {
       const type = DataType.RecordOf({
         foo: DataType.Custom(
-          (v): v is string => typeof v === "string"
-        ).setExtra({
-          typeName: "CustomFoo",
-          path: "./custom-validator.d.ts",
-        } satisfies ExternalTypeImport),
+          (v): v is string => typeof v === "string",
+        ).setExtra(
+          {
+            typeName: "CustomFoo",
+            path: "./custom-validator.d.ts",
+          } satisfies ExternalTypeImport,
+        ),
       });
 
       const tsType = toTsType(type, {
@@ -372,10 +374,12 @@ describe("toTsType", () => {
 
     it("with regular Enum", () => {
       const type = DataType.RecordOf({
-        foo: DataType.Enum(Enum).setExtra({
-          typeName: "MyEnum",
-          path: "./enum.d.ts",
-        } satisfies ExternalTypeImport),
+        foo: DataType.Enum(Enum).setExtra(
+          {
+            typeName: "MyEnum",
+            path: "./enum.d.ts",
+          } satisfies ExternalTypeImport,
+        ),
       });
 
       const tsType = toTsType(type, {
@@ -395,10 +399,12 @@ describe("toTsType", () => {
       const type = DataType.RecordOf({
         foo: DataType.EnumMember(Enum.C)
           .setMemberName("C")
-          .setExtra({
-            typeName: "MyEnum",
-            path: "./enum.d.ts",
-          } satisfies ExternalTypeImport),
+          .setExtra(
+            {
+              typeName: "MyEnum",
+              path: "./enum.d.ts",
+            } satisfies ExternalTypeImport,
+          ),
       });
 
       const tsType = toTsType(type, {
@@ -416,10 +422,12 @@ describe("toTsType", () => {
 
     it("with regular Function as a type", () => {
       const type = DataType.RecordOf({
-        foo: DataType.Function.setExtra({
-          typeName: "MyFunction",
-          path: "./my-function.d.ts",
-        } satisfies ExternalTypeImport),
+        foo: DataType.Function.setExtra(
+          {
+            typeName: "MyFunction",
+            path: "./my-function.d.ts",
+          } satisfies ExternalTypeImport,
+        ),
       });
 
       const tsType = toTsType(type, {
@@ -437,11 +445,13 @@ describe("toTsType", () => {
 
     it("with regular Function as a value", () => {
       const type = DataType.RecordOf({
-        foo: DataType.Function.setExtra({
-          typeName: "myFunction",
-          path: "./my-function.d.ts",
-          valueImport: true,
-        } satisfies ExternalTypeImport),
+        foo: DataType.Function.setExtra(
+          {
+            typeName: "myFunction",
+            path: "./my-function.d.ts",
+            valueImport: true,
+          } satisfies ExternalTypeImport,
+        ),
       });
 
       const tsType = toTsType(type, {
@@ -460,10 +470,12 @@ describe("toTsType", () => {
     it("and export it directly if it's a root type", () => {
       const foo = DataType.Custom((v): v is string => typeof v === "string")
         .setTitle("IsStringFn")
-        .setExtra({
-          typeName: "IsStringFn",
-          path: "./is-string-fn.d.ts",
-        } satisfies ExternalTypeImport);
+        .setExtra(
+          {
+            typeName: "IsStringFn",
+            path: "./is-string-fn.d.ts",
+          } satisfies ExternalTypeImport,
+        );
 
       const tsType = toTsType(foo, {
         mode: "named-expanded",
@@ -556,7 +568,7 @@ describe("toTsType", () => {
             DataType.RecordOf({
               name: DataType.Literal("span"),
               children: DataType.ArrayOf(self),
-            }).setTitle("SpanNode")
+            }).setTitle("SpanNode"),
           ).setTitle("SpanNodeList"),
         }).setTitle("Node")
       );
@@ -576,7 +588,7 @@ describe("toTsType", () => {
               DataType.RecordOf({
                 nested: DataType.Literal(true),
                 items: self2,
-              })
+              }),
             )
           ),
         })
@@ -641,8 +653,8 @@ describe("toTsType", () => {
             DataType.OneOf(
               DataType.Tuple(self),
               DataType.Tuple(self, self),
-              DataType.Tuple(self, self, self)
-            )
+              DataType.Tuple(self, self, self),
+            ),
           ),
         })
       );
@@ -672,8 +684,8 @@ describe("toTsType", () => {
               DataType.RecordOf({
                 name: DataType.String,
                 children: self,
-              })
-            )
+              }),
+            ),
           ),
         })
       );
@@ -702,8 +714,8 @@ describe("toTsType", () => {
               self,
               DataType.RecordOf({
                 type: DataType.String,
-              })
-            )
+              }),
+            ),
           ),
         })
       );

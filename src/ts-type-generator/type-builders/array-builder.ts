@@ -6,7 +6,7 @@ const ARRAY_TEMPLATE = new TemplateBuilder("Array<{{types}}>");
 
 const EXPORT_ARRAY_TEMPLATE = new TemplateBuilder(
   `{{description}}
-{{export}}type {{name}} = Array<{{types}}>;`
+{{export}}type {{name}} = Array<{{types}}>;`,
 );
 
 export class TsArrayBuilder extends TsBaseBuilder implements TsBuilder {

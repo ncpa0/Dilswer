@@ -6,7 +6,7 @@ const SET_TEMPLATE = new TemplateBuilder("Set<{{types}}>");
 
 const EXPORT_SET_TEMPLATE = new TemplateBuilder(
   `{{description}}
-{{export}}type {{name}} = Set<{{types}}>;`
+{{export}}type {{name}} = Set<{{types}}>;`,
 );
 
 export class TsSetBuilder extends TsBaseBuilder implements TsBuilder {

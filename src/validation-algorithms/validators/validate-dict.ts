@@ -5,8 +5,9 @@ import { ValidationError } from "@Validation/validation-error/validation-error";
 import { validateOneOf } from "@Validation/validators/validate-one-of";
 
 export const validateDict = (path: Path, type: Dict, data: unknown) => {
-  if (typeof data !== "object" || data === null || Array.isArray(data))
+  if (typeof data !== "object" || data === null || Array.isArray(data)) {
     throw new ValidationError(path, type, data);
+  }
 
   const keys = Object.keys(data);
 
@@ -17,7 +18,7 @@ export const validateDict = (path: Path, type: Dict, data: unknown) => {
     validateOneOf(
       path.concat(key),
       elemType,
-      (data as Record<string, unknown>)[key]
+      (data as Record<string, unknown>)[key],
     );
   }
 };

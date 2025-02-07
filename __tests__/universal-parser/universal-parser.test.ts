@@ -18,17 +18,18 @@ describe("parseWith", () => {
     class TestVisitor implements DataTypeVisitor<TestParsedFormat> {
       visit(
         dataType: Exclude<AnyDataType, RecordOf>,
-        children?: TestParsedFormat[]
+        children?: TestParsedFormat[],
       ): TestParsedFormat;
       visit(
         dataType: RecordOf,
-        children?: RecordOfVisitChild<TestParsedFormat>[]
+        children?: RecordOfVisitChild<TestParsedFormat>[],
       ): TestParsedFormat;
       visit(dataType: AnyDataType, children: any[] = []): TestParsedFormat {
         return {
           name: dataType.kind,
-          simpleType:
-            dataType.kind === "simple" ? dataType.simpleType : undefined,
+          simpleType: dataType.kind === "simple"
+            ? dataType.simpleType
+            : undefined,
           children: children.map((c) =>
             c._isRecordOfVisitChild
               ? { ...c.child, propertyName: c.propertyName }
@@ -47,7 +48,7 @@ describe("parseWith", () => {
           qux: DataType.Boolean,
           quux: DataType.ArrayOf(DataType.String),
         }),
-      })
+      }),
     );
 
     expect(parsed).toEqual({
@@ -103,7 +104,7 @@ describe("parseWith", () => {
     const visitor = {
       visit(
         type: AnyDataType,
-        children?: Node[] | RecordOfVisitChild<Node>[]
+        children?: Node[] | RecordOfVisitChild<Node>[],
       ): Node {
         switch (type.kind) {
           case "simple":
@@ -111,12 +112,11 @@ describe("parseWith", () => {
           case "record":
             return {
               typeName: "record",
-              children:
-                children &&
-                Object.fromEntries(
+              children: children
+                && Object.fromEntries(
                   (children as RecordOfVisitChild<Node>[]).map(
-                    ({ propertyName, child }) => [propertyName, child]
-                  )
+                    ({ propertyName, child }) => [propertyName, child],
+                  ),
                 ),
             };
           default:

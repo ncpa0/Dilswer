@@ -7,7 +7,7 @@ import { validateStringNumeral } from "@Validation/validators/validate-string-nu
 export const validatePrimitive = (
   path: Path,
   type: BasicDataType,
-  data: unknown
+  data: unknown,
 ) => {
   const typeName = type.simpleType;
 
@@ -21,8 +21,9 @@ export const validatePrimitive = (
   }
 
   if (typeName === "integer") {
-    if (typeof data !== "number" || !Number.isInteger(data))
+    if (typeof data !== "number" || !Number.isInteger(data)) {
       return throwError();
+    }
     return;
   }
 

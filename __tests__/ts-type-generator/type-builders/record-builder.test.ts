@@ -11,7 +11,7 @@ describe("TsRecordBuilder", () => {
 
     expect(tsType).toMatchSnapshot();
     expect(tsType).toBe(
-      "export type RecordType = {\n  foo: string;\n  bar?: number;\n};\n"
+      "export type RecordType = {\n  foo: string;\n  bar?: number;\n};\n",
     );
   });
 
@@ -31,7 +31,7 @@ describe("TsRecordBuilder", () => {
 
     expect(tsType).toMatchSnapshot();
     expect(tsType).toBe(
-      "/**\n * My record's description\n */\nexport type MyRec = {\n  /**\n   * The foo field\n   */\n  foo: string;\n  /**\n   * The bar field\n   */\n  bar?: number;\n};\n"
+      "/**\n * My record's description\n */\nexport type MyRec = {\n  /**\n   * The foo field\n   */\n  foo: string;\n  /**\n   * The bar field\n   */\n  bar?: number;\n};\n",
     );
   });
 });

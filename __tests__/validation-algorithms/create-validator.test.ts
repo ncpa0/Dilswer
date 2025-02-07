@@ -19,11 +19,9 @@ type AssertionFailed = typeof ASSERTION_FAILED_SYM;
 type IsFailed<T> = AssertionFailed extends T ? true : false;
 
 type AssertEqual<T, U> = [T] extends [U]
-  ? [U] extends [T]
-    ? T extends object
-      ? AssertEqual<keyof T, keyof U>
-      : True
-    : AssertionFailed
+  ? [U] extends [T] ? T extends object ? AssertEqual<keyof T, keyof U>
+    : True
+  : AssertionFailed
   : AssertionFailed;
 
 type AssertNotFailed<T> = IsFailed<T> extends true ? AssertionFailed : T;
@@ -33,9 +31,8 @@ type AssertType<T, U extends AnyDataType> = AssertNotFailed<
 >;
 
 type AssertValidator<T, V extends (data: unknown) => boolean> = V extends (
-  data: unknown
-) => data is infer R
-  ? AssertNotFailed<AssertEqual<T, R>>
+  data: unknown,
+) => data is infer R ? AssertNotFailed<AssertEqual<T, R>>
   : AssertionFailed;
 
 /**
@@ -567,7 +564,7 @@ describe("createValidator", () => {
         const typeDef = DataType.OneOf(
           DataType.Function,
           DataType.String,
-          DataType.Number
+          DataType.Number,
         );
 
         type ExpectedType = UnknownFunction | string | number;
@@ -597,8 +594,8 @@ describe("createValidator", () => {
           DataType.ArrayOf(
             DataType.RecordOf({
               foo: { type: DataType.String },
-            })
-          )
+            }),
+          ),
         );
 
         type ExpectedType = UnknownFunction | string | { foo: string }[];
@@ -628,7 +625,7 @@ describe("createValidator", () => {
       it("should validate for an array of string or array of number", () => {
         const typeDef = DataType.OneOf(
           DataType.ArrayOf(DataType.String),
-          DataType.ArrayOf(DataType.Number)
+          DataType.ArrayOf(DataType.Number),
         );
 
         type ExpectedType = string[] | number[];
@@ -662,7 +659,7 @@ describe("createValidator", () => {
             id: { type: DataType.Literal("3") },
             value: { type: DataType.Boolean },
             otherValue: { type: DataType.Null },
-          })
+          }),
         );
 
         type ExpectedType =
@@ -679,14 +676,14 @@ describe("createValidator", () => {
         expect(validate({ id: "2", value: "2" })).toEqual(true);
         expect(validate({ id: "1", value: 1, otherValue: 123 })).toEqual(true);
         expect(validate({ id: "3", value: true, otherValue: null })).toEqual(
-          true
+          true,
         );
 
         expect(validate({ id: "1", value: "2" })).toEqual(false);
         expect(validate({ id: "2", value: 2 })).toEqual(false);
         expect(validate({ id: "3", value: true })).toEqual(false);
         expect(
-          validate({ id: "3", value: true, otherValue: undefined })
+          validate({ id: "3", value: true, otherValue: undefined }),
         ).toEqual(false);
         expect(validate(null)).toEqual(false);
         expect(validate(undefined)).toEqual(false);
@@ -704,7 +701,7 @@ describe("createValidator", () => {
       it("should validate intersection of string and string literal", () => {
         const typeDef = DataType.AllOf(
           DataType.String,
-          DataType.Literal("foo")
+          DataType.Literal("foo"),
         );
 
         type ExpectedType = string & "foo";
@@ -766,7 +763,7 @@ describe("createValidator", () => {
           }),
           DataType.RecordOf({
             bar: { type: DataType.Number },
-          })
+          }),
         );
 
         type ExpectedType = { foo: string } & { bar: number };
@@ -804,7 +801,7 @@ describe("createValidator", () => {
           DataType.RecordOf({
             baz: DataType.Int,
             qux: { type: DataType.Literal("qux"), required: false },
-          })
+          }),
         );
 
         type ExpectedType = { foo: string } & { bar?: number } & {
@@ -820,7 +817,7 @@ describe("createValidator", () => {
         expect(validate({ foo: "foo", baz: 1 })).toEqual(true);
         expect(validate({ foo: "foo", baz: 0, bar: 1.1 })).toEqual(true);
         expect(validate({ foo: "foo", baz: 0, bar: 1.1, qux: "qux" })).toEqual(
-          true
+          true,
         );
         expect(
           validate({
@@ -829,20 +826,20 @@ describe("createValidator", () => {
             bar: 1.1,
             qux: "qux",
             randomProp: () => {},
-          })
+          }),
         ).toEqual(true);
 
         expect(
-          validate({ foo: "foo", baz: false, bar: 1.1, qux: "qux" })
+          validate({ foo: "foo", baz: false, bar: 1.1, qux: "qux" }),
         ).toEqual(false);
         expect(
-          validate({ foo: "foo", baz: 1.02, bar: 1.1, qux: "qux" })
+          validate({ foo: "foo", baz: 1.02, bar: 1.1, qux: "qux" }),
         ).toEqual(false);
         expect(validate({ foo: 1, baz: 0, bar: 1.1, qux: "qux" })).toEqual(
-          false
+          false,
         );
         expect(validate({ foo: "foo", baz: 0, bar: 1.1, qux: "quxx" })).toEqual(
-          false
+          false,
         );
         expect(validate({ baz: 0, bar: 1.1, qux: "qux" })).toEqual(false);
         expect(validate({ foo: "foo", bar: 1.1, qux: "qux" })).toEqual(false);
@@ -1004,7 +1001,7 @@ describe("createValidator", () => {
       it("should validate against nested arrays", () => {
         const typeDef = DataType.ArrayOf(
           DataType.ArrayOf(DataType.Number),
-          DataType.ArrayOf(DataType.ArrayOf(DataType.String))
+          DataType.ArrayOf(DataType.ArrayOf(DataType.String)),
         );
 
         type ExpectedType = Array<Array<number> | Array<Array<string>>>;
@@ -1065,7 +1062,7 @@ describe("createValidator", () => {
       it("should validate against nested tuples", () => {
         const typeDef = DataType.Tuple(
           DataType.String,
-          DataType.Tuple(DataType.Number, DataType.String)
+          DataType.Tuple(DataType.Number, DataType.String),
         );
 
         type ExpectedType = [string, [number, string]];
@@ -1083,7 +1080,7 @@ describe("createValidator", () => {
         expect(validate([, 1])).toEqual(false);
         expect(validate(["foo"])).toEqual(false);
         expect(validate(["foo", { 0: 1, 2: "foo" }, [1, "bar"]])).toEqual(
-          false
+          false,
         );
         expect(validate([1, ["foo", "bar"]])).toEqual(false);
         expect(validate(["foo", ["1", "bar"]])).toEqual(false);
@@ -1241,31 +1238,31 @@ describe("createValidator", () => {
           validate({
             foo: "foo",
             bar: { baz: 1, qux: { corge: () => {} }, thud: T.BAR },
-          })
+          }),
         ).toEqual(true);
 
         expect(validate(null)).toEqual(false);
         expect(validate(undefined)).toEqual(false);
         expect(
-          validate({ foo: 0, bar: { baz: 1, qux: { corge: () => {} } } })
+          validate({ foo: 0, bar: { baz: 1, qux: { corge: () => {} } } }),
         ).toEqual(false);
         expect(
-          validate({ foo: "foo", bar: { baz: 1, qux: { corge: Symbol() } } })
+          validate({ foo: "foo", bar: { baz: 1, qux: { corge: Symbol() } } }),
         ).toEqual(false);
         expect(
-          validate({ foo: "foo", bar: { baz: "1", qux: { corge: () => {} } } })
+          validate({ foo: "foo", bar: { baz: "1", qux: { corge: () => {} } } }),
         ).toEqual(false);
         expect(
           validate({
             foo: "foo",
             bar: { baz: 1, qux: { corge: () => {} }, thud: T.FOO },
-          })
+          }),
         ).toEqual(false);
         expect(
           validate({
             foo: "foo",
             bar: { baz: 1, qux: { corge: () => {} }, thud: 0 },
-          })
+          }),
         ).toEqual(false);
       });
 
@@ -1321,23 +1318,23 @@ describe("createValidator", () => {
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
         expect(validate({ foo: "foo", bar: [1], baz: { qux: true } })).toEqual(
-          true
+          true,
         );
         expect(
-          validate({ foo: "", bar: [""], baz: { qux: false }, optional: 10 })
+          validate({ foo: "", bar: [""], baz: { qux: false }, optional: 10 }),
         ).toEqual(true);
         expect(
-          validate({ bar: [""], baz: { qux: false }, optional: 10 })
+          validate({ bar: [""], baz: { qux: false }, optional: 10 }),
         ).toEqual(false);
         expect(
-          validate({ foo: 0, bar: [""], baz: { qux: false }, optional: 10 })
+          validate({ foo: 0, bar: [""], baz: { qux: false }, optional: 10 }),
         ).toEqual(false);
         expect(
-          validate({ foo: "", baz: { qux: false }, optional: 10 })
+          validate({ foo: "", baz: { qux: false }, optional: 10 }),
         ).toEqual(false);
         expect(validate({ foo: "", bar: [""], optional: 10 })).toEqual(false);
         expect(
-          validate({ foo: "", bar: [""], baz: { qux: false }, optional: "10" })
+          validate({ foo: "", bar: [""], baz: { qux: false }, optional: "10" }),
         ).toEqual(false);
       });
     });
@@ -1373,7 +1370,7 @@ describe("createValidator", () => {
         expect(validate({ foo: "", bar: "0", baz: "" })).toEqual(true);
         expect(validate({ foo: 123, bar: -2 })).toEqual(true);
         expect(validate({ foo: "123", bar: -2, baz: "undefined" })).toEqual(
-          true
+          true,
         );
 
         expect(validate(null)).toEqual(false);
@@ -1399,15 +1396,15 @@ describe("createValidator", () => {
           DataType.String,
           DataType.RecordOf({
             foo: DataType.Dict(DataType.Dict(DataType.EnumMember(T.BAR))),
-          })
+          }),
         );
 
         type ExpectedType = Record<
           string | number,
           | string
           | {
-              foo: Record<string | number, Record<string | number, T.BAR>>;
-            }
+            foo: Record<string | number, Record<string | number, T.BAR>>;
+          }
         >;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
@@ -1420,7 +1417,7 @@ describe("createValidator", () => {
         expect(validate({ bar: { foo: { dict1: {} } } })).toEqual(true);
         expect(validate({ bar: { foo: { dict1: {} } } })).toEqual(true);
         expect(validate({ bar: { foo: { dict1: { enum: T.BAR } } } })).toEqual(
-          true
+          true,
         );
 
         expect(
@@ -1433,7 +1430,7 @@ describe("createValidator", () => {
                 dict3: { a: T.BAR, b: T.BAR, c: T.BAR },
               },
             },
-          })
+          }),
         ).toEqual(true);
 
         expect(validate(null)).toEqual(false);
@@ -1456,23 +1453,23 @@ describe("createValidator", () => {
         expect(validate({ bar: { foo: { a: { b: "1" } } } })).toEqual(false);
         expect(validate({ bar: { foo: { a: { b: null } } } })).toEqual(false);
         expect(validate({ bar: { foo: { a: { b: undefined } } } })).toEqual(
-          false
+          false,
         );
         expect(validate({ bar: { foo: { a: { b: Symbol() } } } })).toEqual(
-          false
+          false,
         );
         expect(validate({ bar: { foo: { a: { b: () => {} } } } })).toEqual(
-          false
+          false,
         );
         expect(validate({ bar: { foo: { dict1: { enum: T.FOO } } } })).toEqual(
-          false
+          false,
         );
 
         expect(
           validate({
             foo: "foo",
             bar: { foo: { dict1: { enum: 1 } } },
-          })
+          }),
         ).toEqual(false);
       });
     });
@@ -1543,7 +1540,7 @@ describe("createValidator", () => {
         expect(validate(new Set([Symbol()]))).toEqual(true);
         expect(validate(new Set(["foo"]))).toEqual(true);
         expect(
-          validate(new Set(["symbol", Symbol(), "foo", Symbol()]))
+          validate(new Set(["symbol", Symbol(), "foo", Symbol()])),
         ).toEqual(true);
 
         expect(validate(undefined)).toEqual(false);
@@ -1562,7 +1559,7 @@ describe("createValidator", () => {
       it("should validate for set of records or undefined", () => {
         const typeDef = DataType.SetOf(
           DataType.Undefined,
-          DataType.RecordOf({ foo: { type: DataType.String } })
+          DataType.RecordOf({ foo: { type: DataType.String } }),
         );
 
         type ExpectedType = Set<undefined | { foo: string }>;
@@ -1576,7 +1573,7 @@ describe("createValidator", () => {
         expect(validate(new Set([undefined]))).toEqual(true);
         expect(validate(new Set([{ foo: "" }]))).toEqual(true);
         expect(validate(new Set([undefined, { foo: "" }, undefined]))).toEqual(
-          true
+          true,
         );
 
         expect(validate(undefined)).toEqual(false);
@@ -1987,7 +1984,7 @@ describe("createValidator", () => {
             validate({
               foo: "foo",
               bar: [],
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -1998,7 +1995,7 @@ describe("createValidator", () => {
                   bar: [],
                 },
               ],
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2023,7 +2020,7 @@ describe("createValidator", () => {
                   ],
                 },
               ],
-            })
+            }),
           ).toEqual(true);
 
           expect(
@@ -2049,7 +2046,7 @@ describe("createValidator", () => {
                   ],
                 },
               ],
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
@@ -2075,18 +2072,18 @@ describe("createValidator", () => {
                   ],
                 },
               ],
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
               foo: "foo",
               bar: [""],
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
               foo: "foo",
-            })
+            }),
           ).toEqual(false);
           expect(validate({})).toEqual(false);
           expect(validate(1)).toEqual(false);
@@ -2141,7 +2138,7 @@ describe("createValidator", () => {
               bar: {
                 baz: {},
               },
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2161,7 +2158,7 @@ describe("createValidator", () => {
                   },
                 },
               },
-            })
+            }),
           ).toEqual(true);
 
           expect(validate({})).toEqual(false);
@@ -2184,7 +2181,7 @@ describe("createValidator", () => {
                   },
                 },
               },
-            })
+            }),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(null)).toEqual(false);
@@ -2214,12 +2211,12 @@ describe("createValidator", () => {
           expect(
             validate({
               foo: new Set(),
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
               foo: new Set(["foo"]),
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2230,7 +2227,7 @@ describe("createValidator", () => {
                 ]),
                 "",
               ]),
-            })
+            }),
           ).toEqual(true);
 
           expect(validate({})).toEqual(false);
@@ -2244,7 +2241,7 @@ describe("createValidator", () => {
                 ]),
                 "",
               ]),
-            })
+            }),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(null)).toEqual(false);
@@ -2263,9 +2260,9 @@ describe("createValidator", () => {
                   b: OptionalField(
                     DataType.RecordOf({
                       ref: OptionalField(self),
-                    })
+                    }),
                   ),
-                })
+                }),
               ),
             })
           );
@@ -2308,10 +2305,10 @@ describe("createValidator", () => {
           expect(validate({ a: { b: { ref: {} } } })).toEqual(true);
           expect(validate({ a: { b: { ref: { a: {} } } } })).toEqual(true);
           expect(validate({ a: { b: { ref: { a: { b: {} } } } } })).toEqual(
-            true
+            true,
           );
           expect(
-            validate({ a: { b: { ref: { a: { b: { ref: {} } } } } } })
+            validate({ a: { b: { ref: { a: { b: { ref: {} } } } } } }),
           ).toEqual(true);
           expect(validate({ a: { b: { ref: undefined } } })).toEqual(true);
 
@@ -2319,7 +2316,7 @@ describe("createValidator", () => {
           expect(validate({ a: { b: 1 } })).toEqual(false);
           expect(validate({ a: { b: { ref: 0 } } })).toEqual(false);
           expect(
-            validate({ a: { b: { ref: { a: { b: { ref: "" } } } } } })
+            validate({ a: { b: { ref: { a: { b: { ref: "" } } } } } }),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(0)).toEqual(false);
@@ -2342,16 +2339,16 @@ describe("createValidator", () => {
             string | number,
             | number
             | Record<
+              string | number,
+              | number
+              | Record<
                 string | number,
                 | number
-                | Record<
-                    string | number,
-                    | number
-                    | Record<string | number, number | never | symbol>
-                    | symbol
-                  >
+                | Record<string | number, number | never | symbol>
                 | symbol
               >
+              | symbol
+            >
             | symbol
           >;
           assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -2381,7 +2378,7 @@ describe("createValidator", () => {
                   },
                 },
               },
-            })
+            }),
           ).toEqual(true);
 
           expect(validate({ a: "foo" })).toEqual(false);
@@ -2404,7 +2401,7 @@ describe("createValidator", () => {
                   },
                 },
               },
-            })
+            }),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(null)).toEqual(false);
@@ -2420,7 +2417,7 @@ describe("createValidator", () => {
             DataType.Dict(
               DataType.RecordOf({
                 foo: DataType.OneOf(DataType.String, DataType.ArrayOf(self)),
-              })
+              }),
             )
           );
 
@@ -2430,29 +2427,29 @@ describe("createValidator", () => {
               foo:
                 | string
                 | Array<
-                    Record<
-                      string | number,
-                      {
-                        foo:
-                          | string
-                          | Array<
-                              Record<
-                                string | number,
-                                {
-                                  foo:
-                                    | string
-                                    | Array<
-                                        Record<
-                                          string | number,
-                                          { foo: string | Array<any> }
-                                        >
-                                      >;
-                                }
-                              >
-                            >;
-                      }
-                    >
-                  >;
+                  Record<
+                    string | number,
+                    {
+                      foo:
+                        | string
+                        | Array<
+                          Record<
+                            string | number,
+                            {
+                              foo:
+                                | string
+                                | Array<
+                                  Record<
+                                    string | number,
+                                    { foo: string | Array<any> }
+                                  >
+                                >;
+                            }
+                          >
+                        >;
+                    }
+                  >
+                >;
             }
           >;
           assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -2467,7 +2464,7 @@ describe("createValidator", () => {
                 foo: "1",
               },
               b: { foo: [] },
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2486,7 +2483,7 @@ describe("createValidator", () => {
                   },
                 ],
               },
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2503,20 +2500,20 @@ describe("createValidator", () => {
                   },
                 ],
               },
-            })
+            }),
           );
 
           expect(
             validate({
               a: {},
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
               a: {
                 foo: 1,
               },
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
@@ -2535,7 +2532,7 @@ describe("createValidator", () => {
                   },
                 ],
               },
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
@@ -2552,7 +2549,7 @@ describe("createValidator", () => {
                   },
                 ],
               },
-            })
+            }),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(null)).toEqual(false);
@@ -2570,7 +2567,7 @@ describe("createValidator", () => {
             DataType.Tuple(
               DataType.Number,
               DataType.OneOf(DataType.Boolean, self),
-              DataType.String
+              DataType.String,
             )
           );
 
@@ -2579,12 +2576,12 @@ describe("createValidator", () => {
             (
               | boolean
               | [
-                  number,
-                  boolean | [number, boolean | [number, any, string], string],
-                  string
-                ]
+                number,
+                boolean | [number, boolean | [number, any, string], string],
+                string,
+              ]
             ),
-            string
+            string,
           ];
 
           assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -2597,19 +2594,19 @@ describe("createValidator", () => {
           expect(validate([1, [3, false, ""], "foo"])).toEqual(true);
           expect(validate([1, [3, [5, true, "bar"], ""], "foo"])).toEqual(true);
           expect(
-            validate([1, [3, [5, [7, true, "bar"], "bar"], ""], "foo"])
+            validate([1, [3, [5, [7, true, "bar"], "bar"], ""], "foo"]),
           ).toEqual(true);
 
           expect(validate([1, "foo", "foo"])).toEqual(false);
           expect(validate([1, [3, "foo", ""], "foo"])).toEqual(false);
           expect(validate([1, [3, [5, [7, true], "bar"], ""], "foo"])).toEqual(
-            false
+            false,
           );
           expect(
-            validate([1, [3, [5, [7, [], ""], "bar"], ""], "foo"])
+            validate([1, [3, [5, [7, [], ""], "bar"], ""], "foo"]),
           ).toEqual(false);
           expect(
-            validate([1, [3, [5, [NaN, true, ""], "bar"], ""], "foo"])
+            validate([1, [3, [5, [NaN, true, ""], "bar"], ""], "foo"]),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(null)).toEqual(false);
@@ -2630,10 +2627,10 @@ describe("createValidator", () => {
                   DataType.RecordOf({
                     a: DataType.Boolean,
                     b: OptionalField(self),
-                  })
-                )
+                  }),
+                ),
               )
-            )
+            ),
           );
 
           type ExpectedType = [
@@ -2654,18 +2651,18 @@ describe("createValidator", () => {
                                   {
                                     a: boolean;
                                     b?: any;
-                                  }
+                                  },
                                 ]
                               >;
-                            }
+                            },
                           ]
                         >;
-                      }
+                      },
                     ]
                   >;
-                }
+                },
               ]
-            >
+            >,
           ];
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
@@ -2694,7 +2691,7 @@ describe("createValidator", () => {
                   },
                 ],
               ]),
-            ])
+            ]),
           ).toEqual(true);
 
           expect(validate([])).toEqual(false);
@@ -2718,7 +2715,7 @@ describe("createValidator", () => {
                   },
                 ],
               ]),
-            ])
+            ]),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate(null)).toEqual(false);
@@ -2739,7 +2736,7 @@ describe("createValidator", () => {
               DataType.Number,
               DataType.Boolean,
               DataType.String,
-              DataType.ArrayOf(self)
+              DataType.ArrayOf(self),
             )
           );
 
@@ -2748,16 +2745,16 @@ describe("createValidator", () => {
             | boolean
             | string
             | Array<
+              | number
+              | boolean
+              | string
+              | Array<
                 | number
                 | boolean
                 | string
-                | Array<
-                    | number
-                    | boolean
-                    | string
-                    | Array<number | boolean | string | Array<any>>
-                  >
-              >;
+                | Array<number | boolean | string | Array<any>>
+              >
+            >;
 
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
@@ -2780,7 +2777,7 @@ describe("createValidator", () => {
               "",
               "",
               12e21,
-            ])
+            ]),
           ).toEqual(true);
 
           expect(
@@ -2795,7 +2792,7 @@ describe("createValidator", () => {
               "",
               "",
               12e21,
-            ])
+            ]),
           ).toEqual(false);
           expect(validate([null])).toEqual(false);
           expect(validate([[[[[[[[[[[[NaN]]]]]]]]]]]])).toEqual(false);
@@ -2813,9 +2810,9 @@ describe("createValidator", () => {
             DataType.String,
             DataType.Circular((self) =>
               DataType.ArrayOf(
-                DataType.OneOf(DataType.Number, DataType.StringNumeral, self)
+                DataType.OneOf(DataType.Number, DataType.StringNumeral, self),
               )
-            )
+            ),
           );
 
           type ExpectedType =
@@ -2823,18 +2820,18 @@ describe("createValidator", () => {
             | boolean
             | string
             | Array<
+              | number
+              | `${number}`
+              | Array<
                 | number
                 | `${number}`
                 | Array<
-                    | number
-                    | `${number}`
-                    | Array<
-                        | number
-                        | `${number}`
-                        | Array<number | `${number}` | Array<any>>
-                      >
-                  >
-              >;
+                  | number
+                  | `${number}`
+                  | Array<number | `${number}` | Array<any>>
+                >
+              >
+            >;
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
           const validate = createValidator(typeDef);
@@ -2851,7 +2848,7 @@ describe("createValidator", () => {
           expect(validate([[[5, "1234"]]])).toEqual(true);
           expect(validate([[[[123, "12.345"]]]])).toEqual(true);
           expect(
-            validate([[[[1, "0"], 2, "1"], "2", 3, 6], "3", "4", 12e21])
+            validate([[[[1, "0"], 2, "1"], "2", 3, 6], "3", "4", 12e21]),
           ).toEqual(true);
 
           expect(
@@ -2860,7 +2857,7 @@ describe("createValidator", () => {
               "3",
               "4",
               12e21,
-            ])
+            ]),
           ).toEqual(false);
           expect(validate([null])).toEqual(false);
           expect(validate([[[[[[[[[[[[NaN]]]]]]]]]]]])).toEqual(false);
@@ -2879,15 +2876,15 @@ describe("createValidator", () => {
               DataType.RecordOf({
                 type: DataType.OneOf(
                   DataType.Literal("A"),
-                  DataType.Literal("B")
+                  DataType.Literal("B"),
                 ),
                 children: DataType.ArrayOf(
                   DataType.AllOf(
                     self,
-                    DataType.RecordOf({ name: DataType.String })
-                  )
+                    DataType.RecordOf({ name: DataType.String }),
+                  ),
                 ),
-              })
+              }),
             )
           );
 
@@ -2920,7 +2917,7 @@ describe("createValidator", () => {
             validate({
               type: "A",
               children: [],
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2932,7 +2929,7 @@ describe("createValidator", () => {
                   children: [],
                 },
               ],
-            })
+            }),
           ).toEqual(true);
           expect(
             validate({
@@ -2974,19 +2971,19 @@ describe("createValidator", () => {
                   ],
                 },
               ],
-            })
+            }),
           ).toEqual(true);
 
           expect(
             validate({
               type: "A",
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
               type: "A",
               children: {},
-            })
+            }),
           ).toEqual(false);
           expect(
             validate({
@@ -3028,7 +3025,7 @@ describe("createValidator", () => {
                   ],
                 },
               ],
-            })
+            }),
           ).toEqual(false);
           expect(validate(1)).toEqual(false);
           expect(validate("{}")).toEqual(false);

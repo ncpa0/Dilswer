@@ -18,7 +18,7 @@ export const Omit = <R extends RecordTypeSchema, K extends keyof R>(
         .map(([key, desc]) => [
           key,
           isFieldDescriptor(desc) ? desc : desc["copy"](),
-        ])
-    ) as any
+        ]),
+    ) as any,
   );
 };

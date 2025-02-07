@@ -7,34 +7,42 @@ import type {
   RecordTypeSchema,
 } from "@DataTypes/types";
 
-type GetType<T extends AnyDataType | FieldDescriptor> =
-  T extends FieldDescriptor ? T["type"] : T;
+type GetType<T extends AnyDataType | FieldDescriptor> = T extends
+  FieldDescriptor ? T["type"] : T;
 
-export type RequiredRecord<R extends RecordTypeSchema> = RecordOf<{
-  [K in keyof R]: { required: true; type: GetType<R[K]> };
-}>;
+export type RequiredRecord<R extends RecordTypeSchema> = RecordOf<
+  {
+    [K in keyof R]: { required: true; type: GetType<R[K]> };
+  }
+>;
 
-export type PartialRecord<R extends RecordTypeSchema> = RecordOf<{
-  [K in keyof R]: { required: false; type: GetType<R[K]> };
-}>;
+export type PartialRecord<R extends RecordTypeSchema> = RecordOf<
+  {
+    [K in keyof R]: { required: false; type: GetType<R[K]> };
+  }
+>;
 
 export type OmitRecord<
   R extends RecordTypeSchema,
-  OK extends keyof R
-> = RecordOf<{
-  [K in keyof R as K extends OK ? never : K]: R[K];
-}>;
+  OK extends keyof R,
+> = RecordOf<
+  {
+    [K in keyof R as K extends OK ? never : K]: R[K];
+  }
+>;
 
 export type PickRecord<
   R extends RecordTypeSchema,
-  PK extends keyof R
-> = RecordOf<{
-  [K in keyof R as K extends PK ? K : never]: R[K];
-}>;
+  PK extends keyof R,
+> = RecordOf<
+  {
+    [K in keyof R as K extends PK ? K : never]: R[K];
+  }
+>;
 
 export type SumRecord<
   R1 extends RecordTypeSchema,
-  R2 extends RecordTypeSchema
+  R2 extends RecordTypeSchema,
 > = RecordOf<
   {
     [K in keyof R1 as K extends keyof R2 ? never : K]: R1[K];

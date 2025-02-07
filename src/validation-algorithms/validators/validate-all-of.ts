@@ -5,7 +5,7 @@ import { validatorsLookupMap } from "@Validation/validators/validate-type";
 export const validateAllOf = (
   path: Path,
   type: AllOf<AnyDataType[]>,
-  data: unknown
+  data: unknown,
 ) => {
   for (let i = 0; i < type.allOf.length; i++) {
     const dataType = type.allOf[i];

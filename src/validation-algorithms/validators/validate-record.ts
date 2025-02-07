@@ -6,13 +6,14 @@ import { validatorsLookupMap } from "@Validation/validators/validate-type";
 
 export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
   if (
-    typeof data !== "object" ||
-    data === null ||
-    Array.isArray(data) ||
+    typeof data !== "object"
+    || data === null
+    || Array.isArray(data)
     // @ts-expect-error
-    data[Symbol.toStringTag] === "Set"
-  )
+    || data[Symbol.toStringTag] === "Set"
+  ) {
     throw new ValidationError(path, type, data);
+  }
 
   const keys = type.keys;
 
@@ -43,7 +44,7 @@ export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
     validatorsLookupMap.get(descriptor.type.kind)!(
       path.concat(key),
       descriptor.type,
-      value
+      value,
     );
   }
 };

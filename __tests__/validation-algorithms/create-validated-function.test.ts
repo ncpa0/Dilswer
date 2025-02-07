@@ -13,7 +13,7 @@ describe("createValidatedFunction", () => {
       },
       () => {
         return "failure";
-      }
+      },
     );
 
     expect(fn({ foo: "foo" })).toEqual("success");
@@ -40,7 +40,7 @@ describe("createValidatedFunction", () => {
       (data) => {
         return undefined;
       },
-      (e) => e
+      (e) => e,
     );
 
     expect(
@@ -48,7 +48,7 @@ describe("createValidatedFunction", () => {
         foo: { bar: 1 },
         baz: ["baz1", "baz2", "baz3"],
         qux: new Set([() => {}]),
-      })
+      }),
     ).toEqual(undefined);
 
     expect(
@@ -56,7 +56,7 @@ describe("createValidatedFunction", () => {
         foo: { bar: "1" },
         baz: ["baz1", "baz2", "baz3"],
         qux: new Set([() => {}]),
-      })
+      }),
     ).toMatchObject({
       fieldPath: "$.foo.bar",
       receivedValue: "1",
@@ -68,7 +68,7 @@ describe("createValidatedFunction", () => {
         foo: { bar: 1 },
         baz: ["baz1", "baz2", 0],
         qux: new Set([() => {}]),
-      })
+      }),
     ).toMatchObject({
       fieldPath: "$.baz[2]",
       receivedValue: 0,
@@ -80,7 +80,7 @@ describe("createValidatedFunction", () => {
         foo: { bar: 1 },
         baz: ["baz1", "baz2"],
         qux: () => {},
-      })
+      }),
     ).toMatchObject({
       fieldPath: "$.qux",
       receivedValue: expect.any(Function),
@@ -103,14 +103,14 @@ describe("createValidatedFunction", () => {
     const validate = createValidatedFunction(
       dt,
       (d) => d,
-      (e) => e
+      (e) => e,
     );
 
     expect(
       validate({
         "./a": "foo",
         list: [{ "a/b": "bar" }],
-      })
+      }),
     ).toEqual({
       "./a": "foo",
       list: [{ "a/b": "bar" }],
@@ -120,9 +120,9 @@ describe("createValidatedFunction", () => {
       validate({
         "./a": "foo",
         list: [{ "a/b": 1 }],
-      })
+      }),
     ).toMatchObject({
-      fieldPath: '$.list[0]["a/b"]',
+      fieldPath: "$.list[0][\"a/b\"]",
       receivedValue: 1,
       expectedValueType: "string",
     });
@@ -131,9 +131,9 @@ describe("createValidatedFunction", () => {
       validate({
         "./a": 1,
         list: [{ "a/b": "bar" }],
-      })
+      }),
     ).toMatchObject({
-      fieldPath: '$["./a"]',
+      fieldPath: "$[\"./a\"]",
       receivedValue: 1,
       expectedValueType: "string",
     });

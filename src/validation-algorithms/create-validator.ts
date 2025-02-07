@@ -14,8 +14,8 @@ const DEFAULT_ROOT = Path.init("$");
  * check was successful.
  */
 export const createValidator = <DT extends AnyDataType>(
-  dataType: DT
-): ((data: unknown) => data is ReWrap<ParseDataType<DT>>) => {
+  dataType: DT,
+): (data: unknown) => data is ReWrap<ParseDataType<DT>> => {
   const validator = (data: unknown): data is ReWrap<ParseDataType<DT>> => {
     try {
       validatorsLookupMap.get(dataType.kind)!(DEFAULT_ROOT, dataType, data);

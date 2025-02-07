@@ -60,28 +60,28 @@ export type ParseToJsonSchemaOptions = {
     Set?: (
       setItemsSchemas: JSONSchema6[],
       original: Set<AnyDataType[]>,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Custom?: (
       validateFunction: Custom["custom"],
       original: Custom,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Undefined?: (
       dataType: BasicDataType,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Symbol?: (
       dataType: BasicDataType,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Function?: (
       dataType: BasicDataType,
-      options: ParseToJsonSchemaOptions
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     InstanceOf?: (
-      original: InstanceOf<new (...args: any[]) => any>,
-      options: ParseToJsonSchemaOptions
+      original: InstanceOf<new(...args: any[]) => any>,
+      options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
   };
 };
@@ -107,7 +107,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
 
   private throwIncompatibleTypeError(typeName: string): never {
     throw new Error(
-      `Cannot parse type "${typeName}" to JSON Schema. Incompatible types.`
+      `Cannot parse type "${typeName}" to JSON Schema. Incompatible types.`,
     );
   }
 
@@ -155,8 +155,9 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
           schema = this.customParser.Function(type, this.options);
           break;
         }
-        if (this.incompatibleTypes === "throw")
+        if (this.incompatibleTypes === "throw") {
           this.throwIncompatibleTypeError(type.simpleType);
+        }
         if (this.incompatibleTypes === "omit") {
           schema = undefined;
           break;
@@ -168,8 +169,9 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
           schema = this.customParser.Symbol(type, this.options);
           break;
         }
-        if (this.incompatibleTypes === "throw")
+        if (this.incompatibleTypes === "throw") {
           this.throwIncompatibleTypeError(type.simpleType);
+        }
         if (this.incompatibleTypes === "omit") {
           schema = undefined;
           break;
@@ -181,8 +183,9 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
           schema = this.customParser.Undefined(type, this.options);
           break;
         }
-        if (this.incompatibleTypes === "throw")
+        if (this.incompatibleTypes === "throw") {
           this.throwIncompatibleTypeError(type.simpleType);
+        }
         if (this.incompatibleTypes === "omit") {
           schema = undefined;
           break;
@@ -223,7 +226,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
 
   private parseRecordOf(
     type: RecordOf,
-    children: RecordOfVisitChild<R>[] = []
+    children: RecordOfVisitChild<R>[] = [],
   ): R {
     const schema: JSONSchema6 = {
       type: "object",
@@ -266,15 +269,17 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
   }
 
   private parseSetOf(type: SetOf, children: Array<R> = []): R {
-    if (this.customParser.Set)
+    if (this.customParser.Set) {
       return this.customParser.Set(
         children.filter(isDefined),
         type as any as Set<AnyDataType[]>,
-        this.options
+        this.options,
       );
+    }
 
-    if (this.incompatibleTypes === "throw")
+    if (this.incompatibleTypes === "throw") {
       this.throwIncompatibleTypeError("Set");
+    }
     if (this.incompatibleTypes === "omit") return undefined;
 
     const schema: JSONSchema6 = {
@@ -330,7 +335,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     }
 
     throw new Error(
-      "Invalid literal type, literals can be only of string, number or boolean type."
+      "Invalid literal type, literals can be only of string, number or boolean type.",
     );
   }
 
@@ -343,7 +348,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
 
     for (const [key, member] of members) {
       const subSchema = this.parseEnumMember(
-        DataType.EnumMember(member as string | number)
+        DataType.EnumMember(member as string | number),
       );
 
       subSchema.title = key;
@@ -374,7 +379,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     }
 
     throw new Error(
-      "Invalid enum member type, enum members can be only of string or number type."
+      "Invalid enum member type, enum members can be only of string or number type.",
     );
   }
 
@@ -383,7 +388,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
       return this.customParser.InstanceOf(type, this.options);
     }
 
-    const constructor = type.instanceOf as new () => unknown;
+    const constructor = type.instanceOf as new() => unknown;
 
     const schema: JSONSchema6 = {
       type: "object",
@@ -396,11 +401,13 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
   }
 
   private parseCustom(type: Custom): R {
-    if (this.customParser.Custom)
+    if (this.customParser.Custom) {
       return this.customParser.Custom(type.custom, type, this.options);
+    }
 
-    if (this.incompatibleTypes === "throw")
+    if (this.incompatibleTypes === "throw") {
       this.throwIncompatibleTypeError("Custom Validator");
+    }
     if (this.incompatibleTypes === "omit") return undefined;
 
     const schema: JSONSchema6 = {
@@ -470,7 +477,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     }
 
     const typeName = NameGenerator.generate(
-      TypeKindNames.get(referencedType.kind) ?? "Circular"
+      TypeKindNames.get(referencedType.kind) ?? "Circular",
     );
     this.definitionNames.set(referencedType, typeName);
     return {
@@ -522,7 +529,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
 export const toJsonSchema = (
   type: AnyDataType,
   options: ParseToJsonSchemaOptions = {},
-  include$schemaProperty = true
+  include$schemaProperty = true,
 ): JSONSchema6 | undefined => {
   try {
     const visitor = new DataTypeJsonSchemaGenerator(options);

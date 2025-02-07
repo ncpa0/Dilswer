@@ -18,25 +18,25 @@ const runSuiteForSample = (name, sample, data) => {
   console.log(separator + "\n");
   return new Promise((r) => {
     const suite = new Bench.Suite(
-      `\u001b[1m\u001b[37mValidators benchmark, sample: \u001b[33m${name}\u001b[0m`
+      `\u001b[1m\u001b[37mValidators benchmark, sample: \u001b[33m${name}\u001b[0m`,
     );
     suite
-      .add("validate", function () {
+      .add("validate", function() {
         validate(data);
       })
-      .add("fastValidate", function () {
+      .add("fastValidate", function() {
         fastValidate(data);
       })
-      .on("start", function () {
+      .on("start", function() {
         console.log("Running Suite: " + this.name);
       })
-      .on("error", function (e) {
+      .on("error", function(e) {
         console.log("Error in Suite: " + this.name, e);
       })
-      .on("abort", function (e) {
+      .on("abort", function(e) {
         console.log("Aborting Suite: " + this.name, e);
       })
-      .on("complete", function () {
+      .on("complete", function() {
         const fastest = this.filter("fastest");
 
         console.log("");
@@ -45,15 +45,15 @@ const runSuiteForSample = (name, sample, data) => {
           console.log(
             "   ",
             this[j].toString(),
-            "\u001b[94m" +
-              ((this[j].hz / fastest[0].hz) * 100).toFixed(2) +
-              "%\u001b[0m"
+            "\u001b[94m"
+              + ((this[j].hz / fastest[0].hz) * 100).toFixed(2)
+              + "%\u001b[0m",
           );
         }
 
         console.log(
           "\n\u001b[1m\u001b[37mFastest is \u001b[92m" + fastest.map("name"),
-          "\u001b[0m"
+          "\u001b[0m",
         );
         r();
       })
@@ -146,7 +146,7 @@ const medium = async () => {
         corge: Type.Boolean,
         grault: Type.ArrayOf(Type.String),
         garply: Type.Null,
-      })
+      }),
     ),
     waldo: Type.Null,
   });
@@ -289,7 +289,7 @@ const large = async () => {
               fred: Type.Boolean,
               plugh: Type.ArrayOf(Type.String, Type.Number, Type.Boolean),
               xyzzy: Type.Null,
-            })
+            }),
           ),
           thud: Type.Function,
           paparapr: Type.Dict(Type.String, Type.Number),
@@ -300,12 +300,12 @@ const large = async () => {
               Type.RecordOf({
                 value: Type.String,
                 done: Type.Boolean,
-              })
-            )
+              }),
+            ),
           ),
           circ: { type: self, required: false },
         })
-      )
+      ),
     ),
     wibble: Type.Null,
   });
@@ -2071,7 +2071,7 @@ const deeplyNestedRecord = async () => {
         quuz: Type.OneOf(
           Type.Literal("a"),
           Type.Literal("b"),
-          Type.Literal("c")
+          Type.Literal("c"),
         ),
         corge: Type.Int,
         grault: Type.RecordOf({
@@ -2083,7 +2083,7 @@ const deeplyNestedRecord = async () => {
           quuz: Type.OneOf(
             Type.Literal("a"),
             Type.Literal("b"),
-            Type.Literal("c")
+            Type.Literal("c"),
           ),
           corge: Type.Int,
           grault: Type.RecordOf({
@@ -2095,7 +2095,7 @@ const deeplyNestedRecord = async () => {
             quuz: Type.OneOf(
               Type.Literal("a"),
               Type.Literal("b"),
-              Type.Literal("c")
+              Type.Literal("c"),
             ),
             corge: Type.Int,
             grault: Type.RecordOf({
@@ -2107,7 +2107,7 @@ const deeplyNestedRecord = async () => {
               quuz: Type.OneOf(
                 Type.Literal("a"),
                 Type.Literal("b"),
-                Type.Literal("c")
+                Type.Literal("c"),
               ),
               corge: Type.Int,
               grault: Type.RecordOf({
@@ -2119,7 +2119,7 @@ const deeplyNestedRecord = async () => {
                 quuz: Type.OneOf(
                   Type.Literal("a"),
                   Type.Literal("b"),
-                  Type.Literal("c")
+                  Type.Literal("c"),
                 ),
                 corge: Type.Int,
               }),
@@ -2311,12 +2311,12 @@ const deeplyNestedRecord = async () => {
   await runSuiteForSample(
     "deeply nested record - invalid 1",
     sample,
-    invalidData1
+    invalidData1,
   );
   await runSuiteForSample(
     "deeply nested record - invalid 2",
     sample,
-    invalidData2
+    invalidData2,
   );
 };
 

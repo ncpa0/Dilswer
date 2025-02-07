@@ -5,11 +5,11 @@ describe("Exclude utility", () => {
     const a = DataType.OneOf(
       DataType.ArrayOf(DataType.String),
       DataType.Number,
-      DataType.String
+      DataType.String,
     );
 
     expect(Exclude(a, DataType.Number)).toMatchObject(
-      DataType.OneOf(DataType.ArrayOf(DataType.String), DataType.String)
+      DataType.OneOf(DataType.ArrayOf(DataType.String), DataType.String),
     );
   });
 });

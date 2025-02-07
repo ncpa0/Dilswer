@@ -17,8 +17,9 @@ export class TsFileScope {
 
       if (this.options.exports === "main" && !isRoot) return "declare";
 
-      if (this.options.exports === "named" && !builder.isTitled)
+      if (this.options.exports === "named" && !builder.isTitled) {
         return "declare";
+      }
 
       return "export/declare";
     }
@@ -81,7 +82,7 @@ export class TsFileScope {
     ref.name = newName;
 
     const declarationStatement = referencedBuilder.buildExport(
-      this.exportTypeFor(referencedBuilder)
+      this.exportTypeFor(referencedBuilder),
     );
 
     if (declarationStatement) {
@@ -95,7 +96,7 @@ export class TsFileScope {
 
     if (!name) {
       throw new Error(
-        "Type name is undefined after definition generation. Impossible situation."
+        "Type name is undefined after definition generation. Impossible situation.",
       );
     }
 
@@ -109,7 +110,7 @@ export class TsFileScope {
             builder.setName(name);
             // rebuild with the new name
             declarationStatement = builder.buildExport(
-              this.exportTypeFor(builder)
+              this.exportTypeFor(builder),
             );
           }
         }

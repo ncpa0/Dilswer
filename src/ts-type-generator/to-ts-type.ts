@@ -114,12 +114,12 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (options.mode) {
       case "fully-expanded":
-        this.addFileExportAndResolveBuilder = function (builder) {
+        this.addFileExportAndResolveBuilder = function(builder) {
           return this.fileScope.addTypeExport(builder);
         };
         break;
       case "named-expanded":
-        this.addFileExportAndResolveBuilder = function (builder) {
+        this.addFileExportAndResolveBuilder = function(builder) {
           if (builder.isTitled) {
             return this.fileScope.addTypeExport(builder);
           }
@@ -129,8 +129,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     }
   }
 
-  private getExternalTypeImport = function (
-    type: any
+  private getExternalTypeImport = function(
+    type: any,
   ): ExternalTypeImportProxy | undefined {
     return undefined;
   };
@@ -141,8 +141,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
    * builder or the Reference builder, if the builder was added
    * to the exports.
    */
-  private addFileExportAndResolveBuilder = function (
-    builder: TsBuilder & TsBaseBuilder
+  private addFileExportAndResolveBuilder = function(
+    builder: TsBuilder & TsBaseBuilder,
   ): TsBuilder {
     return builder;
     // default behavior for compact mode: do nothing
@@ -237,7 +237,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
 
   private parseRecordOf(
     type: RecordOf,
-    children: RecordOfVisitChild<R>[] = []
+    children: RecordOfVisitChild<R>[] = [],
   ): R {
     const builder = new TsRecordBuilder();
     this.tsAddMetadataToBuilder(builder, type);
@@ -308,7 +308,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
 
     if (!typeName) {
       throw new Error(
-        "Enum name is not defined. To be able to parse an Enum DataType `enumName` must be defined."
+        "Enum name is not defined. To be able to parse an Enum DataType `enumName` must be defined.",
       );
     }
 
@@ -326,7 +326,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
 
     if (!typeName || !metadata.memberName) {
       throw new Error(
-        "Enum name, or enum member name is not defined. To be able to parse an EnumMember DataType into Typescript definition `memberName` and `enumName` must be defined."
+        "Enum name, or enum member name is not defined. To be able to parse an EnumMember DataType into Typescript definition `memberName` and `enumName` must be defined.",
       );
     }
 
@@ -342,7 +342,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
   }
 
   private parseInstanceOf(type: InstanceOf): R {
-    const constructor = type.instanceOf as new () => unknown;
+    const constructor = type.instanceOf as new() => unknown;
 
     let typeName = constructor.name;
 
@@ -421,7 +421,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     }
 
     const typeName = NameGenerator.generate(
-      TypeKindNames.get(referencedType.kind) ?? "Circular"
+      TypeKindNames.get(referencedType.kind) ?? "Circular",
     );
     this.circulars.set(referencedType, typeName);
     return new TsNamedReference(typeName);
@@ -475,7 +475,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
  */
 export const toTsType = (
   dataType: AnyDataType,
-  options?: Partial<TsParsingOptions>
+  options?: Partial<TsParsingOptions>,
 ): string => {
   try {
     const opt: TsParsingOptions = {

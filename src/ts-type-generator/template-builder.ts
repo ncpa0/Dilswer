@@ -1,7 +1,7 @@
-type TemplateWildcards<T extends string> =
-  T extends `${infer _}{{${infer W}}}${infer Rest}`
-    ? TemplateWildcards<Rest> & { [K in W]: string }
-    : {};
+type TemplateWildcards<T extends string> = T extends
+  `${infer _}{{${infer W}}}${infer Rest}`
+  ? TemplateWildcards<Rest> & { [K in W]: string }
+  : {};
 
 export class TemplateBuilder<T extends string> {
   constructor(private template: T) {}

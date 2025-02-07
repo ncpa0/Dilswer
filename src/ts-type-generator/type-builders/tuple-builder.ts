@@ -6,7 +6,7 @@ const TUPLE_TEMPLATE = new TemplateBuilder("[{{types}}]");
 
 const EXPORT_TUPLE_TEMPLATE = new TemplateBuilder(
   `{{description}}
-{{export}}type {{name}} = [{{types}}];`
+{{export}}type {{name}} = [{{types}}];`,
 );
 
 export class TsTupleBuilder extends TsBaseBuilder implements TsBuilder {

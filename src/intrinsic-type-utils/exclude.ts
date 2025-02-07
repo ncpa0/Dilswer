@@ -13,8 +13,8 @@ export const Exclude = <U extends OneOf, E extends BasicDataType>(
   return new OneOf(
     union.oneOf.filter(
       (t: AnyDataType) =>
-        !("simpleType" in t) ||
-        !excludeTypes.some((exc) => exc.simpleType === t.simpleType)
-    )
+        !("simpleType" in t)
+        || !excludeTypes.some((exc) => exc.simpleType === t.simpleType),
+    ),
   );
 };

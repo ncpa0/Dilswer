@@ -92,7 +92,7 @@ export type TsParsingOptions = {
    *   //"
    */
   getExternalTypeImport?: (
-    type: Enum | EnumMember | InstanceOf | Custom | SimpleDataType<"function">
+    type: Enum | EnumMember | InstanceOf | Custom | SimpleDataType<"function">,
   ) => ExternalTypeImport | undefined;
 };
 

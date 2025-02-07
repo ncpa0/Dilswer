@@ -6,7 +6,7 @@ export const concatPathSegments = (path: string, key: string) => {
   }
 
   if (/[^a-zA-Z0-9]/.test(key)) {
-    return `${path}["${key.replace(/"/g, '\\"')}"]`;
+    return `${path}["${key.replace(/"/g, "\\\"")}"]`;
   }
 
   return `${path}.${key}`;

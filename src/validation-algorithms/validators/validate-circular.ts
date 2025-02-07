@@ -16,7 +16,7 @@ export const validateCircular = (path: Path, type: Circular, data: unknown) => {
 export const validateCircularRef = (
   path: Path,
   type: CircularRef,
-  data: unknown
+  data: unknown,
 ) => {
   if (wasCircValidated(type._getReferencedType(), data)) {
     return;
