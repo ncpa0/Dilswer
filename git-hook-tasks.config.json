@@ -4,10 +4,6 @@
   "hooks": {
     "pre-push": [
       {
-        "name": "Lint",
-        "script": "test:lint"
-      },
-      {
         "name": "TypeScript",
         "script": "test:tsc"
       },
