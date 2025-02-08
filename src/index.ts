@@ -7,7 +7,7 @@ import {
   Partial,
   Pick,
   Required,
-} from "@Intrinsic";
+} from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
 import { parseWith } from "@UniversalParser/universal-parser";
@@ -46,7 +46,7 @@ export type {
   SetOf,
   TypeMetadata,
 } from "@DataTypes/types";
-export * from "@Intrinsic";
+export * from "@Intrinsic/index";
 export type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
 export type {
   TsParsingMode,

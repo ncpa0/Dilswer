@@ -3,7 +3,7 @@ import type { AnyDataType } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import type { ValidationError } from "@Validation/validation-error/validation-error";
 import { validatedCircularValues } from "@Validation/validators/helper-validated-circ-values";
-import { validatorsLookupMap } from "@Validation/validators/validate-type";
+import { getValidator } from "@Validation/validators/validate-type";
 
 const DEFAULT_ROOT = Path.init("$");
 
@@ -23,7 +23,7 @@ export const createTypeGuardedFunction = <DT extends AnyDataType, R, ER = void>(
 ) => {
   const caller = (data: unknown): R | ER => {
     try {
-      validatorsLookupMap.get(dataType.kind)!(DEFAULT_ROOT, dataType, data);
+      getValidator(dataType.kind)!(DEFAULT_ROOT, dataType, data);
       // @ts-expect-error
       return onValidationSuccess(data);
     } catch (e) {

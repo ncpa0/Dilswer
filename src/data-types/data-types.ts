@@ -11,7 +11,7 @@ import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { compileFastValidator } from "@Validation/compile-fast-validator";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { validatorsLookupMap } from "@Validation/validators/validate-type";
+import { getValidator } from "@Validation/validators/validate-type";
 import { StandardSchemaV1 } from "../standard-schema";
 import { CircularType } from "./circular-type-utils";
 import {
@@ -124,7 +124,7 @@ export abstract class BaseDataType {
     any,
     GetDataType<Self>
   > {
-    const validateFn = validatorsLookupMap.get(this.kind)!;
+    const validateFn = getValidator(this.kind)!;
     const root = Path.init("$");
 
     let validate = this.compiledValidatorRef.fn ?? ((value: any) => {

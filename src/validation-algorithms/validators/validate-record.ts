@@ -2,7 +2,7 @@ import type { RecordOf } from "@DataTypes/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import type { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { validatorsLookupMap } from "@Validation/validators/validate-type";
+import { getValidator } from "@Validation/validators/validate-type";
 
 export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
   if (
@@ -41,7 +41,7 @@ export const validateRecord = (path: Path, type: RecordOf, data: unknown) => {
       continue;
     }
 
-    validatorsLookupMap.get(descriptor.type.kind)!(
+    getValidator(descriptor.type.kind)!(
       path.concat(key),
       descriptor.type,
       value,

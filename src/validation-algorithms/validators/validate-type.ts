@@ -19,24 +19,41 @@ import { validateSet } from "@Validation/validators/validate-set";
 import { validateStringMatching } from "@Validation/validators/validate-string-matching";
 import { validateTuple } from "@Validation/validators/validate-tuple";
 
-export const validatorsLookupMap = new Map<
-  DataTypeKind,
-  (path: Path, type: any, data: unknown) => void
->([
-  ["simple", validatePrimitive],
-  ["array", validateArray],
-  ["tuple", validateTuple],
-  ["record", validateRecord],
-  ["dictionary", validateDict],
-  ["union", validateOneOf],
-  ["intersection", validateAllOf],
-  ["literal", validateLiteral],
-  ["enumMember", validateEnumMember],
-  ["enumUnion", validateEnum],
-  ["set", validateSet],
-  ["instanceOf", validateInstanceOf],
-  ["custom", validateCustom],
-  ["stringMatching", validateStringMatching],
-  ["circular", validateCircular],
-  ["circularRef", validateCircularRef],
-]);
+export function getValidator(
+  type: DataTypeKind,
+): (path: Path, type: any, data: unknown) => void {
+  switch (type) {
+    case "simple":
+      return validatePrimitive;
+    case "array":
+      return validateArray;
+    case "tuple":
+      return validateTuple;
+    case "record":
+      return validateRecord;
+    case "dictionary":
+      return validateDict;
+    case "union":
+      return validateOneOf;
+    case "intersection":
+      return validateAllOf;
+    case "literal":
+      return validateLiteral;
+    case "enumMember":
+      return validateEnumMember;
+    case "enumUnion":
+      return validateEnum;
+    case "set":
+      return validateSet;
+    case "instanceOf":
+      return validateInstanceOf;
+    case "custom":
+      return validateCustom;
+    case "stringMatching":
+      return validateStringMatching;
+    case "circular":
+      return validateCircular;
+    case "circularRef":
+      return validateCircularRef;
+  }
+}
