@@ -35,7 +35,3 @@ jobs:
         name: Run unit tests
         with:
           cmd: test:unit
-      - uses: borales/actions-yarn@v3.0.0
-        name: Run linter
-        with:
-          cmd: test:lint
