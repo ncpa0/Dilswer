@@ -18,6 +18,7 @@ both the runtime validation types and the TypeScript type definitions.
    2. [Create a TypeScript type from a Dilswer definition](#create-a-typescript-type-from-a-dilswer-definition)
    3. [Create a validation function](#create-a-validation-function)
    4. [Create a function with a validated input](#create-a-function-with-a-validated-input)
+   5. [Standard Schema support](#standard-schema-support)
 2. [Available Functions](#available-functions)
    1. [assertDataType()](#assertdatatype)
    2. [createValidator()](#createvalidator)
@@ -71,15 +72,15 @@ both the runtime validation types and the TypeScript type definitions.
 
 ```ts
 // person-type.ts
-import { DataType, OptionalField } from "dilswer";
+import { Type, OptionalField } from "dilswer";
 
 // Record property types can be defined in a few different ways:
-const PersonDataType = DataType.RecordOf({
-  id: DataType.String,
-  name: DataType.String,
-  age: { type: DataType.Number },
-  email: OptionalField(DataType.String),
-  friends: { type: DataType.ArrayOf(DataType.String), required: false },
+const PersonDataType = Type.RecordOf({
+  id: Type.String,
+  name: Type.String,
+  age: { type: Type.Number },
+  email: OptionalField(Type.String),
+  friends: { type: Type.ArrayOf(Type.String), required: false },
 });
 
 // A TypeScript equivalent type of the above would be:
@@ -179,6 +180,44 @@ const person = await axios
   .then((r) => r.data);
 
 const result = processPerson(person); // => "Success!" or "Failure"
+```
+
+### Standard Schema support
+
+Dilswer can be used with any library that supports the Standard Schema validation, like tRPC, OpenAuth and others.
+
+```ts
+import { Type } from "dilswer";
+import { initTRPC } from "@trpc/server";
+
+const t = initTRPC.create();
+
+const router = t.router({
+  greeting: t.procedure
+    .input(Type.RecordOf({
+      name: Type.String,
+    }))
+    .query(async ({ input }) => {
+      return `Hello, ${input.name}!`;
+    }),
+})
+```
+
+For the best performance, type schemas passed to the other libraries should get compiled via the `.compileStd()` method.
+The compiled schemas do not provide as detailed error messages but are order of magnitude faster.
+
+```ts
+const router = t.router({
+  greeting: t.procedure
+    .input(
+      Type.RecordOf({
+        name: Type.String,
+      }).compileStd()
+    )
+    .query(async ({ input }) => {
+      return `Hello, ${input.name}!`;
+    }),
+})
 ```
 
 ## Available Functions
@@ -390,8 +429,8 @@ type TsParsingOptions = {
    *   // data-type.ts
    *   import { Foo } from "./foo";
    *
-   *   export const dt = DataType.RecordOf({
-   *     foo: DataType.InstanceOf(Foo),
+   *   export const dt = Type.RecordOf({
+   *     foo: Type.InstanceOf(Foo),
    *   });
    *
    *   // ts-type-generator.ts
@@ -454,76 +493,76 @@ type ExternalTypeImport = {
 };
 ```
 
-#### DataType
+#### DataType / Type
 
 Object containing all the dilswer runtime type definitions (like `Number`,
 `String`, `ArrayOf(...)`, etc.)
 
 ## Data Types
 
-#### DataType.Number
+#### Type.Number
 
 will match any number values and translate to the standard `number` type in
 TypeScript.
 
-#### DataType.Int
+#### Type.Int
 
 will match any integer values and translate to the standard `number` type in
 TypeScript. TypeScript does not have any way of distinguishing float and
 integers therefore both are assigned the same TypeScript type.
 
-#### DataType.String
+#### Type.String
 
 will match any string values and translate to the standard `string` type in
 TypeScript.
 
-#### DataType.StringNumeral
+#### Type.StringNumeral
 
 will match any string containing only numeric values and translate to a
 `` `${number}` `` type in TypeScript. A value successfully validated with
 `StringNumeral` is safe to convert into a number and will never produce a `NaN`
 value.
 
-#### DataType.StringInt
+#### Type.StringInt
 
 will match any string containing only numbers and translate to a
 `` `${number}` `` type in TypeScript. Strings with floating point numbers are
 not matched by this type. A value successfully validated with `StringInt` is
 safe to convert into a number and will never produce a `NaN` value.
 
-#### DataType.StringMatching(regex)
+#### Type.StringMatching(regex)
 
 will match any string matching the provided regular expression and translate to
 a the standard `string` type in TypeScript.
 
-#### DataType.Boolean
+#### Type.Boolean
 
 will match any `true` and `false` values and translate to the standard `boolean`
 type in TypeScript.
 
-#### DataType.Symbol
+#### Type.Symbol
 
 will match any symbolic values and translate to the `symbol` type in TypeScript.
 
-#### DataType.Null
+#### Type.Null
 
 will match only `null` value and translate to the standard `null` type in
 TypeScript.
 
-#### DataType.Undefined
+#### Type.Undefined
 
 will match only `undefined` value and translate to the standard `undefined` type
 in TypeScript.
 
-#### DataType.Function
+#### Type.Function
 
 will match any function and translate to the `Function` type in TypeScript.
 
-#### DataType.Unknown
+#### Type.Unknown
 
 will match any value and translate to the `unknown` type in TypeScript.
 
-#### DataType.OneOf(...DataType's)
+#### Type.OneOf(...Type's)
 
 will match any value matching one of the DataType's provided in the arguments
 and translate to an TypeScript union type.
@@ -531,12 +570,12 @@ and translate to an TypeScript union type.
 Example
 
 ```ts
-const foo = DataType.OneOf(DataType.String, DataType.Number);
+const foo = Type.OneOf(Type.String, Type.Number);
 
 type T = GetDataType<typeof foo>; // type T = (string | number)
 ```
 
-#### DataType.AllOf(...DataType's)
+#### Type.AllOf(...Type's)
 
 will match values matching every DataType provided and translate to a TypeScript
 intersection of all those DataType's.
@@ -546,15 +585,15 @@ Mostly useful to intersect multiple RecordOf's.
 Example
 
 ```ts
-const foo = DataType.RecordOf({ foo: string });
-const bar = DataType.RecordOf({ bar: string });
+const foo = Type.RecordOf({ foo: string });
+const bar = Type.RecordOf({ bar: string });
 
-const combined = DataType.AllOf(foo, bar);
+const combined = Type.AllOf(foo, bar);
 
 type T = GetDataType<typeof combined>; // type T = { foo: string; bar: string; }
 ```
 
-#### DataType.ArrayOf(...DataType's)
+#### Type.ArrayOf(...Type's)
 
 will match any array which contains only values matching any of the DataType's
 provided in the arguments and translate to the `Array<...>` type in TypeScript.
@@ -562,12 +601,12 @@ provided in the arguments and translate to the `Array<...>` type in TypeScript.
 Example
 
 ```ts
-const foo = DataType.ArrayOf(DataType.String, DataType.Number);
+const foo = Type.ArrayOf(Type.String, Type.Number);
 
 type T = GetDataType<typeof foo>; // type T = (string | number)[]
 ```
 
-#### DataType.RecordOf(Record<string, FieldDescriptor>)
+#### Type.RecordOf(Record<string, FieldDescriptor>)
 
 will match any object which structure matches the key-value pairs of object
 properties and FieldDescriptor's passed to the argument.
@@ -575,16 +614,17 @@ properties and FieldDescriptor's passed to the argument.
 Example
 
 ```ts
-const foo = DataType.RecordOf({
-  foo: DataType.Boolean,
-  bar: { type: DataType.String },
-  baz: { type: DataType.Number, required: false },
+const foo = Type.RecordOf({
+  foo: Type.Boolean,
+  bar: { type: Type.String },
+  baz: { type: Type.Number, required: false },
+  qux: OptionalField(Type.String),
 });
 
 type T = GetDataType<typeof foo>; // type T = {foo: boolean, bar: string, baz?: number | undefined}
 ```
 
-#### DataType.Dict(...DataType's)
+#### Type.Dict(...Type's)
 
 will match any object which properties match against the provided DataTypes's,
 and translates to a Record type in TypeScript.
@@ -592,12 +632,12 @@ and translates to a Record type in TypeScript.
 Example
 
 ```ts
-const dictOfFunctions = DataType.Dict(DataType.Function);
+const dictOfFunctions = Type.Dict(Type.Function);
 
 type T = GetDataType<typeof dictOfFunctions>; // type T = Record<string | number, Function>
 ```
 
-#### DataType.SetOf(...DataType's)
+#### Type.SetOf(...Type's)
 
 will match any Set object which contains only values matching any of the
 DataType's provided in the arguments and translate to the `Set<...>` type in
@@ -606,12 +646,12 @@ TypeScript.
 Example
 
 ```ts
-const foo = DataType.SetOf(DataType.String, DataType.Number);
+const foo = Type.SetOf(Type.String, Type.Number);
 
 type T = GetDataType<typeof foo>; // type T = Set<string | number>
 ```
 
-#### DataType.Literal(string | number | boolean)
+#### Type.Literal(string | number | boolean)
 
 will match any value that exactly matches the passed argument and translate to
 the literal type of that value in TypeScript.
@@ -619,24 +659,24 @@ the literal type of that value in TypeScript.
 Example's
 
 ```ts
-const foo = DataType.Literal("some-string-literal");
+const foo = Type.Literal("some-string-literal");
 
 type T0 = GetDataType<typeof foo>; // type T0 = "some-string-literal"
 ```
 
 ```ts
-const bar = DataType.Literal(123);
+const bar = Type.Literal(123);
 
 type T1 = GetDataType<typeof bar>; // type T1 = 123
 ```
 
 ```ts
-const baz = DataType.Literal(true);
+const baz = Type.Literal(true);
 
 type T2 = GetDataType<typeof baz>; // type T2 = true
 ```
 
-#### DataType.InstanceOf(class)
+#### Type.InstanceOf(class)
 
 will match any value that is an instance of the passed class and translate to
 the `InstanceType` type of that class in TypeScript.
@@ -644,12 +684,12 @@ the `InstanceType` type of that class in TypeScript.
 ```ts
 class FooBar {}
 
-const foo = DataType.InstanceOf(FooBar);
+const foo = Type.InstanceOf(FooBar);
 
 type T = GetDataType<typeof foo>; // type T = InstanceType<typeof FooBar>
 ```
 
-#### DataType.Enum(enum)
+#### Type.Enum(enum)
 
 will match any value that belongs to an TypeScript enum and translate to that
 enum type.
@@ -660,7 +700,7 @@ enum MyEnum {
   B = "B",
 }
 
-const foo = DataType.Enum(MyEnum);
+const foo = Type.Enum(MyEnum);
 
 type T = GetDataType<typeof foo>; // type T = MyEnum
 
@@ -670,7 +710,7 @@ validate(MyEnum.A); // => true
 validate(MyEnum.B); // => true
 ```
 
-#### DataType.EnumMember(enum member)
+#### Type.EnumMember(enum member)
 
 will match any value that equals to the specified TypeScript enum member and
 translate to that enum member type.
@@ -681,7 +721,7 @@ enum MyEnum {
   B = "VALUE_B",
 }
 
-const foo = DataType.EnumMember(MyEnum.A);
+const foo = Type.EnumMember(MyEnum.A);
 
 type T = GetDataType<typeof foo>; // type T = MyEnum.A
 
@@ -692,7 +732,7 @@ validate(MyEnum.A); // => true
 validate(MyEnum.B); // => false
 ```
 
-#### DataType.Circular(Function)
+#### Type.Circular(Function)
 
 Allows to define types that reference themselves. The function it accepts should
 always return a valid DataType, which the reference provided to that function
@@ -701,10 +741,10 @@ will point to.
 Example
 
 ```ts
-const Node = DataType.Circular((self) =>
-  DataType.Record({
-    tag: DataType.String,
-    children: DataType.ArrayOf(self),
+const Node = Type.Circular((self) =>
+  Type.Record({
+    tag: Type.String,
+    children: Type.ArrayOf(self),
   })
 );
 
@@ -743,7 +783,7 @@ If you absolutely need to get a type that has infinite recursion, you can use
 [toTsType](#totstype) utility to generate TypeScript code which will meet that
 need.
 
-#### DataType.Custom(Function)
+#### Type.Custom(Function)
 
 will test the data with the provided function, provided function should return a
 boolean indicating if the tested value passed the validation, passed function
@@ -756,7 +796,7 @@ Example
 const isNonEmptyString = (v: any): v is string =>
   typeof v === "string" && v.length > 0;
 
-const nonEmptyTypeDef = DataType.Custom(isNonEmptyString);
+const nonEmptyTypeDef = Type.Custom(isNonEmptyString);
 
 type T = GetDataType<typeof nonEmptyTypeDef>; // type T = string
 ```
@@ -770,14 +810,14 @@ any of the properties between the two combined Type Defs have the same key-name,
 the definition of the second one takes priority.
 
 ```ts
-const typeDefOne = DataType.RecordOf({
-  foo: DataType.Number,
-  bar: DataType.Number,
+const typeDefOne = Type.RecordOf({
+  foo: Type.Number,
+  bar: Type.Number,
 });
 
-const typeDefTwo = DataType.RecordOf({
-  bar: DataType.ArrayOf(DataType.String),
-  baz: DataType.Boolean,
+const typeDefTwo = Type.RecordOf({
+  bar: Type.ArrayOf(Type.String),
+  baz: Type.Boolean,
 });
 
 const typeDefSum = And(typeDefOne, typeDefTwo);
@@ -793,11 +833,11 @@ const typeDefSum = And(typeDefOne, typeDefTwo);
 `Omit()` utility function removes specified keys from a Record Type Definition.
 
 ```ts
-const typeDefOne = DataType.RecordOf({
-  foo: DataType.Number,
-  bar: DataType.Number,
-  baz: DataType.Number,
-  qux: DataType.Number,
+const typeDefOne = Type.RecordOf({
+  foo: Type.Number,
+  bar: Type.Number,
+  baz: Type.Number,
+  qux: Type.Number,
 });
 
 const typeDefOmitted = Omit(typeDefOne, "bar", "qux");
@@ -813,11 +853,11 @@ const typeDefOmitted = Omit(typeDefOne, "bar", "qux");
 Definition.
 
 ```ts
-const typeDefOne = DataType.RecordOf({
-  foo: DataType.Number,
-  bar: DataType.Number,
-  baz: DataType.Number,
-  qux: DataType.Number,
+const typeDefOne = Type.RecordOf({
+  foo: Type.Number,
+  bar: Type.Number,
+  baz: Type.Number,
+  qux: Type.Number,
 });
 
 const typeDefPick = Pick(typeDefOne, "bar", "qux");
@@ -832,10 +872,10 @@ const typeDefPick = Pick(typeDefOne, "bar", "qux");
 `Partial()` utility type makes all the Record's Type Definition keys optional.
 
 ```ts
-const typeDefOne = DataType.RecordOf({
-  foo: DataType.Number,
-  bar: DataType.String,
-  baz: DataType.ArrayOf(DataType.Number),
+const typeDefOne = Type.RecordOf({
+  foo: Type.Number,
+  bar: Type.String,
+  baz: Type.ArrayOf(Type.Number),
 });
 
 const typeDefPartial = Partial(typeDefOne);
@@ -852,10 +892,10 @@ const typeDefPartial = Partial(typeDefOne);
 required (vs optional).
 
 ```ts
-const typeDefOne = DataType.RecordOf({
-  foo: { type: DataType.Number, required: false },
-  bar: { type: DataType.String, required: false },
-  baz: { type: DataType.ArrayOf(DataType.Number), required: false },
+const typeDefOne = Type.RecordOf({
+  foo: { type: Type.Number, required: false },
+  bar: { type: Type.String, required: false },
+  baz: { type: Type.ArrayOf(Type.Number), required: false },
 });
 
 const typeDefRequired = Required(typeDefOne);
@@ -871,10 +911,10 @@ const typeDefRequired = Required(typeDefOne);
 `Exclude()` utility function removes Type Definitions from an Type Def union.
 
 ```ts
-const typeDefOne = DataType.OneOf(
-  DataType.String,
-  DataType.Number,
-  DataType.Boolean,
+const typeDefOne = Type.OneOf(
+  Type.String,
+  Type.Number,
+  Type.Boolean,
 );
 
 const typeDefExcluded = Exclude(typeDefOne, DataType.Number);
@@ -892,16 +932,16 @@ a description to a data type, or a title, or format.
 ### Assign Metadata
 
 ```ts
-import { DataType } from "dilswer";
+import { Type } from "dilswer";
 
-const UserNameDT = DataType.String.setTitle("User Name").setDescription(
+const UserNameDT = Type.String.setTitle("User Name").setDescription(
   "The user's name.",
 );
 
-const User = DataType.RecordOf({
+const User = Type.RecordOf({
   name: UserNameDT,
-  id: DataType.String.setTitle("User ID").setFormat("uuid"),
-  friends: DataType.ArrayOf(DataType.String).setDescription(
+  id: Type.String.setTitle("User ID").setFormat("uuid"),
+  friends: Type.ArrayOf(Type.String).setDescription(
     "A list of the user's friends names.",
   ),
 })
@@ -914,7 +954,7 @@ const User = DataType.RecordOf({
 ### Read Metadata
 
 ```ts
-import { DataType, getMetadata } from "dilswer";
+import { Type, getMetadata } from "dilswer";
 
 const userNameMetadata = getMetadata(UserNameDT);
 
@@ -937,14 +977,14 @@ Metadata is also used when generating JSON Schema, if a DataType has a title,
 description or format, it will be included in the generated JSON Schema.
 
 ```ts
-import { DataType, toJsonSchema } from "dilswer";
+import { Type, toJsonSchema } from "dilswer";
 
-const UserDT = DataType.RecordOf({
-  name: DataType.String.setTitle("User Name").setDescription(
+const UserDT = Type.RecordOf({
+  name: Type.String.setTitle("User Name").setDescription(
     "The user's name.",
   ),
-  id: DataType.String.setTitle("User ID").setFormat("uuid"),
-  friends: DataType.ArrayOf(DataType.String).setDescription(
+  id: Type.String.setTitle("User ID").setFormat("uuid"),
+  friends: Type.ArrayOf(Type.String).setDescription(
     "A list of the user's friends names.",
   ),
 })
@@ -996,7 +1036,7 @@ You can see the implementation of these functions in the source code
 #### Example
 
 ```ts
-import { AnyDataType, DataType, parseWith } from "dilswer";
+import { AnyDataType, Type, parseWith } from "dilswer";
 
 // Define how the new structure should look like
 type Node = {
@@ -1032,10 +1072,10 @@ const visitor = {
 
 // use the visitor on a Dilser data type
 
-const type = DataType.RecordOf({
-  foo: DataType.String,
-  bar: DataType.ArrayOf(DataType.Number),
-  baz: DataType.OneOf(DataType.String, DataType.Number),
+const type = Type.RecordOf({
+  foo: Type.String,
+  bar: Type.ArrayOf(Type.Number),
+  baz: Type.OneOf(Type.String, Type.Number),
 });
 
 const nodeTree = parseWith(visitor, type);
