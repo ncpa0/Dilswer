@@ -1,11 +1,4 @@
 import type {
-  Circular,
-  CircularRef,
-  InstanceOf,
-  StringMatching,
-  Tuple,
-} from "@DataTypes/data-types";
-import type {
   ExcludeOptional,
   ExcludeRequired,
   GetDescriptorType,
@@ -13,28 +6,23 @@ import type {
   ParseBasicDataType,
 } from "@DataTypes/type-utils";
 import type {
-  AllOf,
   AnyDataType,
-  ArrayOf,
   BasicDataType,
   ComplexDataType,
-  Dict,
-  Enum,
-  EnumMember,
-  Literal,
-  OneOf,
-  RecordOf,
   RecordTypeSchema,
-  SetOf,
-} from "@DataTypes/types";
-
-class Unique {
-  private _!: never;
-}
-type ExtUnique<T> = T extends Unique ? true : false;
-type IsAny<T> = true extends ExtUnique<T> ? false extends ExtUnique<T> ? true
-  : false
-  : false;
+} from "./types";
+import type { ArrayType } from "./types/array";
+import type { DictType } from "./types/dict";
+import type { EnumType } from "./types/enum";
+import type { EnumMemberType } from "./types/enum-member";
+import type { IntersectionType } from "./types/intersection";
+import type { LiteralType } from "./types/literal";
+import type { RecordType } from "./types/record";
+import type { RecursiveType, RecursiveTypeReference } from "./types/recursive";
+import type { SetType } from "./types/set";
+import type { StringMatchingType } from "./types/string-matching";
+import type { TupleType } from "./types/tuple";
+import type { UnionType } from "./types/union";
 
 type IsDefaultReplacement<W extends ReplacementType<any>> = W extends
   DefaultReplacementType<any> ? true : false;
@@ -53,8 +41,8 @@ class DefaultReplacementType<T> extends ReplacementType<T> {
   isDefault!: true;
 }
 
-type ReplaceIfRef<T, W extends ReplacementType<any>> = T extends CircularRef
-  ? W["T"]
+type ReplaceIfRef<T, W extends ReplacementType<any>> = T extends
+  RecursiveTypeReference ? W["T"]
   : ParseCircularDataType<T, W>;
 
 type MapRecordTypeSchema<
@@ -88,31 +76,31 @@ type MapTupleType<T extends any[], W extends ReplacementType<any>> = T extends [
   : [];
 
 type CircularTypesMap<D extends AnyDataType, W extends ReplacementType<any>> = {
-  array: D extends ArrayOf<infer T>
+  array: D extends ArrayType<infer T>
     ? Array<MapToUnion<T, ChangeDefault<W, any>>>
     : never;
-  tuple: D extends Tuple<infer T> ? MapTupleType<T, ChangeDefault<W, any>>
+  tuple: D extends TupleType<infer T> ? MapTupleType<T, ChangeDefault<W, any>>
     : never;
-  record: D extends RecordOf<infer T>
+  record: D extends RecordType<infer T>
     ? MapRecordTypeSchema<T, ChangeDefault<W, any>>
     : never;
-  dictionary: D extends Dict<infer T>
+  dictionary: D extends DictType<infer T>
     ? Record<string | number, MapToUnion<T, ChangeDefault<W, any>>>
     : never;
-  set: D extends SetOf<infer T> ? Set<MapToUnion<T, ChangeDefault<W, any>>>
+  set: D extends SetType<infer T> ? Set<MapToUnion<T, ChangeDefault<W, any>>>
     : never;
-  union: D extends OneOf<infer T> ? MapToUnion<T, ChangeDefault<W, any>>
+  union: D extends UnionType<infer T> ? MapToUnion<T, ChangeDefault<W, any>>
     : never;
-  intersection: D extends AllOf<infer T>
+  intersection: D extends IntersectionType<infer T>
     ? MapToIntersection<T, ChangeDefault<W, any>>
     : never;
-  literal: D extends Literal<infer T> ? T : never;
-  enumUnion: D extends Enum<infer T> ? T : never;
-  enumMember: D extends EnumMember<infer T> ? T : never;
-  instanceOf: D extends InstanceOf<infer T> ? InstanceType<T> : never;
+  literal: D extends LiteralType<infer T> ? T : never;
+  enumUnion: D extends EnumType<infer T> ? T : never;
+  enumMember: D extends EnumMemberType<infer T> ? T : never;
+  instanceOf: D extends InstanceType<infer T> ? InstanceType<T> : never;
   custom: D extends ComplexDataType ? GetTypeFromCustom<D> : never;
-  stringMatching: D extends StringMatching<infer T> ? T : never;
-  circular: D extends Circular ? GetTypeFromCircular<D> : never;
+  stringMatching: D extends StringMatchingType<infer T> ? T : never;
+  circular: D extends RecursiveType ? GetTypeFromCircular<D> : never;
 };
 
 type ReplaceCircularRefs<
@@ -139,9 +127,10 @@ export type CircularType<T extends AnyDataType> = ReplaceCircularRefs<
   >
 >;
 
-export type GetTypeFromCircular<D extends ComplexDataType> = D extends Circular<
-  infer T
-> ? CircularType<T>
+export type GetTypeFromCircular<D extends ComplexDataType> = D extends
+  RecursiveType<
+    infer T
+  > ? CircularType<T>
   : never;
 
 export type ParseCircularDataType<

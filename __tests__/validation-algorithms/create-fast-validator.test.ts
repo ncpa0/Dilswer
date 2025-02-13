@@ -1,39 +1,38 @@
 import type {
   GetDataType,
   ParseDataType,
+  ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
 import {
   AnyDataType,
   compileFastValidator,
-  DataType,
   OptionalField,
+  Type,
 } from "../../src";
 
 const TRUE_SYM = Symbol("true");
 type True = typeof TRUE_SYM;
 
-const ASSERTION_FAILED_SYM = Symbol("Type assertion failed.");
-type AssertionFailed = typeof ASSERTION_FAILED_SYM;
-
-type IsFailed<T> = AssertionFailed extends T ? true : false;
+class AssertionFailed<Reason, Values = never> {
+  private _reason!: Reason;
+}
 
 type AssertEqual<T, U> = [T] extends [U]
   ? [U] extends [T] ? T extends object ? AssertEqual<keyof T, keyof U>
     : True
-  : AssertionFailed
-  : AssertionFailed;
+  : AssertionFailed<"Values are not equal", { T: T; U: U }>
+  : AssertionFailed<"Values are not equal", { T: T; U: U }>;
 
-type AssertNotFailed<T> = IsFailed<T> extends true ? AssertionFailed : T;
-
-type AssertType<T, U extends AnyDataType> = AssertNotFailed<
-  AssertEqual<T, ParseDataType<U>>
+type AssertType<T, U extends AnyDataType> = AssertEqual<
+  T,
+  ReWrap<ParseDataType<U>>
 >;
 
-type AssertValidator<T, V extends (data: unknown) => boolean> = V extends (
+type AssertValidator<T, V extends (data: unknown) => data is any> = V extends (
   data: unknown,
-) => data is infer R ? AssertNotFailed<AssertEqual<T, R>>
-  : AssertionFailed;
+) => data is infer R ? AssertEqual<T, R>
+  : AssertionFailed<"Given type is not a assertion function", { T: T; V: V }>;
 
 /**
  * A dummy function for asserting the type T provided is equal to
@@ -44,7 +43,7 @@ const assert = <V extends True>() => {};
 describe("createFastValidator", () => {
   describe("for primitives", () => {
     it("should validate against a string", () => {
-      const typeDef = DataType.String;
+      const typeDef = Type.String;
 
       type ExpectedType = string;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -69,7 +68,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a number", () => {
-      const typeDef = DataType.Number;
+      const typeDef = Type.Number;
 
       type ExpectedType = number;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -95,7 +94,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a integer", () => {
-      const typeDef = DataType.Int;
+      const typeDef = Type.Int;
 
       type ExpectedType = number;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -124,7 +123,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a boolean", () => {
-      const typeDef = DataType.Boolean;
+      const typeDef = Type.Boolean;
 
       type ExpectedType = boolean;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -148,7 +147,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a symbol", () => {
-      const typeDef = DataType.Symbol;
+      const typeDef = Type.Symbol;
 
       type ExpectedType = symbol;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -171,7 +170,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a null", () => {
-      const typeDef = DataType.Null;
+      const typeDef = Type.Null;
 
       type ExpectedType = null;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -194,7 +193,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a undefined", () => {
-      const typeDef = DataType.Undefined;
+      const typeDef = Type.Undefined;
 
       type ExpectedType = undefined;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -217,7 +216,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against unknown", () => {
-      const typeDef = DataType.Unknown;
+      const typeDef = Type.Unknown;
 
       type ExpectedType = unknown;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -239,7 +238,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a string numeral", () => {
-      const typeDef = DataType.StringNumeral;
+      const typeDef = Type.StringNumeral;
 
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -276,7 +275,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a string integer", () => {
-      const typeDef = DataType.StringInt;
+      const typeDef = Type.StringInt;
 
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -316,7 +315,7 @@ describe("createFastValidator", () => {
   describe("for complex types", () => {
     describe("for literals", () => {
       it("should validate against a string literal", () => {
-        const typeDef = DataType.Literal("foo");
+        const typeDef = Type.Literal("foo");
 
         type ExpectedType = "foo";
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -342,7 +341,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against a numeric literal", () => {
-        const typeDef = DataType.Literal(69);
+        const typeDef = Type.Literal(69);
 
         type ExpectedType = 69;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -369,7 +368,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against a boolean literal", () => {
-        const typeDef = DataType.Literal(false);
+        const typeDef = Type.Literal(false);
 
         type ExpectedType = false;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -393,7 +392,7 @@ describe("createFastValidator", () => {
 
     describe("for unions", () => {
       it("should validate a union of string type", () => {
-        const typeDef = DataType.OneOf(DataType.String);
+        const typeDef = Type.OneOf(Type.String);
 
         type ExpectedType = string;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -416,7 +415,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of number type", () => {
-        const typeDef = DataType.OneOf(DataType.Number);
+        const typeDef = Type.OneOf(Type.Number);
 
         type ExpectedType = number;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -439,7 +438,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of boolean type", () => {
-        const typeDef = DataType.OneOf(DataType.Boolean);
+        const typeDef = Type.OneOf(Type.Boolean);
 
         type ExpectedType = boolean;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -463,7 +462,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of string and numbers", () => {
-        const typeDef = DataType.OneOf(DataType.String, DataType.Number);
+        const typeDef = Type.OneOf(Type.String, Type.Number);
 
         type ExpectedType = string | number;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -486,7 +485,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of boolean and null", () => {
-        const typeDef = DataType.OneOf(DataType.Boolean, DataType.Null);
+        const typeDef = Type.OneOf(Type.Boolean, Type.Null);
 
         type ExpectedType = boolean | null;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -508,7 +507,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of booleans and symbols", () => {
-        const typeDef = DataType.OneOf(DataType.Boolean, DataType.Symbol);
+        const typeDef = Type.OneOf(Type.Boolean, Type.Symbol);
 
         type ExpectedType = boolean | symbol;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -536,7 +535,7 @@ describe("createFastValidator", () => {
           BAR = "BAR",
         }
 
-        const typeDef = DataType.OneOf(DataType.Enum(T), DataType.Symbol);
+        const typeDef = Type.OneOf(Type.Enum(T), Type.Symbol);
 
         type ExpectedType = T | symbol;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -561,10 +560,10 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of functions, string and numbers", () => {
-        const typeDef = DataType.OneOf(
-          DataType.Function,
-          DataType.String,
-          DataType.Number,
+        const typeDef = Type.OneOf(
+          Type.Function,
+          Type.String,
+          Type.Number,
         );
 
         type ExpectedType = UnknownFunction | string | number;
@@ -588,12 +587,12 @@ describe("createFastValidator", () => {
       });
 
       it("should validate a union of functions, string and arrays of objects with foo property", () => {
-        const typeDef = DataType.OneOf(
-          DataType.Function,
-          DataType.String,
-          DataType.ArrayOf(
-            DataType.RecordOf({
-              foo: { type: DataType.String },
+        const typeDef = Type.OneOf(
+          Type.Function,
+          Type.String,
+          Type.Array(
+            Type.Record({
+              foo: { type: Type.String },
             }),
           ),
         );
@@ -623,9 +622,9 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for an array of string or array of number", () => {
-        const typeDef = DataType.OneOf(
-          DataType.ArrayOf(DataType.String),
-          DataType.ArrayOf(DataType.Number),
+        const typeDef = Type.OneOf(
+          Type.Array(Type.String),
+          Type.Array(Type.Number),
         );
 
         type ExpectedType = string[] | number[];
@@ -646,19 +645,19 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against a union of similar records", () => {
-        const typeDef = DataType.OneOf(
-          DataType.RecordOf({
-            id: { type: DataType.Literal("1") },
-            value: { type: DataType.Number },
+        const typeDef = Type.OneOf(
+          Type.Record({
+            id: { type: Type.Literal("1") },
+            value: { type: Type.Number },
           }),
-          DataType.RecordOf({
-            id: { type: DataType.Literal("2") },
-            value: { type: DataType.String },
+          Type.Record({
+            id: { type: Type.Literal("2") },
+            value: { type: Type.String },
           }),
-          DataType.RecordOf({
-            id: { type: DataType.Literal("3") },
-            value: { type: DataType.Boolean },
-            otherValue: { type: DataType.Null },
+          Type.Record({
+            id: { type: Type.Literal("3") },
+            value: { type: Type.Boolean },
+            otherValue: { type: Type.Null },
           }),
         );
 
@@ -699,9 +698,9 @@ describe("createFastValidator", () => {
 
     describe("for intersections", () => {
       it("should validate intersection of string and string literal", () => {
-        const typeDef = DataType.AllOf(
-          DataType.String,
-          DataType.Literal("foo"),
+        const typeDef = Type.AllOf(
+          Type.String,
+          Type.Literal("foo"),
         );
 
         type ExpectedType = string & "foo";
@@ -727,7 +726,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate intersection of string and string numerals", () => {
-        const typeDef = DataType.AllOf(DataType.String, DataType.StringNumeral);
+        const typeDef = Type.AllOf(Type.String, Type.StringNumeral);
 
         type ExpectedType = string & `${number}`;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -757,12 +756,12 @@ describe("createFastValidator", () => {
       });
 
       it("should validate intersection of records", () => {
-        const typeDef = DataType.AllOf(
-          DataType.RecordOf({
-            foo: { type: DataType.String },
+        const typeDef = Type.AllOf(
+          Type.Record({
+            foo: { type: Type.String },
           }),
-          DataType.RecordOf({
-            bar: { type: DataType.Number },
+          Type.Record({
+            bar: { type: Type.Number },
           }),
         );
 
@@ -791,16 +790,16 @@ describe("createFastValidator", () => {
       });
 
       it("should validate intersection of records with optional properties", () => {
-        const typeDef = DataType.AllOf(
-          DataType.RecordOf({
-            foo: { type: DataType.String },
+        const typeDef = Type.AllOf(
+          Type.Record({
+            foo: { type: Type.String },
           }),
-          DataType.RecordOf({
-            bar: { type: DataType.Number, required: false },
+          Type.Record({
+            bar: { type: Type.Number, required: false },
           }),
-          DataType.RecordOf({
-            baz: DataType.Int,
-            qux: { type: DataType.Literal("qux"), required: false },
+          Type.Record({
+            baz: Type.Int,
+            qux: { type: Type.Literal("qux"), required: false },
           }),
         );
 
@@ -860,7 +859,7 @@ describe("createFastValidator", () => {
 
     describe("for arrays", () => {
       it("should validate against any array when type is unknown", () => {
-        const typeDef = DataType.ArrayOf(DataType.Unknown);
+        const typeDef = Type.Array(Type.Unknown);
 
         type ExpectedType = unknown[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -887,7 +886,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against simple array of string", () => {
-        const typeDef = DataType.ArrayOf(DataType.String);
+        const typeDef = Type.Array(Type.String);
 
         type ExpectedType = string[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -915,7 +914,7 @@ describe("createFastValidator", () => {
           FOO = "FOO",
           BAR = "BAR",
         }
-        const typeDef = DataType.ArrayOf(DataType.Enum(T));
+        const typeDef = Type.Array(Type.Enum(T));
 
         type ExpectedType = T[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -942,7 +941,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against array of functions or booleans", () => {
-        const typeDef = DataType.ArrayOf(DataType.Function, DataType.Boolean);
+        const typeDef = Type.Array(Type.Function, Type.Boolean);
 
         type ExpectedType = Array<UnknownFunction | boolean>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -968,7 +967,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against array of undefined or nulls", () => {
-        const typeDef = DataType.ArrayOf(DataType.Null, DataType.Undefined);
+        const typeDef = Type.Array(Type.Null, Type.Undefined);
 
         type ExpectedType = Array<null | undefined>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -999,9 +998,9 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against nested arrays", () => {
-        const typeDef = DataType.ArrayOf(
-          DataType.ArrayOf(DataType.Number),
-          DataType.ArrayOf(DataType.ArrayOf(DataType.String)),
+        const typeDef = Type.Array(
+          Type.Array(Type.Number),
+          Type.Array(Type.Array(Type.String)),
         );
 
         type ExpectedType = Array<Array<number> | Array<Array<string>>>;
@@ -1028,7 +1027,7 @@ describe("createFastValidator", () => {
 
     describe("for tuples", () => {
       it("should validate against simple tuple", () => {
-        const typeDef = DataType.Tuple(DataType.String, DataType.Number);
+        const typeDef = Type.Tuple(Type.String, Type.Number);
 
         type ExpectedType = [string, number];
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1060,9 +1059,9 @@ describe("createFastValidator", () => {
       });
 
       it("should validate against nested tuples", () => {
-        const typeDef = DataType.Tuple(
-          DataType.String,
-          DataType.Tuple(DataType.Number, DataType.String),
+        const typeDef = Type.Tuple(
+          Type.String,
+          Type.Tuple(Type.Number, Type.String),
         );
 
         type ExpectedType = [string, [number, string]];
@@ -1099,7 +1098,7 @@ describe("createFastValidator", () => {
 
     describe("for records", () => {
       it("should not validate null for empty objects", () => {
-        const typeDef = DataType.RecordOf({});
+        const typeDef = Type.Record({});
 
         type ExpectedType = Record<string, never>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1115,9 +1114,9 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for optional properties", () => {
-        const typeDef = DataType.RecordOf({
-          foo: { required: true, type: DataType.String },
-          bar: { required: false, type: DataType.Number },
+        const typeDef = Type.Record({
+          foo: { required: true, type: Type.String },
+          bar: { required: false, type: Type.Number },
         });
 
         type ExpectedType = {
@@ -1139,9 +1138,9 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for optional properties defined with OptionalField", () => {
-        const typeDef = DataType.RecordOf({
-          foo: DataType.String,
-          bar: OptionalField(DataType.Number),
+        const typeDef = Type.Record({
+          foo: Type.String,
+          bar: OptionalField(Type.Number),
         });
 
         type ExpectedType = {
@@ -1162,10 +1161,10 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for simple records", () => {
-        const typeDef = DataType.RecordOf({
-          foo: { type: DataType.String },
-          bar: { type: DataType.Number },
-          baz: { type: DataType.Unknown },
+        const typeDef = Type.Record({
+          foo: { type: Type.String },
+          bar: { type: Type.Number },
+          baz: { type: Type.Unknown },
         });
 
         type ExpectedType = {
@@ -1203,17 +1202,17 @@ describe("createFastValidator", () => {
           BAR = "BAR",
         }
 
-        const typeDef = DataType.RecordOf({
-          foo: { type: DataType.String },
+        const typeDef = Type.Record({
+          foo: { type: Type.String },
           bar: {
-            type: DataType.RecordOf({
-              baz: { type: DataType.Number },
+            type: Type.Record({
+              baz: { type: Type.Number },
               qux: {
-                type: DataType.RecordOf({
-                  corge: { type: DataType.Function },
+                type: Type.Record({
+                  corge: { type: Type.Function },
                 }),
               },
-              thud: { type: DataType.EnumMember(T.BAR), required: false },
+              thud: { type: Type.EnumMember(T.BAR), required: false },
             }),
           },
         });
@@ -1267,9 +1266,9 @@ describe("createFastValidator", () => {
       });
 
       it("should correctly validate against a record with undefined and null properties", () => {
-        const typeDef = DataType.RecordOf({
-          foo: { type: DataType.Undefined },
-          bar: { type: DataType.Null },
+        const typeDef = Type.Record({
+          foo: { type: Type.Undefined },
+          bar: { type: Type.Null },
         });
 
         type ExpectedType = {
@@ -1294,13 +1293,13 @@ describe("createFastValidator", () => {
       });
 
       it("should correctly parse the new record syntax", () => {
-        const typeDef = DataType.RecordOf({
-          foo: DataType.String,
-          bar: DataType.ArrayOf(DataType.String, DataType.Number),
-          baz: DataType.RecordOf({
-            qux: DataType.Boolean,
+        const typeDef = Type.Record({
+          foo: Type.String,
+          bar: Type.Array(Type.String, Type.Number),
+          baz: Type.Record({
+            qux: Type.Boolean,
           }),
-          optional: { type: DataType.Number, required: false },
+          optional: { type: Type.Number, required: false },
         });
 
         type ExpectedType = {
@@ -1341,7 +1340,7 @@ describe("createFastValidator", () => {
 
     describe("for dictionaries", () => {
       it("should not validate null for empty objects", () => {
-        const typeDef = DataType.Dict(DataType.Unknown);
+        const typeDef = Type.Dict(Type.Unknown);
 
         type ExpectedType = Record<string | number, unknown>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1357,7 +1356,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for simple dictionaries", () => {
-        const typeDef = DataType.Dict(DataType.String, DataType.Number);
+        const typeDef = Type.Dict(Type.String, Type.Number);
 
         type ExpectedType = Record<string | number, string | number>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1392,10 +1391,10 @@ describe("createFastValidator", () => {
           BAR = "BAR",
         }
 
-        const typeDef = DataType.Dict(
-          DataType.String,
-          DataType.RecordOf({
-            foo: DataType.Dict(DataType.Dict(DataType.EnumMember(T.BAR))),
+        const typeDef = Type.Dict(
+          Type.String,
+          Type.Record({
+            foo: Type.Dict(Type.Dict(Type.EnumMember(T.BAR))),
           }),
         );
 
@@ -1476,7 +1475,7 @@ describe("createFastValidator", () => {
 
     describe("for sets", () => {
       it("should validate for set of numbers", () => {
-        const typeDef = DataType.SetOf(DataType.Number);
+        const typeDef = Type.Set(Type.Number);
 
         type ExpectedType = Set<number>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1502,7 +1501,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for set of functions", () => {
-        const typeDef = DataType.SetOf(DataType.Function);
+        const typeDef = Type.Set(Type.Function);
 
         type ExpectedType = Set<UnknownFunction>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1528,7 +1527,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for set of symbols or strings", () => {
-        const typeDef = DataType.SetOf(DataType.Symbol, DataType.String);
+        const typeDef = Type.Set(Type.Symbol, Type.String);
 
         type ExpectedType = Set<symbol | string>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1557,9 +1556,9 @@ describe("createFastValidator", () => {
       });
 
       it("should validate for set of records or undefined", () => {
-        const typeDef = DataType.SetOf(
-          DataType.Undefined,
-          DataType.RecordOf({ foo: { type: DataType.String } }),
+        const typeDef = Type.Set(
+          Type.Undefined,
+          Type.Record({ foo: { type: Type.String } }),
         );
 
         type ExpectedType = Set<undefined | { foo: string }>;
@@ -1598,7 +1597,7 @@ describe("createFastValidator", () => {
           C = "C",
         }
 
-        const typeDef = DataType.Enum(Foo);
+        const typeDef = Type.Enum(Foo);
 
         type ExpectedType = Foo;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1636,7 +1635,7 @@ describe("createFastValidator", () => {
           C,
         }
 
-        const typeDef = DataType.Enum(Foo);
+        const typeDef = Type.Enum(Foo);
 
         type ExpectedType = Foo;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1673,8 +1672,8 @@ describe("createFastValidator", () => {
           C = "C",
         }
 
-        const typeDef = DataType.RecordOf({
-          myEnum: DataType.Enum(Foo),
+        const typeDef = Type.Record({
+          myEnum: Type.Enum(Foo),
         });
 
         type ExpectedType = { myEnum: Foo };
@@ -1705,7 +1704,7 @@ describe("createFastValidator", () => {
           C = "C",
         }
 
-        const typeDef = DataType.EnumMember(Foo.A);
+        const typeDef = Type.EnumMember(Foo.A);
 
         type ExpectedType = Foo.A;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1743,7 +1742,7 @@ describe("createFastValidator", () => {
           C,
         }
 
-        const typeDef = DataType.EnumMember(Foo.A);
+        const typeDef = Type.EnumMember(Foo.A);
 
         type ExpectedType = Foo.A;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1780,7 +1779,7 @@ describe("createFastValidator", () => {
       it("should correctly check if the value is an instance of the class", () => {
         class Foo {}
 
-        const typeDef = DataType.InstanceOf(Foo);
+        const typeDef = Type.InstanceOf(Foo);
 
         type ExpectedType = Foo;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1810,7 +1809,7 @@ describe("createFastValidator", () => {
       });
 
       it("should correctly check if the value is an instance of a builtin class", () => {
-        const typeDef = DataType.InstanceOf(RegExp);
+        const typeDef = Type.InstanceOf(RegExp);
 
         type ExpectedType = RegExp;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1841,8 +1840,8 @@ describe("createFastValidator", () => {
           return typeof value === "string";
         };
 
-        const typeDef = DataType.RecordOf({
-          foo: DataType.Custom(customValidator),
+        const typeDef = Type.Record({
+          foo: Type.Custom(customValidator),
         });
 
         type ExpectedType = { foo: string };
@@ -1879,8 +1878,8 @@ describe("createFastValidator", () => {
           throw new Error("foo");
         };
 
-        const typeDef = DataType.RecordOf({
-          foo: DataType.Custom(customValidator),
+        const typeDef = Type.Record({
+          foo: Type.Custom(customValidator),
         });
 
         type ExpectedType = { foo: string };
@@ -1896,7 +1895,7 @@ describe("createFastValidator", () => {
 
     describe("for string matching pattern", () => {
       it("should validate the string against the pattern", () => {
-        const typeDef = DataType.StringMatching(/^foo/);
+        const typeDef = Type.StringMatching(/^foo/);
 
         type ExpectedType = string;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1923,7 +1922,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate the string against the pattern and assert the type", () => {
-        const typeDef = DataType.StringMatching<`bar.${string}`>(/^bar\./);
+        const typeDef = Type.StringMatching<`bar.${string}`>(/^bar\./);
 
         type ExpectedType = `bar.${string}`;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1954,10 +1953,10 @@ describe("createFastValidator", () => {
     describe("for circular types, it correctly validates", () => {
       describe("a record", () => {
         it("scenario 1", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.RecordOf({
-              foo: DataType.String,
-              bar: DataType.ArrayOf(self),
+          const typeDef = Type.Recursive((self) =>
+            Type.Record({
+              foo: Type.String,
+              bar: Type.Array(self),
             })
           );
 
@@ -2096,11 +2095,11 @@ describe("createFastValidator", () => {
         });
 
         it("scenario 2", () => {
-          const typeDef = DataType.RecordOf({
-            foo: DataType.String,
-            bar: DataType.Circular((self) =>
-              DataType.RecordOf({
-                baz: DataType.Dict(self),
+          const typeDef = Type.Record({
+            foo: Type.String,
+            bar: Type.Recursive((self) =>
+              Type.Record({
+                baz: Type.Dict(self),
               })
             ),
           });
@@ -2193,10 +2192,8 @@ describe("createFastValidator", () => {
         });
 
         it("scenario 3", () => {
-          const typeDef = DataType.RecordOf({
-            foo: DataType.Circular((self) =>
-              DataType.SetOf(self, DataType.String)
-            ),
+          const typeDef = Type.Record({
+            foo: Type.Recursive((self) => Type.Set(self, Type.String)),
           });
 
           type ExpectedType = {
@@ -2253,12 +2250,12 @@ describe("createFastValidator", () => {
         });
 
         it("scenario 5", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.RecordOf({
+          const typeDef = Type.Recursive((self) =>
+            Type.Record({
               a: OptionalField(
-                DataType.RecordOf({
+                Type.Record({
                   b: OptionalField(
-                    DataType.RecordOf({
+                    Type.Record({
                       ref: OptionalField(self),
                     }),
                   ),
@@ -2331,8 +2328,8 @@ describe("createFastValidator", () => {
 
       describe("a dict", () => {
         it("scenario 1", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.Dict(DataType.Number, self, DataType.Symbol)
+          const typeDef = Type.Recursive((self) =>
+            Type.Dict(Type.Number, self, Type.Symbol)
           );
 
           type ExpectedType = Record<
@@ -2413,10 +2410,10 @@ describe("createFastValidator", () => {
         });
 
         it("scenario 2", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.Dict(
-              DataType.RecordOf({
-                foo: DataType.OneOf(DataType.String, DataType.ArrayOf(self)),
+          const typeDef = Type.Recursive((self) =>
+            Type.Dict(
+              Type.Record({
+                foo: Type.OneOf(Type.String, Type.Array(self)),
               }),
             )
           );
@@ -2563,11 +2560,11 @@ describe("createFastValidator", () => {
 
       describe("a tuple", () => {
         it("scenario 1", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.Tuple(
-              DataType.Number,
-              DataType.OneOf(DataType.Boolean, self),
-              DataType.String,
+          const typeDef = Type.Recursive((self) =>
+            Type.Tuple(
+              Type.Number,
+              Type.OneOf(Type.Boolean, self),
+              Type.String,
             )
           );
 
@@ -2620,12 +2617,12 @@ describe("createFastValidator", () => {
         });
 
         it("scenario 2", () => {
-          const typeDef = DataType.Tuple(
-            DataType.Circular((self) =>
-              DataType.SetOf(
-                DataType.Tuple(
-                  DataType.RecordOf({
-                    a: DataType.Boolean,
+          const typeDef = Type.Tuple(
+            Type.Recursive((self) =>
+              Type.Set(
+                Type.Tuple(
+                  Type.Record({
+                    a: Type.Boolean,
                     b: OptionalField(self),
                   }),
                 ),
@@ -2731,12 +2728,12 @@ describe("createFastValidator", () => {
 
       describe("a union", () => {
         it("scenario 1", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.OneOf(
-              DataType.Number,
-              DataType.Boolean,
-              DataType.String,
-              DataType.ArrayOf(self),
+          const typeDef = Type.Recursive((self) =>
+            Type.OneOf(
+              Type.Number,
+              Type.Boolean,
+              Type.String,
+              Type.Array(self),
             )
           );
 
@@ -2804,13 +2801,13 @@ describe("createFastValidator", () => {
         });
 
         it("scenario 2", () => {
-          const typeDef = DataType.OneOf(
-            DataType.Number,
-            DataType.Boolean,
-            DataType.String,
-            DataType.Circular((self) =>
-              DataType.ArrayOf(
-                DataType.OneOf(DataType.Number, DataType.StringNumeral, self),
+          const typeDef = Type.OneOf(
+            Type.Number,
+            Type.Boolean,
+            Type.String,
+            Type.Recursive((self) =>
+              Type.Array(
+                Type.OneOf(Type.Number, Type.StringNumeral, self),
               )
             ),
           );
@@ -2871,17 +2868,17 @@ describe("createFastValidator", () => {
 
       describe("a intersection", () => {
         it("scenario 1", () => {
-          const typeDef = DataType.Circular((self) =>
-            DataType.AllOf(
-              DataType.RecordOf({
-                type: DataType.OneOf(
-                  DataType.Literal("A"),
-                  DataType.Literal("B"),
+          const typeDef = Type.Recursive((self) =>
+            Type.AllOf(
+              Type.Record({
+                type: Type.OneOf(
+                  Type.Literal("A"),
+                  Type.Literal("B"),
                 ),
-                children: DataType.ArrayOf(
-                  DataType.AllOf(
+                children: Type.Array(
+                  Type.AllOf(
                     self,
-                    DataType.RecordOf({ name: DataType.String }),
+                    Type.Record({ name: Type.String }),
                   ),
                 ),
               }),
@@ -3038,10 +3035,10 @@ describe("createFastValidator", () => {
       });
 
       it("self referencing record shouldn't throw the 'Maximum call stack size exceeded' error", () => {
-        const typeDef = DataType.Circular((self) =>
-          DataType.RecordOf({
-            tag: DataType.String,
-            children: DataType.ArrayOf(self),
+        const typeDef = Type.Recursive((self) =>
+          Type.Record({
+            tag: Type.String,
+            children: Type.Array(self),
           })
         );
 
@@ -3095,16 +3092,16 @@ describe("createFastValidator", () => {
       });
 
       it("multiple neighboring circular types should correctly validate", () => {
-        const typeDef = DataType.RecordOf({
-          a: DataType.Circular((self) =>
-            DataType.RecordOf({
-              tag: DataType.String,
-              children: DataType.ArrayOf(self),
+        const typeDef = Type.Record({
+          a: Type.Recursive((self) =>
+            Type.Record({
+              tag: Type.String,
+              children: Type.Array(self),
             })
           ),
-          b: DataType.Circular((self) =>
-            DataType.RecordOf({
-              tag: DataType.Number,
+          b: Type.Recursive((self) =>
+            Type.Record({
+              tag: Type.Number,
             })
           ),
         });
@@ -3123,14 +3120,12 @@ describe("createFastValidator", () => {
 
         expect(validate(data)).toEqual(false);
 
-        const typeDef2 = DataType.RecordOf({
-          a: DataType.Circular((self) =>
-            DataType.RecordOf({
-              tag: DataType.String,
-              children: DataType.ArrayOf(self),
-              notSelf: DataType.Circular((s) =>
-                DataType.RecordOf({ foo: DataType.String })
-              ),
+        const typeDef2 = Type.Record({
+          a: Type.Recursive((self) =>
+            Type.Record({
+              tag: Type.String,
+              children: Type.Array(self),
+              notSelf: Type.Recursive((s) => Type.Record({ foo: Type.String })),
             })
           ),
         });

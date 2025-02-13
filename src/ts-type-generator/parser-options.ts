@@ -1,5 +1,8 @@
-import type { InstanceOf, SimpleDataType } from "@DataTypes/data-types";
-import type { Custom, Enum, EnumMember } from "@DataTypes/types";
+import type { CustomType } from "@DataTypes/types/custom";
+import type { EnumType } from "@DataTypes/types/enum";
+import type { EnumMemberType } from "@DataTypes/types/enum-member";
+import type { FunctionType } from "@DataTypes/types/function";
+import type { InstanceOfType } from "@DataTypes/types/instance";
 
 export type TsParsingMode = "compact" | "fully-expanded" | "named-expanded";
 export type TsParsingOptions = {
@@ -92,7 +95,12 @@ export type TsParsingOptions = {
    *   //"
    */
   getExternalTypeImport?: (
-    type: Enum | EnumMember | InstanceOf | Custom | SimpleDataType<"function">,
+    type:
+      | EnumType
+      | EnumMemberType
+      | InstanceOfType
+      | CustomType
+      | FunctionType,
   ) => ExternalTypeImport | undefined;
 };
 
