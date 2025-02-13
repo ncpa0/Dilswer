@@ -1,5 +1,5 @@
 import type { RecordTypeSchema } from "@DataTypes/types";
-import { RecordOf } from "@DataTypes/types";
+import { RecordType } from "@DataTypes/types/record";
 import type { RequiredRecord } from "@Intrinsic/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 
@@ -8,9 +8,9 @@ import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
  * Similar to the Typescript's `Required<>` utility type.
  */
 export const Required = <R extends RecordTypeSchema>(
-  recordDataType: RecordOf<R>,
+  recordDataType: RecordType<R>,
 ): RequiredRecord<R> => {
-  return new RecordOf(
+  return new RecordType(
     Object.fromEntries(
       Object.entries(recordDataType.recordOf).map(([key, descriptor]) => [
         key,

@@ -1,10 +1,5 @@
 import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
-import {
-  DataType,
-  getMetadata,
-  OptionalField,
-  toTsType,
-} from "../../src/index";
+import { getMetadata, OptionalField, toTsType, Type } from "../../src/index";
 
 enum Enum {
   A = "A",
@@ -12,100 +7,100 @@ enum Enum {
   C = "C",
 }
 
-const testDt = DataType.RecordOf({
-  uuid: DataType.String.setDescription("User unique identifier"),
-  number: DataType.Number,
-  bool: DataType.Boolean,
-  stringSet: DataType.SetOf(DataType.String),
-  stringArray: DataType.ArrayOf(DataType.String),
-  unionArray: DataType.ArrayOf(
-    DataType.RecordOf({ foo: DataType.String }),
-    DataType.RecordOf({ bar: DataType.String }),
+const testDt = Type.Record({
+  uuid: Type.String.setDescription("User unique identifier"),
+  number: Type.Number,
+  bool: Type.Boolean,
+  stringSet: Type.Set(Type.String),
+  stringArray: Type.Array(Type.String),
+  unionArray: Type.Array(
+    Type.Record({ foo: Type.String }),
+    Type.Record({ bar: Type.String }),
   ).setDescription("Array of two possible record types"),
-  tuple: DataType.Tuple(DataType.String, DataType.Number),
-  namedTuple: DataType.Tuple(
-    DataType.ArrayOf(DataType.String),
-    DataType.Enum(Enum).setEnumName("Enum"),
+  tuple: Type.Tuple(Type.String, Type.Number),
+  namedTuple: Type.Tuple(
+    Type.Array(Type.String),
+    Type.Enum(Enum).setEnumName("Enum"),
   )
     .setTitle("A Tuple")
     .setDescription("A tuple with a named type"),
-  literalString: DataType.Literal("literal"),
-  literalNumber: DataType.Literal(1),
-  literalBoolean: DataType.Literal(true),
-  enum: DataType.Enum(Enum).setEnumName("Enum"),
-  bMember: DataType.EnumMember(Enum.B).setEnumName("Enum").setMemberName("B"),
-  recordIntersection: DataType.AllOf(
-    DataType.RecordOf({
-      a: DataType.String,
+  literalString: Type.Literal("literal"),
+  literalNumber: Type.Literal(1),
+  literalBoolean: Type.Literal(true),
+  enum: Type.Enum(Enum).setEnumName("Enum"),
+  bMember: Type.EnumMember(Enum.B).setEnumName("Enum").setMemberName("B"),
+  recordIntersection: Type.AllOf(
+    Type.Record({
+      a: Type.String,
     }),
-    DataType.RecordOf({
-      b: DataType.Number,
+    Type.Record({
+      b: Type.Number,
     }),
   ),
-  dict: DataType.Dict(DataType.String),
-  oneof: DataType.OneOf(
-    DataType.RecordOf({ foo: DataType.String }).setTitle("Foo Container"),
-    DataType.RecordOf({ bar: DataType.String }).setTitle("Bar Container"),
+  dict: Type.Dict(Type.String),
+  oneof: Type.OneOf(
+    Type.Record({ foo: Type.String }).setTitle("Foo Container"),
+    Type.Record({ bar: Type.String }).setTitle("Bar Container"),
   ),
-  symbol: DataType.Symbol,
-  undef: DataType.Undefined,
-  customValidator: DataType.Custom((value: any): value is any => true),
-  stringMatching: DataType.StringMatching(/^foo$/),
-  namedStringMatching: DataType.StringMatching(/^'foo'\..+$/)
+  symbol: Type.Symbol,
+  undef: Type.Undefined,
+  customValidator: Type.Custom((value: any): value is any => true),
+  stringMatching: Type.StringMatching(/^foo$/),
+  namedStringMatching: Type.StringMatching(/^'foo'\..+$/)
     .setTitle("Foo Matcher")
     .setTsPattern("'foo'.${string}"),
   optionalSelfCopy: {
     required: false,
-    type: DataType.RecordOf({
-      id: { required: false, type: DataType.String },
-      number: { required: false, type: DataType.Number },
-      bool: { required: false, type: DataType.Boolean },
-      stringSet: { required: false, type: DataType.SetOf(DataType.String) },
+    type: Type.Record({
+      id: { required: false, type: Type.String },
+      number: { required: false, type: Type.Number },
+      bool: { required: false, type: Type.Boolean },
+      stringSet: { required: false, type: Type.Set(Type.String) },
       stringArray: {
         required: false,
-        type: DataType.ArrayOf(DataType.String),
+        type: Type.Array(Type.String),
       },
       unionArray: {
         required: false,
-        type: DataType.ArrayOf(
-          DataType.RecordOf({ foo: DataType.String }).setTitle("Foo Container"),
-          DataType.RecordOf({ bar: DataType.String }),
+        type: Type.Array(
+          Type.Record({ foo: Type.String }).setTitle("Foo Container"),
+          Type.Record({ bar: Type.String }),
         ),
       },
       tuple: {
         required: false,
-        type: DataType.Tuple(DataType.String, DataType.Number),
+        type: Type.Tuple(Type.String, Type.Number),
       },
-      literalString: { required: false, type: DataType.Literal("literal") },
-      literalNumber: { required: false, type: DataType.Literal(1) },
-      literalBoolean: { required: false, type: DataType.Literal(true) },
+      literalString: { required: false, type: Type.Literal("literal") },
+      literalNumber: { required: false, type: Type.Literal(1) },
+      literalBoolean: { required: false, type: Type.Literal(true) },
       enum: {
         required: false,
-        type: DataType.Enum(Enum).setEnumName("Enum"),
+        type: Type.Enum(Enum).setEnumName("Enum"),
       },
       bMember: {
         required: false,
-        type: DataType.EnumMember(Enum.B)
+        type: Type.EnumMember(Enum.B)
           .setEnumName("Enum")
           .setMemberName("B"),
       },
       recordIntersection: {
         required: false,
-        type: DataType.AllOf(
-          DataType.RecordOf({
-            a: DataType.String,
+        type: Type.AllOf(
+          Type.Record({
+            a: Type.String,
           }),
-          DataType.RecordOf({
-            b: DataType.Number,
+          Type.Record({
+            b: Type.Number,
           }),
         ).setTitle("SomeIntersection"),
       },
-      dict: { required: false, type: DataType.Dict(DataType.String) },
+      dict: { required: false, type: Type.Dict(Type.String) },
       oneof: {
         required: false,
-        type: DataType.OneOf(
-          DataType.RecordOf({ foo: DataType.String }),
-          DataType.RecordOf({ bar: DataType.String }),
+        type: Type.OneOf(
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.String }),
         ),
       },
     })
@@ -144,8 +139,8 @@ describe("toTsType", () => {
   describe("should correctly add export statements", () => {
     describe("when exporting only main", () => {
       it("should not add `declare`", () => {
-        const dt = DataType.RecordOf({
-          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        const dt = Type.Record({
+          foo: Type.Array(Type.String).setTitle("FooList"),
         }).setTitle("Main");
 
         const tsType = toTsType(dt, {
@@ -159,8 +154,8 @@ describe("toTsType", () => {
       });
 
       it("should add `declare`", () => {
-        const dt = DataType.RecordOf({
-          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        const dt = Type.Record({
+          foo: Type.Array(Type.String).setTitle("FooList"),
         }).setTitle("Main");
 
         const tsType = toTsType(dt, {
@@ -176,9 +171,9 @@ describe("toTsType", () => {
 
     describe("when exporting only named", () => {
       it("should not add `declare`", () => {
-        const dt = DataType.RecordOf({
-          unnamed: DataType.ArrayOf(DataType.Number),
-          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        const dt = Type.Record({
+          unnamed: Type.Array(Type.Number),
+          foo: Type.Array(Type.String).setTitle("FooList"),
         }).setTitle("Main");
 
         const tsType = toTsType(dt, {
@@ -192,9 +187,9 @@ describe("toTsType", () => {
       });
 
       it("should add `declare`", () => {
-        const dt = DataType.RecordOf({
-          unnamed: DataType.ArrayOf(DataType.Number),
-          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        const dt = Type.Record({
+          unnamed: Type.Array(Type.Number),
+          foo: Type.Array(Type.String).setTitle("FooList"),
         }).setTitle("Main");
 
         const tsType = toTsType(dt, {
@@ -210,9 +205,9 @@ describe("toTsType", () => {
 
     describe("when exporting all", () => {
       it("should not add `declare`", () => {
-        const dt = DataType.RecordOf({
-          unnamed: DataType.ArrayOf(DataType.Number),
-          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        const dt = Type.Record({
+          unnamed: Type.Array(Type.Number),
+          foo: Type.Array(Type.String).setTitle("FooList"),
         }).setTitle("Main");
 
         const tsType = toTsType(dt, {
@@ -226,9 +221,9 @@ describe("toTsType", () => {
       });
 
       it("should add `declare`", () => {
-        const dt = DataType.RecordOf({
-          unnamed: DataType.ArrayOf(DataType.Number),
-          foo: DataType.ArrayOf(DataType.String).setTitle("FooList"),
+        const dt = Type.Record({
+          unnamed: Type.Array(Type.Number),
+          foo: Type.Array(Type.String).setTitle("FooList"),
         }).setTitle("Main");
 
         const tsType = toTsType(dt, {
@@ -247,8 +242,8 @@ describe("toTsType", () => {
     it("in compact mode with global FooBar", () => {
       class FooBar {}
 
-      const dt = DataType.RecordOf({
-        foobar: DataType.InstanceOf(FooBar),
+      const dt = Type.Record({
+        foobar: Type.InstanceOf(FooBar),
       });
 
       const tsType = toTsType(dt);
@@ -259,8 +254,8 @@ describe("toTsType", () => {
     it("in fully-expanded mode with global FooBar", () => {
       class FooBar {}
 
-      const dt = DataType.RecordOf({
-        foobar: DataType.InstanceOf(FooBar),
+      const dt = Type.Record({
+        foobar: Type.InstanceOf(FooBar),
       });
 
       const tsType = toTsType(dt, { mode: "fully-expanded" });
@@ -271,8 +266,8 @@ describe("toTsType", () => {
     it("in fully-expanded mode with global FooBar", () => {
       class FooBar {}
 
-      const dt = DataType.RecordOf({
-        foobar: DataType.InstanceOf(FooBar).setTitle("FooBar"),
+      const dt = Type.Record({
+        foobar: Type.InstanceOf(FooBar).setTitle("FooBar"),
       });
 
       const tsType = toTsType(dt, { mode: "named-expanded" });
@@ -283,8 +278,8 @@ describe("toTsType", () => {
     it("in compact mode with imported FooBar", () => {
       class FooBar {}
 
-      const dt = DataType.RecordOf({
-        foobar: DataType.InstanceOf(FooBar),
+      const dt = Type.Record({
+        foobar: Type.InstanceOf(FooBar),
       });
 
       const tsType = toTsType(dt, {
@@ -304,8 +299,8 @@ describe("toTsType", () => {
     it("in fully-expanded mode with imported FooBar", () => {
       class FooBar {}
 
-      const dt = DataType.RecordOf({
-        foobar: DataType.InstanceOf(FooBar),
+      const dt = Type.Record({
+        foobar: Type.InstanceOf(FooBar),
       });
 
       const tsType = toTsType(dt, {
@@ -326,8 +321,8 @@ describe("toTsType", () => {
     it("in fully-expanded mode with imported FooBar", () => {
       class FooBar {}
 
-      const dt = DataType.RecordOf({
-        foobar: DataType.InstanceOf(FooBar).setTitle("FooBar"),
+      const dt = Type.Record({
+        foobar: Type.InstanceOf(FooBar).setTitle("FooBar"),
       });
 
       const tsType = toTsType(dt, {
@@ -348,8 +343,8 @@ describe("toTsType", () => {
 
   describe("should correctly add external type import statements", () => {
     it("with regular Custom validator", () => {
-      const type = DataType.RecordOf({
-        foo: DataType.Custom(
+      const type = Type.Record({
+        foo: Type.Custom(
           (v): v is string => typeof v === "string",
         ).setExtra(
           {
@@ -373,8 +368,8 @@ describe("toTsType", () => {
     });
 
     it("with regular Enum", () => {
-      const type = DataType.RecordOf({
-        foo: DataType.Enum(Enum).setExtra(
+      const type = Type.Record({
+        foo: Type.Enum(Enum).setExtra(
           {
             typeName: "MyEnum",
             path: "./enum.d.ts",
@@ -396,8 +391,8 @@ describe("toTsType", () => {
     });
 
     it("with regular Enum Member", () => {
-      const type = DataType.RecordOf({
-        foo: DataType.EnumMember(Enum.C)
+      const type = Type.Record({
+        foo: Type.EnumMember(Enum.C)
           .setMemberName("C")
           .setExtra(
             {
@@ -421,8 +416,8 @@ describe("toTsType", () => {
     });
 
     it("with regular Function as a type", () => {
-      const type = DataType.RecordOf({
-        foo: DataType.Function.setExtra(
+      const type = Type.Record({
+        foo: Type.Function.setExtra(
           {
             typeName: "MyFunction",
             path: "./my-function.d.ts",
@@ -444,8 +439,8 @@ describe("toTsType", () => {
     });
 
     it("with regular Function as a value", () => {
-      const type = DataType.RecordOf({
-        foo: DataType.Function.setExtra(
+      const type = Type.Record({
+        foo: Type.Function.setExtra(
           {
             typeName: "myFunction",
             path: "./my-function.d.ts",
@@ -468,7 +463,7 @@ describe("toTsType", () => {
     });
 
     it("and export it directly if it's a root type", () => {
-      const foo = DataType.Custom((v): v is string => typeof v === "string")
+      const foo = Type.Custom((v): v is string => typeof v === "string")
         .setTitle("IsStringFn")
         .setExtra(
           {
@@ -493,10 +488,10 @@ describe("toTsType", () => {
 
   describe("should work correctly with circular type", () => {
     it("simple circular record", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Array(self),
         })
       );
 
@@ -506,10 +501,10 @@ describe("toTsType", () => {
     });
 
     it("simple circular named record", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Array(self),
         }).setTitle("Node")
       );
 
@@ -519,9 +514,9 @@ describe("toTsType", () => {
     });
 
     it("immediately self-referencing record", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           self: OptionalField(self),
         }).setTitle("SelfReferencingRecord")
       );
@@ -532,9 +527,7 @@ describe("toTsType", () => {
     });
 
     it("simple circular array", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.ArrayOf(DataType.String, self)
-      );
+      const typeDef = Type.Recursive((self) => Type.Array(Type.String, self));
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
 
@@ -542,14 +535,14 @@ describe("toTsType", () => {
     });
 
     it("deeply nested structure", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.RecordOf({
-            type: DataType.String,
-            container: DataType.RecordOf({
-              name: DataType.String,
-              children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Record({
+            type: Type.String,
+            container: Type.Record({
+              name: Type.String,
+              children: Type.Array(self),
             }),
           }),
         }).setTitle("Node")
@@ -561,13 +554,13 @@ describe("toTsType", () => {
     });
 
     it("deeply nested structure of named types", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.ArrayOf(
-            DataType.RecordOf({
-              name: DataType.Literal("span"),
-              children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Array(
+            Type.Record({
+              name: Type.Literal("span"),
+              children: Type.Array(self),
             }).setTitle("SpanNode"),
           ).setTitle("SpanNodeList"),
         }).setTitle("Node")
@@ -579,14 +572,14 @@ describe("toTsType", () => {
     });
 
     it("deeply nested circular types", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.Circular((self2) =>
-            DataType.ArrayOf(
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Recursive((self2) =>
+            Type.Array(
               self,
-              DataType.RecordOf({
-                nested: DataType.Literal(true),
+              Type.Record({
+                nested: Type.Literal(true),
                 items: self2,
               }),
             )
@@ -600,10 +593,10 @@ describe("toTsType", () => {
     });
 
     it("works with sets", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.SetOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Set(self),
         })
       );
 
@@ -613,9 +606,7 @@ describe("toTsType", () => {
     });
 
     it("works with direct sets", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.SetOf(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.Set(self, Type.String));
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
 
@@ -623,10 +614,10 @@ describe("toTsType", () => {
     });
 
     it("works with dicts", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.Dict(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Dict(self),
         })
       );
 
@@ -636,9 +627,7 @@ describe("toTsType", () => {
     });
 
     it("works with direct dicts", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.Dict(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.Dict(self, Type.String));
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
 
@@ -646,14 +635,14 @@ describe("toTsType", () => {
     });
 
     it("works with tuples", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           children: OptionalField(
-            DataType.OneOf(
-              DataType.Tuple(self),
-              DataType.Tuple(self, self),
-              DataType.Tuple(self, self, self),
+            Type.OneOf(
+              Type.Tuple(self),
+              Type.Tuple(self, self),
+              Type.Tuple(self, self, self),
             ),
           ),
         })
@@ -665,9 +654,7 @@ describe("toTsType", () => {
     });
 
     it("works with direct tuples", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.Tuple(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.Tuple(self, Type.String));
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
 
@@ -675,14 +662,14 @@ describe("toTsType", () => {
     });
 
     it("works with unions", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           children: OptionalField(
-            DataType.OneOf(
+            Type.OneOf(
               self,
-              DataType.RecordOf({
-                name: DataType.String,
+              Type.Record({
+                name: Type.String,
                 children: self,
               }),
             ),
@@ -696,9 +683,7 @@ describe("toTsType", () => {
     });
 
     it("works with direct unions", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.OneOf(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.OneOf(self, Type.String));
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
 
@@ -706,14 +691,14 @@ describe("toTsType", () => {
     });
 
     it("works with intersections", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           children: OptionalField(
-            DataType.AllOf(
+            Type.AllOf(
               self,
-              DataType.RecordOf({
-                type: DataType.String,
+              Type.Record({
+                type: Type.String,
               }),
             ),
           ),

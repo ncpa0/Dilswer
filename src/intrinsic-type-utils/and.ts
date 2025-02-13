@@ -1,5 +1,5 @@
 import type { RecordTypeSchema } from "@DataTypes/types";
-import { RecordOf } from "@DataTypes/types";
+import { RecordType } from "@DataTypes/types/record";
 import type { SumRecord } from "@Intrinsic/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 
@@ -8,10 +8,10 @@ import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
  * Typescript `&` works.
  */
 export const And = <R1 extends RecordTypeSchema, R2 extends RecordTypeSchema>(
-  recordDataTypeA: RecordOf<R1>,
-  recordDataTypeB: RecordOf<R2>,
+  recordDataTypeA: RecordType<R1>,
+  recordDataTypeB: RecordType<R2>,
 ): SumRecord<R1, R2> => {
-  return new RecordOf({
+  return new RecordType({
     ...(Object.fromEntries(
       Object.entries(recordDataTypeA.recordOf).map(([key, desc]) => [
         key,

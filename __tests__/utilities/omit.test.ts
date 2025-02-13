@@ -1,20 +1,20 @@
-import { DataType, Omit } from "../../src";
+import { Omit, Type } from "../../src";
 
 describe("Omit utility", () => {
   it("should correctly remove the specified keys from data type", () => {
-    const a = DataType.RecordOf({
-      foo: { type: DataType.Number },
-      bar: { type: DataType.String },
-      baz: { type: DataType.Boolean },
-      qux: { type: DataType.Symbol },
-      coorg: { type: DataType.Null },
+    const a = Type.Record({
+      foo: { type: Type.Number },
+      bar: { type: Type.String },
+      baz: { type: Type.Boolean },
+      qux: { type: Type.Symbol },
+      coorg: { type: Type.Null },
     });
 
     expect(Omit(a, "bar", "qux")).toMatchObject(
-      DataType.RecordOf({
-        foo: { type: DataType.Number },
-        baz: { type: DataType.Boolean },
-        coorg: { type: DataType.Null },
+      Type.Record({
+        foo: { type: Type.Number },
+        baz: { type: Type.Boolean },
+        coorg: { type: Type.Null },
       }),
     );
   });

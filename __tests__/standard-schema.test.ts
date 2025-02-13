@@ -155,10 +155,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates records", async () => {
       const e = endpoint(
-        Type.RecordOf({
+        Type.Record({
           a: Type.String,
           b: Type.Number,
-          c: { type: Type.RecordOf({ foo: Type.Boolean }), required: false },
+          c: { type: Type.Record({ foo: Type.Boolean }), required: false },
         }),
       );
 
@@ -183,8 +183,8 @@ describe("validating via the Standard Schema", () => {
       });
 
       const e2 = endpoint(
-        Type.RecordOf({
-          foo: Type.RecordOf({ bar: Type.RecordOf({ baz: Type.String }) }),
+        Type.Record({
+          foo: Type.Record({ bar: Type.Record({ baz: Type.String }) }),
         }),
       );
 
@@ -219,7 +219,7 @@ describe("validating via the Standard Schema", () => {
     });
 
     it("correctly validates arrays", async () => {
-      const e = endpoint(Type.ArrayOf(Type.String, Type.SetOf(Type.Number)));
+      const e = endpoint(Type.Array(Type.String, Type.Set(Type.Number)));
 
       await expect(e.post(["hello", "world", new Set([1, 2])])).resolves
         .toEqual({
@@ -245,7 +245,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates sets", async () => {
       const e = endpoint(
-        Type.SetOf(Type.String, Type.RecordOf({ foo: Type.String })),
+        Type.Set(Type.String, Type.Record({ foo: Type.String })),
       );
 
       await expect(e.post(new Set(["hello", "world"]))).resolves.toEqual({
@@ -271,7 +271,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates dictionaries", async () => {
       const e = endpoint(
-        Type.Dict(Type.String, Type.RecordOf({ args: Type.String })),
+        Type.Dict(Type.String, Type.Record({ args: Type.String })),
       );
 
       await expect(e.post({ key1: "value1", key2: "value2" })).resolves.toEqual(
@@ -301,7 +301,7 @@ describe("validating via the Standard Schema", () => {
       const e = endpoint(
         Type.Tuple(
           Type.String,
-          Type.RecordOf({ arr: Type.ArrayOf(Type.Number) }),
+          Type.Record({ arr: Type.Array(Type.Number) }),
         ),
       );
 
@@ -331,7 +331,7 @@ describe("validating via the Standard Schema", () => {
         Type.OneOf(
           Type.String,
           Type.Number,
-          Type.RecordOf({ args: Type.String }),
+          Type.Record({ args: Type.String }),
         ),
       );
 
@@ -366,10 +366,10 @@ describe("validating via the Standard Schema", () => {
     it("correctly validates all of types", async () => {
       const e = endpoint(
         Type.AllOf(
-          Type.RecordOf({ foo: Type.String }),
-          Type.RecordOf({ bar: Type.Literal("bar") }),
-          Type.RecordOf({
-            baz: { required: false, type: Type.ArrayOf(Type.Number) },
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.Literal("bar") }),
+          Type.Record({
+            baz: { required: false, type: Type.Array(Type.Number) },
           }),
         ),
       );
@@ -557,10 +557,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates circular types", async () => {
       const e = endpoint(
-        Type.Circular(self =>
-          Type.RecordOf({
+        Type.Recursive(self =>
+          Type.Record({
             foo: Type.String,
-            childs: Type.ArrayOf(self),
+            childs: Type.Array(self),
           })
         ),
       );
@@ -733,10 +733,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates records", async () => {
       const e = endpoint(
-        Type.RecordOf({
+        Type.Record({
           a: Type.String,
           b: Type.Number,
-          c: { type: Type.RecordOf({ foo: Type.Boolean }), required: false },
+          c: { type: Type.Record({ foo: Type.Boolean }), required: false },
         }).compileStd(),
       );
 
@@ -760,8 +760,8 @@ describe("validating via the Standard Schema", () => {
       });
 
       const e2 = endpoint(
-        Type.RecordOf({
-          foo: Type.RecordOf({ bar: Type.RecordOf({ baz: Type.String }) }),
+        Type.Record({
+          foo: Type.Record({ bar: Type.Record({ baz: Type.String }) }),
         }).compileStd(),
       );
 
@@ -789,7 +789,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates arrays", async () => {
       const e = endpoint(
-        Type.ArrayOf(Type.String, Type.SetOf(Type.Number)).compileStd(),
+        Type.Array(Type.String, Type.Set(Type.Number)).compileStd(),
       );
 
       await expect(e.post(["hello", "world", new Set([1, 2])])).resolves
@@ -815,7 +815,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates sets", async () => {
       const e = endpoint(
-        Type.SetOf(Type.String, Type.RecordOf({ foo: Type.String }))
+        Type.Set(Type.String, Type.Record({ foo: Type.String }))
           .compileStd(),
       );
 
@@ -841,7 +841,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates dictionaries", async () => {
       const e = endpoint(
-        Type.Dict(Type.String, Type.RecordOf({ args: Type.String }))
+        Type.Dict(Type.String, Type.Record({ args: Type.String }))
           .compileStd(),
       );
 
@@ -871,7 +871,7 @@ describe("validating via the Standard Schema", () => {
       const e = endpoint(
         Type.Tuple(
           Type.String,
-          Type.RecordOf({ arr: Type.ArrayOf(Type.Number) }),
+          Type.Record({ arr: Type.Array(Type.Number) }),
         ).compileStd(),
       );
 
@@ -900,7 +900,7 @@ describe("validating via the Standard Schema", () => {
         Type.OneOf(
           Type.String,
           Type.Number,
-          Type.RecordOf({ args: Type.String }),
+          Type.Record({ args: Type.String }),
         ).compileStd(),
       );
 
@@ -934,10 +934,10 @@ describe("validating via the Standard Schema", () => {
     it("correctly validates all of types", async () => {
       const e = endpoint(
         Type.AllOf(
-          Type.RecordOf({ foo: Type.String }),
-          Type.RecordOf({ bar: Type.Literal("bar") }),
-          Type.RecordOf({
-            baz: { required: false, type: Type.ArrayOf(Type.Number) },
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.Literal("bar") }),
+          Type.Record({
+            baz: { required: false, type: Type.Array(Type.Number) },
           }),
         ).compileStd(),
       );
@@ -1118,10 +1118,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates circular types", async () => {
       const e = endpoint(
-        Type.Circular(self =>
-          Type.RecordOf({
+        Type.Recursive(self =>
+          Type.Record({
             foo: Type.String,
-            childs: Type.ArrayOf(self),
+            childs: Type.Array(self),
           })
         ).compileStd(),
       );

@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import { DataType, OptionalField, toJsonSchema } from "../../src";
+import { OptionalField, toJsonSchema, Type } from "../../src";
 
 enum Enum {
   A = "A",
@@ -7,91 +7,91 @@ enum Enum {
   C = "C",
 }
 
-const testDt = DataType.RecordOf({
-  uuid: DataType.String,
-  number: DataType.Number,
-  bool: DataType.Boolean,
-  stringSet: DataType.SetOf(DataType.String),
-  stringArray: DataType.ArrayOf(DataType.String),
-  unionArray: DataType.ArrayOf(
-    DataType.RecordOf({ foo: DataType.String }),
-    DataType.RecordOf({ bar: DataType.String }),
+const testDt = Type.Record({
+  uuid: Type.String,
+  number: Type.Number,
+  bool: Type.Boolean,
+  stringSet: Type.Set(Type.String),
+  stringArray: Type.Array(Type.String),
+  unionArray: Type.Array(
+    Type.Record({ foo: Type.String }),
+    Type.Record({ bar: Type.String }),
   ),
-  tuple: DataType.Tuple(DataType.String, DataType.Number),
-  literalString: DataType.Literal("literal"),
-  literalNumber: DataType.Literal(1),
-  literalBoolean: DataType.Literal(true),
-  enum: DataType.Enum(Enum),
-  bMember: DataType.EnumMember(Enum.B),
-  recordIntersection: DataType.AllOf(
-    DataType.RecordOf({
-      a: DataType.String,
+  tuple: Type.Tuple(Type.String, Type.Number),
+  literalString: Type.Literal("literal"),
+  literalNumber: Type.Literal(1),
+  literalBoolean: Type.Literal(true),
+  enum: Type.Enum(Enum),
+  bMember: Type.EnumMember(Enum.B),
+  recordIntersection: Type.AllOf(
+    Type.Record({
+      a: Type.String,
     }),
-    DataType.RecordOf({
-      b: DataType.Number,
+    Type.Record({
+      b: Type.Number,
     }),
   ),
-  dict: DataType.Dict(DataType.String),
-  oneof: DataType.OneOf(
-    DataType.RecordOf({ foo: DataType.String }),
-    DataType.RecordOf({ bar: DataType.String }),
+  dict: Type.Dict(Type.String),
+  oneof: Type.OneOf(
+    Type.Record({ foo: Type.String }),
+    Type.Record({ bar: Type.String }),
   ),
-  symbol: DataType.Symbol,
-  undef: DataType.Undefined,
-  customValidator: DataType.Custom((value: any): value is any => true),
-  stringMatching: DataType.StringMatching(/^foo$/),
+  symbol: Type.Symbol,
+  undef: Type.Undefined,
+  customValidator: Type.Custom((value: any): value is any => true),
+  stringMatching: Type.StringMatching(/^foo$/),
   optionalSelfCopy: {
     required: false,
-    type: DataType.RecordOf({
-      id: { required: false, type: DataType.String },
-      number: { required: false, type: DataType.Number },
-      bool: { required: false, type: DataType.Boolean },
-      stringSet: { required: false, type: DataType.SetOf(DataType.String) },
-      stringArray: { required: false, type: DataType.ArrayOf(DataType.String) },
+    type: Type.Record({
+      id: { required: false, type: Type.String },
+      number: { required: false, type: Type.Number },
+      bool: { required: false, type: Type.Boolean },
+      stringSet: { required: false, type: Type.Set(Type.String) },
+      stringArray: { required: false, type: Type.Array(Type.String) },
       unionArray: {
         required: false,
-        type: DataType.ArrayOf(
-          DataType.RecordOf({ foo: DataType.String }),
-          DataType.RecordOf({ bar: DataType.String }),
+        type: Type.Array(
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.String }),
         ),
       },
       tuple: {
         required: false,
-        type: DataType.Tuple(
-          DataType.RecordOf({
-            id: { required: false, type: DataType.String },
+        type: Type.Tuple(
+          Type.Record({
+            id: { required: false, type: Type.String },
           }),
-          DataType.Literal("separator"),
-          DataType.Boolean,
+          Type.Literal("separator"),
+          Type.Boolean,
         ),
       },
-      literalString: { required: false, type: DataType.Literal("literal") },
-      literalNumber: { required: false, type: DataType.Literal(1) },
-      literalBoolean: { required: false, type: DataType.Literal(true) },
-      enum: { required: false, type: DataType.Enum(Enum) },
-      bMember: { required: false, type: DataType.EnumMember(Enum.B) },
+      literalString: { required: false, type: Type.Literal("literal") },
+      literalNumber: { required: false, type: Type.Literal(1) },
+      literalBoolean: { required: false, type: Type.Literal(true) },
+      enum: { required: false, type: Type.Enum(Enum) },
+      bMember: { required: false, type: Type.EnumMember(Enum.B) },
       recordIntersection: {
         required: false,
-        type: DataType.AllOf(
-          DataType.RecordOf({
-            a: DataType.String,
+        type: Type.AllOf(
+          Type.Record({
+            a: Type.String,
           }),
-          DataType.RecordOf({
-            b: DataType.Number,
+          Type.Record({
+            b: Type.Number,
           }),
         ),
       },
-      dict: { required: false, type: DataType.Dict(DataType.String) },
+      dict: { required: false, type: Type.Dict(Type.String) },
       oneof: {
         required: false,
-        type: DataType.OneOf(
-          DataType.RecordOf({ foo: DataType.String }),
-          DataType.RecordOf({ bar: DataType.String }),
+        type: Type.OneOf(
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.String }),
         ),
       },
       stringMatching: {
         required: false,
-        type: DataType.StringMatching(/foo.+[0-9]$/gi),
+        type: Type.StringMatching(/foo.+[0-9]$/gi),
       },
     }),
   },
@@ -145,12 +145,12 @@ describe("toJsonSchema", () => {
   });
 
   it("should use the custom parsers", () => {
-    const dt = DataType.RecordOf({
-      custom: DataType.Custom((value: any): value is any => true),
-      function: DataType.Function,
-      set: DataType.SetOf(DataType.String),
-      symbol: DataType.Symbol,
-      undefined: DataType.Undefined,
+    const dt = Type.Record({
+      custom: Type.Custom((value: any): value is any => true),
+      function: Type.Function,
+      set: Type.Set(Type.String),
+      symbol: Type.Symbol,
+      undefined: Type.Undefined,
     });
 
     const schema = toJsonSchema(
@@ -196,14 +196,14 @@ describe("toJsonSchema", () => {
   });
 
   it("should copy the properties from metadata", () => {
-    const dt = DataType.RecordOf({
-      date: DataType.String.setFormat("date-time"),
-      timestamp: DataType.Int.setDescription("UNIX timestamp.").setTitle(
+    const dt = Type.Record({
+      date: Type.String.setFormat("date-time"),
+      timestamp: Type.Int.setDescription("UNIX timestamp.").setTitle(
         "Creation Timestamp",
       ),
-      list: DataType.ArrayOf(DataType.String),
+      list: Type.Array(Type.String),
       dictionary: OptionalField(
-        DataType.RecordOf({ foo: DataType.Unknown }).setDescription(
+        Type.Record({ foo: Type.Unknown }).setDescription(
           "This field is optional.",
         ),
       ),
@@ -220,10 +220,10 @@ describe("toJsonSchema", () => {
 
   describe("should work correctly with circular type", () => {
     it("simple circular record", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Array(self),
         })
       );
 
@@ -237,10 +237,10 @@ describe("toJsonSchema", () => {
     });
 
     it("simple circular named record", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Array(self),
         }).setTitle("Node")
       );
 
@@ -254,9 +254,9 @@ describe("toJsonSchema", () => {
     });
 
     it("immediately self-referencing record", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           self: OptionalField(self),
         }).setTitle("SelfReferencingRecord")
       );
@@ -271,9 +271,7 @@ describe("toJsonSchema", () => {
     });
 
     it("simple circular array", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.ArrayOf(DataType.String, self)
-      );
+      const typeDef = Type.Recursive((self) => Type.Array(Type.String, self));
 
       const schema = toJsonSchema(typeDef, {}, false);
 
@@ -285,14 +283,14 @@ describe("toJsonSchema", () => {
     });
 
     it("deeply nested structure", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.RecordOf({
-            type: DataType.String,
-            container: DataType.RecordOf({
-              name: DataType.String,
-              children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Record({
+            type: Type.String,
+            container: Type.Record({
+              name: Type.String,
+              children: Type.Array(self),
             }),
           }),
         }).setTitle("Node")
@@ -308,13 +306,13 @@ describe("toJsonSchema", () => {
     });
 
     it("deeply nested structure of named types", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.ArrayOf(
-            DataType.RecordOf({
-              name: DataType.Literal("span"),
-              children: DataType.ArrayOf(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Array(
+            Type.Record({
+              name: Type.Literal("span"),
+              children: Type.Array(self),
             }).setTitle("SpanNode"),
           ).setTitle("SpanNodeList"),
         }).setTitle("Node")
@@ -330,14 +328,14 @@ describe("toJsonSchema", () => {
     });
 
     it("deeply nested circular types", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.Circular((self2) =>
-            DataType.ArrayOf(
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Recursive((self2) =>
+            Type.Array(
               self,
-              DataType.RecordOf({
-                nested: DataType.Literal(true),
+              Type.Record({
+                nested: Type.Literal(true),
                 items: self2,
               }),
             )
@@ -355,10 +353,10 @@ describe("toJsonSchema", () => {
     });
 
     it("works with dicts", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
-          children: DataType.Dict(self),
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
+          children: Type.Dict(self),
         })
       );
 
@@ -372,9 +370,7 @@ describe("toJsonSchema", () => {
     });
 
     it("works with direct dicts", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.Dict(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.Dict(self, Type.String));
 
       const schema = toJsonSchema(typeDef, {}, false);
 
@@ -386,14 +382,14 @@ describe("toJsonSchema", () => {
     });
 
     it("works with tuples", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           children: OptionalField(
-            DataType.OneOf(
-              DataType.Tuple(self),
-              DataType.Tuple(self, self),
-              DataType.Tuple(self, self, self),
+            Type.OneOf(
+              Type.Tuple(self),
+              Type.Tuple(self, self),
+              Type.Tuple(self, self, self),
             ),
           ),
         })
@@ -409,9 +405,7 @@ describe("toJsonSchema", () => {
     });
 
     it("works with direct tuples", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.Tuple(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.Tuple(self, Type.String));
 
       const schema = toJsonSchema(typeDef, {}, false);
 
@@ -423,14 +417,14 @@ describe("toJsonSchema", () => {
     });
 
     it("works with unions", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           children: OptionalField(
-            DataType.OneOf(
+            Type.OneOf(
               self,
-              DataType.RecordOf({
-                name: DataType.String,
+              Type.Record({
+                name: Type.String,
                 children: self,
               }),
             ),
@@ -448,9 +442,7 @@ describe("toJsonSchema", () => {
     });
 
     it("works with direct unions", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.OneOf(self, DataType.String)
-      );
+      const typeDef = Type.Recursive((self) => Type.OneOf(self, Type.String));
 
       const schema = toJsonSchema(typeDef, {}, false);
 
@@ -462,14 +454,14 @@ describe("toJsonSchema", () => {
     });
 
     it("works with intersections", () => {
-      const typeDef = DataType.Circular((self) =>
-        DataType.RecordOf({
-          name: DataType.String,
+      const typeDef = Type.Recursive((self) =>
+        Type.Record({
+          name: Type.String,
           children: OptionalField(
-            DataType.AllOf(
+            Type.AllOf(
               self,
-              DataType.RecordOf({
-                type: DataType.String,
+              Type.Record({
+                type: Type.String,
               }),
             ),
           ),
