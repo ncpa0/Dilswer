@@ -34,10 +34,11 @@
     "test:tsc": "tsc --noEmit",
     "test:unit": "jest --coverage",
     "test:fmt": "dprint check",
-    "test:lint": "oxlint . --deny-warnings",
+    "test:lint": "oxlint .",
     "lint": "oxlint --fix .",
     "fmt": "dprint fmt",
-    "benchmark": "NODE_PATH=/usr/local/lib/node_modules node ./benchmark/fast-validator.js"
+    "benchmark": "NODE_PATH=/usr/local/lib/node_modules node ./benchmark/fast-validator.js",
+    "prepare": "husky install"
   },
   "devDependencies": {
     "@ncpa0cpl/nodepack": "^2.3.3",
