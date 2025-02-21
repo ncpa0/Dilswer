@@ -1,27 +1,27 @@
-import type {
-  Circular,
-  CircularRef,
-  InstanceOf,
-  StringMatching,
-  Tuple,
-} from "@DataTypes/data-types";
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type {
-  AllOf,
-  AnyDataType,
-  ArrayOf,
-  BasicDataType,
-  Custom,
-  DataTypeVisitor,
-  Dict,
-  Enum,
-  EnumMember,
-  Literal,
-  RecordOf,
-  RecordOfVisitChild,
-  SetOf,
+  AnyType,
+  BasicType,
+  RecordVisitChild,
+  TypeVisitor,
 } from "@DataTypes/types";
-import { OneOf } from "@DataTypes/types";
+import type { ArrayType } from "@DataTypes/types/array";
+import type { CustomType } from "@DataTypes/types/custom";
+import type { DictType } from "@DataTypes/types/dict";
+import type { EnumType } from "@DataTypes/types/enum";
+import type { EnumMemberType } from "@DataTypes/types/enum-member";
+import type { InstanceOfType } from "@DataTypes/types/instance";
+import type { IntersectionType } from "@DataTypes/types/intersection";
+import type { LiteralType } from "@DataTypes/types/literal";
+import type { RecordType } from "@DataTypes/types/record";
+import type {
+  RecursiveType,
+  RecursiveTypeReference,
+} from "@DataTypes/types/recursive";
+import type { SetType } from "@DataTypes/types/set";
+import type { StringMatchingType } from "@DataTypes/types/string-matching";
+import type { TupleType } from "@DataTypes/types/tuple";
+import type { UnionType } from "@DataTypes/types/union";
 
 const propertyAccessor = (propertyName: string) => {
   if (propertyName.match(/^[a-zA-Z_$][a-zA-Z_$0-9]*$/)) {
@@ -137,10 +137,6 @@ const $isSet = (varname: string) => {
   return $equal(`${varname}[Symbol.toStringTag]`, "Set");
 };
 
-const $isNotSet = (varname: string) => {
-  return $notEqual(`${varname}[Symbol.toStringTag]`, "Set");
-};
-
 const $isInteger = (varname: string) => {
   return `Number.isInteger(${varname})`;
 };
@@ -208,7 +204,7 @@ class ValidateGenerator {
 
 type R = ValidateGenerator;
 
-class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
+class DataTypeValidatorVisitor implements TypeVisitor<R> {
   includes = {
     stringNumeral: false,
     stringInteger: false,
@@ -218,17 +214,17 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     array: false,
   };
 
-  private circValidationFnNames: Map<AnyDataType, string> = new Map();
+  private circValidationFnNames: Map<AnyType, string> = new Map();
 
   private _counter1 = 0;
   private _counter2 = 0;
   private _counter3 = 0;
 
-  private knownTypes = new Map<AnyDataType, string>();
+  private knownTypes = new Map<AnyType, string>();
 
   constructor() {}
 
-  public getUniqueStringForType(type: AnyDataType) {
+  public getUniqueStringForType(type: AnyType) {
     if (this.knownTypes.has(type)) {
       return this.knownTypes.get(type)!;
     }
@@ -247,7 +243,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     return `_$v${++this._counter2}`;
   }
 
-  private visitPrimitive(type: BasicDataType): R {
+  private visitPrimitive(type: BasicType): R {
     switch (type.simpleType) {
       case "boolean":
         return new ValidateGenerator(
@@ -312,11 +308,11 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     }
   }
 
-  private visitArrayOf(type: ArrayOf, children?: Array<R>): R {
+  private visitArrayOf(type: ArrayType, children?: Array<R>): R {
     this.includes.array = true;
 
     if (children && children.length > 0) {
-      const oneof = this.visitOneOf(new OneOf(type.arrayOf), children);
+      const oneof = this.visitOneOf(type["union"], children);
 
       const itemName = this.getUniqueVarName();
 
@@ -334,7 +330,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     );
   }
 
-  private visitTuple(type: Tuple, children?: Array<R>): R {
+  private visitTuple(type: TupleType, children?: Array<R>): R {
     const generator = this;
 
     return new ValidateGenerator(null, (varname, v) => {
@@ -359,15 +355,14 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
   }
 
   private visitRecordOf(
-    type: RecordOf,
-    children: RecordOfVisitChild<R>[] = [],
+    type: RecordType,
+    children: RecordVisitChild<R>[] = [],
   ): R {
     const getRecordConditions = (varName: string, v: ValidateGenerator) => {
       const cond = condition("&&")
         .add($type(varName, "object"))
         .add($laxNotEqual(varName, null))
-        .add($not($isArray(varName)))
-        .add($isNotSet(varName));
+        .add($not($isArray(varName)));
 
       if (children && children.length > 0) {
         for (const c of children) {
@@ -415,19 +410,18 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     });
   }
 
-  private visitDict(type: Dict, children?: Array<R>): R {
+  private visitDict(type: DictType, children?: Array<R>): R {
     this.includes.dict = true;
 
     const getBaseDictConditions = (varName: string) => {
       return condition("&&")
         .add($type(varName, "object"))
         .add($laxNotEqual(varName, null))
-        .add($not($isArray(varName)))
-        .add($isNotSet(varName));
+        .add($not($isArray(varName)));
     };
 
     if (children && children.length > 0) {
-      const oneof = this.visitOneOf(new OneOf(type.dict), children);
+      const oneof = this.visitOneOf(type["union"], children);
 
       const itemName = this.getUniqueVarName();
 
@@ -448,7 +442,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     }
   }
 
-  private visitSetOf(type: SetOf, children: Array<R> = []): R {
+  private visitSetOf(type: SetType, children: Array<R> = []): R {
     this.includes.set = true;
 
     const getBaseSetConditions = (varName: string) => {
@@ -459,7 +453,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     };
 
     if (children && children.length > 0) {
-      const oneof = this.visitOneOf(new OneOf(type.setOf), children);
+      const oneof = this.visitOneOf(type["union"], children);
 
       const itemName = this.getUniqueVarName();
 
@@ -480,7 +474,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     );
   }
 
-  private visitOneOf(type: OneOf, children: Array<R>): R {
+  private visitOneOf(type: UnionType, children: Array<R>): R {
     return new ValidateGenerator(null, (varname, v) => {
       const cond = condition("||");
 
@@ -494,7 +488,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     });
   }
 
-  private visitAllOf(type: AllOf, children: Array<R>): R {
+  private visitAllOf(type: IntersectionType, children: Array<R>): R {
     return new ValidateGenerator(null, (varname, v) => {
       const cond = condition("&&");
 
@@ -508,14 +502,14 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     });
   }
 
-  private visitLiteral(type: Literal): R {
+  private visitLiteral(type: LiteralType): R {
     return new ValidateGenerator(
       null,
       (varname) => condition("&&").add($equal(varname, type.literal)),
     );
   }
 
-  private visitEnum(type: Enum): R {
+  private visitEnum(type: EnumType): R {
     const enumKeys = Object.keys(type.enumInstance).filter((key) =>
       Number.isNaN(Number(key))
     );
@@ -532,14 +526,14 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     });
   }
 
-  private visitEnumMember(type: EnumMember): R {
+  private visitEnumMember(type: EnumMemberType): R {
     return new ValidateGenerator(
       null,
       (varname) => condition("&&").add($equal(varname, type.enumMember)),
     );
   }
 
-  private visitInstanceOf(type: InstanceOf): R {
+  private visitInstanceOf(type: InstanceOfType): R {
     const classDepName = this.getUniqueVarName();
 
     return new ValidateGenerator(null, (varname) =>
@@ -548,7 +542,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
       )).addDependency(classDepName, type.instanceOf);
   }
 
-  private visitCustom(type: Custom): R {
+  private visitCustom(type: CustomType): R {
     const customDepName = this.getUniqueVarName();
 
     return new ValidateGenerator(
@@ -558,7 +552,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     ).addDependency(customDepName, type.custom);
   }
 
-  private visitStringMatching(type: StringMatching): R {
+  private visitStringMatching(type: StringMatchingType): R {
     const regexp = $defineRegexp(this.getUniqueVarName(), type.pattern);
 
     return new ValidateGenerator(
@@ -570,7 +564,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     ).addDeclare(regexp.declaration);
   }
 
-  private visitCircular(circular: Circular, children: R[]): R {
+  private visitCircular(circular: RecursiveType, children: R[]): R {
     const [childSchema] = children;
     const child = circular.type;
 
@@ -600,7 +594,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     return childSchema;
   }
 
-  private visitCircularRef(type: CircularRef): R {
+  private visitCircularRef(type: RecursiveTypeReference): R {
     const referencedType = type._getReferencedType();
 
     if (this.circValidationFnNames.has(referencedType)) {
@@ -622,9 +616,9 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
     );
   }
 
-  visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
-  visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
-  visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
+  visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
+  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
     switch (type.kind) {
       case "simple":
         return this.visitPrimitive(type);
@@ -633,7 +627,7 @@ class DataTypeValidatorVisitor implements DataTypeVisitor<R> {
       case "tuple":
         return this.visitTuple(type, children as R[]);
       case "record":
-        return this.visitRecordOf(type, children as RecordOfVisitChild<R>[]);
+        return this.visitRecordOf(type, children as RecordVisitChild<R>[]);
       case "dictionary":
         return this.visitDict(type, children as R[]);
       case "set":
@@ -737,7 +731,7 @@ const circTracker = /* js */ `
  * best performance, you should compile the validator
  * ahead-of-time and reuse it.
  */
-export const compileFastValidator = <DT extends AnyDataType>(
+export const compileFastValidator = <DT extends AnyType>(
   dataType: DT,
 ): (data: unknown) => data is ReWrap<ParseDataType<DT>> => {
   const visitor = new DataTypeValidatorVisitor();

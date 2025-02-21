@@ -1,8 +1,8 @@
-import { DataType, toTsType } from "../../../src/index";
+import { toTsType, Type } from "../../../src/index";
 
 describe("TsArrayBuilder", () => {
   it("should correctly generate a simple array type", () => {
-    const dt = DataType.ArrayOf(DataType.String);
+    const dt = Type.Array(Type.String);
 
     const tsType = toTsType(dt);
 
@@ -10,7 +10,7 @@ describe("TsArrayBuilder", () => {
   });
 
   it("should correctly generate a simple array type with title and description", () => {
-    const dt = DataType.ArrayOf(DataType.Number);
+    const dt = Type.Array(Type.Number);
 
     dt.setTitle("MyArray");
     dt.setDescription("My array description");

@@ -1,22 +1,22 @@
-import { And, DataType } from "../../src";
+import { And, Type } from "../../src";
 
 describe("And utility", () => {
   it("should correctly merge the two record data types", () => {
-    const a = DataType.RecordOf({
-      foo: { type: DataType.Number },
-      bar: { type: DataType.String },
+    const a = Type.Record({
+      foo: { type: Type.Number },
+      bar: { type: Type.String },
     });
 
-    const b = DataType.RecordOf({
-      bar: { type: DataType.Boolean },
-      baz: { type: DataType.Symbol },
+    const b = Type.Record({
+      bar: { type: Type.Boolean },
+      baz: { type: Type.Symbol },
     });
 
     expect(And(a, b)).toMatchObject(
-      DataType.RecordOf({
-        foo: { type: DataType.Number },
-        bar: { type: DataType.Boolean },
-        baz: { type: DataType.Symbol },
+      Type.Record({
+        foo: { type: Type.Number },
+        bar: { type: Type.Boolean },
+        baz: { type: Type.Symbol },
       }),
     );
   });

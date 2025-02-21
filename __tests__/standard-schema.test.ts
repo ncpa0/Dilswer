@@ -12,6 +12,24 @@ function endpoint<R>(validator: StandardSchemaV1<any, R>) {
   };
 }
 
+class AssertionFailed<Reason, Values = never> {
+  private _reason!: Reason;
+}
+
+const TRUE_SYM = Symbol("true");
+type True = typeof TRUE_SYM;
+type AssertEndpoint<Expected, Endpoint> = Endpoint extends {
+  post(...args: any[]): Promise<{ data?: infer T }>;
+} ? T extends Expected ? True
+  : AssertionFailed<"Types do not match", [Expected, T]>
+  : AssertionFailed<"Types do not match", [Expected, Endpoint]>;
+
+/**
+ * A dummy function for asserting the type T provided is equal to
+ * `true`
+ */
+const assert = <V extends True>() => {};
+
 describe("validating via the Standard Schema", () => {
   describe("default validation function", () => {
     it("correctly validates simple types", async () => {
@@ -22,6 +40,14 @@ describe("validating via the Standard Schema", () => {
       const e5 = endpoint(Type.Symbol);
       const e6 = endpoint(Type.Undefined);
       const e7 = endpoint(Type.Int);
+
+      assert<AssertEndpoint<boolean, typeof e1>>();
+      assert<AssertEndpoint<string, typeof e2>>();
+      assert<AssertEndpoint<number, typeof e3>>();
+      assert<AssertEndpoint<null, typeof e4>>();
+      assert<AssertEndpoint<symbol, typeof e5>>();
+      assert<AssertEndpoint<undefined, typeof e6>>();
+      assert<AssertEndpoint<number, typeof e7>>();
 
       await expect(e1.post(true)).resolves.toEqual({
         data: true,
@@ -155,12 +181,22 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates records", async () => {
       const e = endpoint(
-        Type.RecordOf({
+        Type.Record({
           a: Type.String,
           b: Type.Number,
-          c: { type: Type.RecordOf({ foo: Type.Boolean }), required: false },
+          c: { type: Type.Record({ foo: Type.Boolean }), required: false },
         }),
       );
+
+      assert<
+        AssertEndpoint<{
+          a: string;
+          b: number;
+          c?: {
+            foo: boolean;
+          };
+        }, typeof e>
+      >();
 
       await expect(e.post({ a: "hello", b: 1 })).resolves.toEqual({
         data: { a: "hello", b: 1 },
@@ -183,10 +219,16 @@ describe("validating via the Standard Schema", () => {
       });
 
       const e2 = endpoint(
-        Type.RecordOf({
-          foo: Type.RecordOf({ bar: Type.RecordOf({ baz: Type.String }) }),
+        Type.Record({
+          foo: Type.Record({ bar: Type.Record({ baz: Type.String }) }),
         }),
       );
+
+      assert<
+        AssertEndpoint<{
+          foo: { bar: { baz: string } };
+        }, typeof e2>
+      >();
 
       await expect(e2.post({ foo: { bar: { baz: "quux" } } })).resolves.toEqual(
         {
@@ -219,7 +261,9 @@ describe("validating via the Standard Schema", () => {
     });
 
     it("correctly validates arrays", async () => {
-      const e = endpoint(Type.ArrayOf(Type.String, Type.SetOf(Type.Number)));
+      const e = endpoint(Type.Array(Type.String, Type.Set(Type.Number)));
+
+      assert<AssertEndpoint<Array<string | Set<number>>, typeof e>>();
 
       await expect(e.post(["hello", "world", new Set([1, 2])])).resolves
         .toEqual({
@@ -245,8 +289,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates sets", async () => {
       const e = endpoint(
-        Type.SetOf(Type.String, Type.RecordOf({ foo: Type.String })),
+        Type.Set(Type.String, Type.Record({ foo: Type.String })),
       );
+
+      assert<AssertEndpoint<Set<string | { foo: string }>, typeof e>>();
 
       await expect(e.post(new Set(["hello", "world"]))).resolves.toEqual({
         data: new Set(["hello", "world"]),
@@ -271,8 +317,15 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates dictionaries", async () => {
       const e = endpoint(
-        Type.Dict(Type.String, Type.RecordOf({ args: Type.String })),
+        Type.Dict(Type.String, Type.Record({ args: Type.String })),
       );
+
+      assert<
+        AssertEndpoint<
+          Record<string | number, { args: string } | string>,
+          typeof e
+        >
+      >();
 
       await expect(e.post({ key1: "value1", key2: "value2" })).resolves.toEqual(
         {
@@ -301,9 +354,13 @@ describe("validating via the Standard Schema", () => {
       const e = endpoint(
         Type.Tuple(
           Type.String,
-          Type.RecordOf({ arr: Type.ArrayOf(Type.Number) }),
+          Type.Record({ arr: Type.Array(Type.Number) }),
         ),
       );
+
+      assert<
+        AssertEndpoint<[string, { arr: number[] }], typeof e>
+      >();
 
       await expect(e.post(["hello", { arr: [1, 2] }])).resolves.toEqual({
         data: ["hello", { arr: [1, 2] }],
@@ -331,9 +388,13 @@ describe("validating via the Standard Schema", () => {
         Type.OneOf(
           Type.String,
           Type.Number,
-          Type.RecordOf({ args: Type.String }),
+          Type.Record({ args: Type.String }),
         ),
       );
+
+      assert<
+        AssertEndpoint<string | number | { args: string }, typeof e>
+      >();
 
       await expect(e.post("hello")).resolves.toEqual({
         data: "hello",
@@ -366,13 +427,21 @@ describe("validating via the Standard Schema", () => {
     it("correctly validates all of types", async () => {
       const e = endpoint(
         Type.AllOf(
-          Type.RecordOf({ foo: Type.String }),
-          Type.RecordOf({ bar: Type.Literal("bar") }),
-          Type.RecordOf({
-            baz: { required: false, type: Type.ArrayOf(Type.Number) },
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.Literal("bar") }),
+          Type.Record({
+            baz: { required: false, type: Type.Array(Type.Number) },
           }),
         ),
       );
+
+      assert<
+        AssertEndpoint<{
+          foo: string;
+          bar: "bar";
+          baz?: number[];
+        }, typeof e>
+      >();
 
       await expect(e.post({ foo: "abc", bar: "bar" })).resolves.toEqual({
         data: { foo: "abc", bar: "bar" },
@@ -397,6 +466,8 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates literals", async () => {
       const e = endpoint(Type.Literal("hello"));
+
+      assert<AssertEndpoint<"hello", typeof e>>();
 
       await expect(e.post("hello")).resolves.toEqual({
         data: "hello",
@@ -426,6 +497,8 @@ describe("validating via the Standard Schema", () => {
       }
       const e = endpoint(Type.Enum(TestEnum));
 
+      assert<AssertEndpoint<TestEnum, typeof e>>();
+
       await expect(e.post(TestEnum.A)).resolves.toEqual({
         data: TestEnum.A,
         validationResults: {
@@ -454,6 +527,8 @@ describe("validating via the Standard Schema", () => {
       }
       const e = endpoint(Type.EnumMember(TestEnum.A));
 
+      assert<AssertEndpoint<TestEnum.A, typeof e>>();
+
       await expect(e.post(TestEnum.A)).resolves.toEqual({
         data: TestEnum.A,
         validationResults: {
@@ -478,6 +553,8 @@ describe("validating via the Standard Schema", () => {
     it("correctly validates instances", async () => {
       class TestClass {}
       const e = endpoint(Type.InstanceOf(TestClass));
+
+      assert<AssertEndpoint<TestClass, typeof e>>();
 
       const instance = new TestClass();
       await expect(e.post(instance)).resolves.toEqual({
@@ -508,6 +585,8 @@ describe("validating via the Standard Schema", () => {
         ),
       );
 
+      assert<AssertEndpoint<"string", typeof e>>();
+
       await expect(e.post("string")).resolves.toEqual({
         data: "string",
         validationResults: {
@@ -534,6 +613,8 @@ describe("validating via the Standard Schema", () => {
         Type.StringMatching(/^START.+END$/),
       );
 
+      assert<AssertEndpoint<string, typeof e>>();
+
       await expect(e.post("START hello END")).resolves.toEqual({
         data: "START hello END",
         validationResults: {
@@ -557,13 +638,26 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates circular types", async () => {
       const e = endpoint(
-        Type.Circular(self =>
-          Type.RecordOf({
+        Type.Recursive(self =>
+          Type.Record({
             foo: Type.String,
-            childs: Type.ArrayOf(self),
+            childs: Type.Array(self),
           })
         ),
       );
+
+      assert<
+        AssertEndpoint<{
+          foo: string;
+          childs: Array<{
+            foo: string;
+            childs: Array<{
+              foo: string;
+              childs: any[];
+            }>;
+          }>;
+        }, typeof e>
+      >();
 
       await expect(
         e.post({
@@ -733,10 +827,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates records", async () => {
       const e = endpoint(
-        Type.RecordOf({
+        Type.Record({
           a: Type.String,
           b: Type.Number,
-          c: { type: Type.RecordOf({ foo: Type.Boolean }), required: false },
+          c: { type: Type.Record({ foo: Type.Boolean }), required: false },
         }).compileStd(),
       );
 
@@ -760,8 +854,8 @@ describe("validating via the Standard Schema", () => {
       });
 
       const e2 = endpoint(
-        Type.RecordOf({
-          foo: Type.RecordOf({ bar: Type.RecordOf({ baz: Type.String }) }),
+        Type.Record({
+          foo: Type.Record({ bar: Type.Record({ baz: Type.String }) }),
         }).compileStd(),
       );
 
@@ -789,7 +883,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates arrays", async () => {
       const e = endpoint(
-        Type.ArrayOf(Type.String, Type.SetOf(Type.Number)).compileStd(),
+        Type.Array(Type.String, Type.Set(Type.Number)).compileStd(),
       );
 
       await expect(e.post(["hello", "world", new Set([1, 2])])).resolves
@@ -815,7 +909,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates sets", async () => {
       const e = endpoint(
-        Type.SetOf(Type.String, Type.RecordOf({ foo: Type.String }))
+        Type.Set(Type.String, Type.Record({ foo: Type.String }))
           .compileStd(),
       );
 
@@ -841,7 +935,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates dictionaries", async () => {
       const e = endpoint(
-        Type.Dict(Type.String, Type.RecordOf({ args: Type.String }))
+        Type.Dict(Type.String, Type.Record({ args: Type.String }))
           .compileStd(),
       );
 
@@ -871,7 +965,7 @@ describe("validating via the Standard Schema", () => {
       const e = endpoint(
         Type.Tuple(
           Type.String,
-          Type.RecordOf({ arr: Type.ArrayOf(Type.Number) }),
+          Type.Record({ arr: Type.Array(Type.Number) }),
         ).compileStd(),
       );
 
@@ -900,7 +994,7 @@ describe("validating via the Standard Schema", () => {
         Type.OneOf(
           Type.String,
           Type.Number,
-          Type.RecordOf({ args: Type.String }),
+          Type.Record({ args: Type.String }),
         ).compileStd(),
       );
 
@@ -934,10 +1028,10 @@ describe("validating via the Standard Schema", () => {
     it("correctly validates all of types", async () => {
       const e = endpoint(
         Type.AllOf(
-          Type.RecordOf({ foo: Type.String }),
-          Type.RecordOf({ bar: Type.Literal("bar") }),
-          Type.RecordOf({
-            baz: { required: false, type: Type.ArrayOf(Type.Number) },
+          Type.Record({ foo: Type.String }),
+          Type.Record({ bar: Type.Literal("bar") }),
+          Type.Record({
+            baz: { required: false, type: Type.Array(Type.Number) },
           }),
         ).compileStd(),
       );
@@ -1118,10 +1212,10 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates circular types", async () => {
       const e = endpoint(
-        Type.Circular(self =>
-          Type.RecordOf({
+        Type.Recursive(self =>
+          Type.Record({
             foo: Type.String,
-            childs: Type.ArrayOf(self),
+            childs: Type.Array(self),
           })
         ).compileStd(),
       );

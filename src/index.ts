@@ -1,71 +1,78 @@
-import { DataType, getMetadata } from "@DataTypes/data-types";
-import {
-  And,
-  Exclude,
-  Omit,
-  OptionalField,
-  Partial,
-  Pick,
-  Required,
-} from "@Intrinsic/index";
+import { BaseType } from "@DataTypes/data-types";
+import { Type } from "@DataTypes/Type";
+import { AnyType } from "@DataTypes/types";
+import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
 import { parseWith } from "@UniversalParser/universal-parser";
 import { compileFastValidator } from "@Validation/compile-fast-validator";
-import {
-  createTypeGuardedFunction,
-  createValidatedFunction,
-} from "@Validation/create-validated-function";
-import { createChecker, createValidator } from "@Validation/create-validator";
-import { ensureDataType } from "@Validation/ensure-data-type";
+import { validator } from "@Validation/create-validator";
+import { assertType } from "@Validation/ensure-data-type";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
-const assertDataType = ensureDataType;
-const Type = DataType;
-
-export type { GetDataType } from "@DataTypes/type-utils";
+export type { Infer } from "@DataTypes/type-utils";
 export type {
-  AllDataTypes,
-  AllOf,
-  AnyDataType,
-  ArrayOf,
-  BasicDataType,
+  AnyType,
+  BasicType,
   BasicTypeNames,
-  ComplexDataType,
-  Custom,
-  DataTypeVisitor,
-  Dict,
-  Enum,
-  EnumMember,
+  ComplexType,
   FieldDescriptor,
-  Literal,
-  OneOf,
-  RecordOf,
-  RecordOfVisitChild,
   RecordTypeSchema,
-  SetOf,
   TypeMetadata,
+  TypeVisitor,
 } from "@DataTypes/types";
+export type { ArrayType } from "@DataTypes/types/array";
+export type { BooleanType } from "@DataTypes/types/boolean";
+export type { CustomType } from "@DataTypes/types/custom";
+export type { DictType } from "@DataTypes/types/dict";
+export type { EnumType } from "@DataTypes/types/enum";
+export type { EnumMemberType } from "@DataTypes/types/enum-member";
+export type { FunctionType } from "@DataTypes/types/function";
+export type { InstanceOfType as InstanceType } from "@DataTypes/types/instance";
+export type { IntegerType } from "@DataTypes/types/integer";
+export type { IntersectionType } from "@DataTypes/types/intersection";
+export type { LiteralType } from "@DataTypes/types/literal";
+export type { NullType } from "@DataTypes/types/null";
+export type { NumberType } from "@DataTypes/types/number";
+export type { RecordType } from "@DataTypes/types/record";
+export type {
+  RecursiveType,
+  RecursiveTypeReference,
+} from "@DataTypes/types/recursive";
+export type { SetType } from "@DataTypes/types/set";
+export type { StringType } from "@DataTypes/types/string";
+export type { StringIntegerType } from "@DataTypes/types/string-integer";
+export type { StringMatchingType } from "@DataTypes/types/string-matching";
+export type { StringNumeralType } from "@DataTypes/types/string-numberal";
+export type { SymbolType } from "@DataTypes/types/symbol";
+export type { TupleType } from "@DataTypes/types/tuple";
+export type { UndefinedType } from "@DataTypes/types/undefined";
+export type { UnionType } from "@DataTypes/types/union";
+export type { UnknownType } from "@DataTypes/types/unknown";
 export * from "@Intrinsic/index";
 export type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
 export type {
   TsParsingMode,
   TsParsingOptions,
 } from "@TsTypeGenerator/parser-options";
+
+/**
+ * Retrieves the metadata of a DataType, like title, description
+ * or examples.
+ *
+ * Metadata must be explicitly set on the DataType, otherwise it
+ * will be an empty object.
+ */
+const getMetadata = <T extends Record<any, any>>(dt: AnyType) =>
+  BaseType.getMetadata<T>(dt);
+
 export {
   And,
-  assertDataType,
+  assertType,
   compileFastValidator,
-  createChecker,
-  createTypeGuardedFunction,
-  createValidatedFunction,
-  createValidator,
-  DataType,
-  ensureDataType,
   Exclude,
   getMetadata,
   Omit,
-  OptionalField,
   parseWith,
   Partial,
   Pick,
@@ -74,24 +81,19 @@ export {
   toTsType,
   Type,
   ValidationError,
+  validator,
 };
 
 export default {
   And,
-  assertDataType,
-  createChecker,
-  createTypeGuardedFunction,
-  createValidatedFunction,
-  createValidator,
+  assertType,
+  validator,
   compileFastValidator,
   ValidationError,
-  DataType,
   Type,
-  ensureDataType,
   Exclude,
   getMetadata,
   Omit,
-  OptionalField,
   Partial,
   Pick,
   Required,

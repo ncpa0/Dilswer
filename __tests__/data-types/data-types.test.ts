@@ -1,9 +1,9 @@
-import { DataType } from "../../src";
+import { Type } from "../../src";
 
 describe("DataType", () => {
   describe("SimpleDataType", () => {
     it("should be immutable", () => {
-      const type = DataType.String;
+      const type = Type.String;
 
       expect(() => {
         // @ts-expect-error
@@ -14,8 +14,8 @@ describe("DataType", () => {
 
   describe("RecordOf", () => {
     it("should be immutable", () => {
-      const type = DataType.RecordOf({
-        foo: { type: DataType.String },
+      const type = Type.Record({
+        foo: { type: Type.String },
       });
 
       expect(() => {
@@ -25,19 +25,19 @@ describe("DataType", () => {
 
       expect(() => {
         // @ts-expect-error
-        type.recordOf.foo = DataType.Boolean;
+        type.recordOf.foo = Type.Boolean;
       }).toThrowError();
 
       expect(() => {
         // @ts-expect-error
-        type.recordOf.foo.type = DataType.Boolean;
+        type.recordOf.foo.type = Type.Boolean;
       }).toThrowError();
     });
   });
 
   describe("Dict", () => {
     it("should be immutable", () => {
-      const type = DataType.Dict(DataType.String);
+      const type = Type.Dict(Type.String);
 
       expect(() => {
         // @ts-expect-error
@@ -46,14 +46,14 @@ describe("DataType", () => {
 
       expect(() => {
         // @ts-expect-error
-        type.dict.push(DataType.Boolean);
+        type.dict.push(Type.Boolean);
       }).toThrowError();
     });
   });
 
   describe("ArrayOf", () => {
     it("should be immutable", () => {
-      const type = DataType.ArrayOf(DataType.String);
+      const type = Type.Array(Type.String);
 
       expect(() => {
         // @ts-expect-error
@@ -62,14 +62,14 @@ describe("DataType", () => {
 
       expect(() => {
         // @ts-expect-error
-        type.arrayOf.push(DataType.Boolean);
+        type.arrayOf.push(Type.Boolean);
       }).toThrowError();
     });
   });
 
   describe("SetOf", () => {
     it("should be immutable", () => {
-      const type = DataType.SetOf(DataType.String);
+      const type = Type.Set(Type.String);
 
       expect(() => {
         // @ts-expect-error
@@ -78,14 +78,14 @@ describe("DataType", () => {
 
       expect(() => {
         // @ts-expect-error
-        type.setOf.push(DataType.Boolean);
+        type.setOf.push(Type.Boolean);
       }).toThrowError();
     });
   });
 
   describe("OneOf", () => {
     it("should be immutable", () => {
-      const type = DataType.OneOf(DataType.String);
+      const type = Type.OneOf(Type.String);
 
       expect(() => {
         // @ts-expect-error
@@ -94,14 +94,14 @@ describe("DataType", () => {
 
       expect(() => {
         // @ts-expect-error
-        type.oneOf.push(DataType.Boolean);
+        type.oneOf.push(Type.Boolean);
       }).toThrowError();
     });
   });
 
   describe("AllOf", () => {
     it("should be immutable", () => {
-      const type = DataType.AllOf(DataType.String);
+      const type = Type.AllOf(Type.String);
 
       expect(() => {
         // @ts-expect-error
@@ -110,14 +110,14 @@ describe("DataType", () => {
 
       expect(() => {
         // @ts-expect-error
-        type.allOf.push(DataType.Boolean);
+        type.allOf.push(Type.Boolean);
       }).toThrowError();
     });
   });
 
   describe("Literal", () => {
     it("should be immutable", () => {
-      const type = DataType.Literal("foo");
+      const type = Type.Literal("foo");
 
       expect(() => {
         // @ts-expect-error
@@ -137,7 +137,7 @@ describe("DataType", () => {
         foo = "foo",
         bar = "bar",
       }
-      const type = DataType.EnumMember(Enum.foo);
+      const type = Type.EnumMember(Enum.foo);
 
       expect(() => {
         // @ts-expect-error
@@ -157,7 +157,7 @@ describe("DataType", () => {
         foo = "foo",
         bar = "bar",
       }
-      const type = DataType.Enum(Enum);
+      const type = Type.Enum(Enum);
 
       expect(() => {
         // @ts-expect-error
@@ -174,7 +174,7 @@ describe("DataType", () => {
   describe("InstanceOf", () => {
     it("should be immutable", () => {
       class Foo {}
-      const type = DataType.InstanceOf(Foo);
+      const type = Type.InstanceOf(Foo);
 
       expect(() => {
         // @ts-expect-error
@@ -190,7 +190,7 @@ describe("DataType", () => {
 
   describe("Custom", () => {
     it("should be immutable", () => {
-      const type = DataType.Custom((v): v is string => typeof v === "string");
+      const type = Type.Custom((v): v is string => typeof v === "string");
 
       expect(() => {
         // @ts-expect-error

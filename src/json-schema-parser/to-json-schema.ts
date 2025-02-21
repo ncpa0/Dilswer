@@ -1,28 +1,29 @@
-import type {
-  Circular,
-  CircularRef,
-  InstanceOf,
-  StringMatching,
-  Tuple,
-} from "@DataTypes/data-types";
-import { BaseDataType, DataType } from "@DataTypes/data-types";
+import { BaseType } from "@DataTypes/data-types";
+import { Type } from "@DataTypes/Type";
 import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
-  AllOf,
-  AnyDataType,
-  ArrayOf,
-  BasicDataType,
-  Custom,
-  DataTypeVisitor,
-  Dict,
-  Enum,
-  EnumMember,
-  Literal,
-  OneOf,
-  RecordOf,
-  RecordOfVisitChild,
-  SetOf,
+  AnyType,
+  BasicType,
+  RecordVisitChild,
+  TypeVisitor,
 } from "@DataTypes/types";
+import type { ArrayType } from "@DataTypes/types/array";
+import type { CustomType } from "@DataTypes/types/custom";
+import type { DictType } from "@DataTypes/types/dict";
+import type { EnumType } from "@DataTypes/types/enum";
+import type { EnumMemberType } from "@DataTypes/types/enum-member";
+import type { InstanceOfType } from "@DataTypes/types/instance";
+import type { IntersectionType } from "@DataTypes/types/intersection";
+import type { LiteralType } from "@DataTypes/types/literal";
+import type { RecordType } from "@DataTypes/types/record";
+import type {
+  RecursiveType,
+  RecursiveTypeReference,
+} from "@DataTypes/types/recursive";
+import type { SetType } from "@DataTypes/types/set";
+import type { StringMatchingType } from "@DataTypes/types/string-matching";
+import type { TupleType } from "@DataTypes/types/tuple";
+import type { UnionType } from "@DataTypes/types/union";
 import { isDefined } from "@JSONSchemaParser/is-defined";
 import { NameGenerator } from "@TsTypeGenerator/name-generator";
 import type { JSONSchema6, JSONSchema6Definition } from "json-schema";
@@ -59,28 +60,28 @@ export type ParseToJsonSchemaOptions = {
   customParser?: {
     Set?: (
       setItemsSchemas: JSONSchema6[],
-      original: Set<AnyDataType[]>,
+      original: Set<AnyType[]>,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Custom?: (
-      validateFunction: Custom["custom"],
-      original: Custom,
+      validateFunction: CustomType["custom"],
+      original: CustomType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Undefined?: (
-      dataType: BasicDataType,
+      dataType: BasicType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Symbol?: (
-      dataType: BasicDataType,
+      dataType: BasicType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Function?: (
-      dataType: BasicDataType,
+      dataType: BasicType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     InstanceOf?: (
-      original: InstanceOf<new(...args: any[]) => any>,
+      original: InstanceOfType<new(...args: any[]) => any>,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
   };
@@ -88,7 +89,7 @@ export type ParseToJsonSchemaOptions = {
 
 type R = JSONSchema6 | undefined;
 
-class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
+class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
   private incompatibleTypes: Exclude<
     ParseToJsonSchemaOptions["incompatibleTypes"],
     undefined
@@ -97,7 +98,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     ParseToJsonSchemaOptions["customParser"],
     undefined
   >;
-  private definitionNames: Map<AnyDataType, string> = new Map();
+  private definitionNames: Map<AnyType, string> = new Map();
   definitions: Map<string, JSONSchema6Definition> = new Map();
 
   constructor(private options: ParseToJsonSchemaOptions) {
@@ -111,15 +112,15 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     );
   }
 
-  private assignMetadataToSchema(schema: JSONSchema6, type: AnyDataType) {
-    const meta = BaseDataType.getOriginalMetadata(type);
+  private assignMetadataToSchema(schema: JSONSchema6, type: AnyType) {
+    const meta = BaseType.getOriginalMetadata(type);
 
     if (meta.title) schema.title = meta.title;
     if (meta.description) schema.description = meta.description;
     if (meta.format) schema.format = meta.format;
   }
 
-  private parsePrimitive(type: BasicDataType): R {
+  private parsePrimitive(type: BasicType): R {
     let schema: R = {};
 
     this.assignMetadataToSchema(schema, type);
@@ -197,7 +198,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseArrayOf(type: ArrayOf, children?: Array<R>): R {
+  private parseArrayOf(type: ArrayType, children?: Array<R>): R {
     const schema: JSONSchema6 = {
       type: "array",
       items: children?.filter(isDefined),
@@ -208,7 +209,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseTuple(type: Tuple, children?: Array<R>): R {
+  private parseTuple(type: TupleType, children?: Array<R>): R {
     const items = children?.map((c) => c ?? {}) ?? [];
 
     const schema: JSONSchema6 = {
@@ -225,8 +226,8 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
   }
 
   private parseRecordOf(
-    type: RecordOf,
-    children: RecordOfVisitChild<R>[] = [],
+    type: RecordType,
+    children: RecordVisitChild<R>[] = [],
   ): R {
     const schema: JSONSchema6 = {
       type: "object",
@@ -255,7 +256,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseDict(type: Dict, children?: Array<R>): R {
+  private parseDict(type: DictType, children?: Array<R>): R {
     const schema: JSONSchema6 = {
       type: "object",
       additionalProperties: {
@@ -268,11 +269,11 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseSetOf(type: SetOf, children: Array<R> = []): R {
+  private parseSetOf(type: SetType, children: Array<R> = []): R {
     if (this.customParser.Set) {
       return this.customParser.Set(
         children.filter(isDefined),
-        type as any as Set<AnyDataType[]>,
+        type as any as Set<AnyType[]>,
         this.options,
       );
     }
@@ -291,7 +292,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseOneOf(type: OneOf, children: Array<R>): R {
+  private parseOneOf(type: UnionType, children: Array<R>): R {
     const schema: JSONSchema6 = {
       anyOf: children.filter(isDefined),
     };
@@ -301,7 +302,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseAllOf(type: AllOf, children: Array<R>): R {
+  private parseAllOf(type: IntersectionType, children: Array<R>): R {
     const schema: JSONSchema6 = {
       allOf: children.filter(isDefined),
     };
@@ -311,7 +312,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseLiteral(type: Literal): R {
+  private parseLiteral(type: LiteralType): R {
     const schema: JSONSchema6 = {};
 
     this.assignMetadataToSchema(schema, type);
@@ -339,7 +340,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     );
   }
 
-  private parseEnum(type: Enum): R {
+  private parseEnum(type: EnumType): R {
     const members = Object.entries(type.enumInstance);
 
     const schema: JSONSchema6 = {
@@ -348,7 +349,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
 
     for (const [key, member] of members) {
       const subSchema = this.parseEnumMember(
-        DataType.EnumMember(member as string | number),
+        Type.EnumMember(member as string | number),
       );
 
       subSchema.title = key;
@@ -361,7 +362,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseEnumMember(type: EnumMember): JSONSchema6 {
+  private parseEnumMember(type: EnumMemberType): JSONSchema6 {
     const schema: JSONSchema6 = {};
 
     this.assignMetadataToSchema(schema, type);
@@ -383,7 +384,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     );
   }
 
-  private parseInstanceOf(type: InstanceOf): R {
+  private parseInstanceOf(type: InstanceOfType): R {
     if (this.customParser.InstanceOf) {
       return this.customParser.InstanceOf(type, this.options);
     }
@@ -400,7 +401,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseCustom(type: Custom): R {
+  private parseCustom(type: CustomType): R {
     if (this.customParser.Custom) {
       return this.customParser.Custom(type.custom, type, this.options);
     }
@@ -419,7 +420,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseStringMatching(type: StringMatching): R {
+  private parseStringMatching(type: StringMatchingType): R {
     const schema: JSONSchema6 = {
       type: "string",
       pattern: type.pattern.source,
@@ -437,7 +438,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return schema;
   }
 
-  private parseCircular(circular: Circular, children: R[]): R {
+  private parseCircular(circular: RecursiveType, children: R[]): R {
     const [childSchema] = children;
     const child = circular.type;
 
@@ -456,7 +457,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     return childSchema;
   }
 
-  private parseCircularRef(type: CircularRef): R {
+  private parseCircularRef(type: RecursiveTypeReference): R {
     const referencedType = type._getReferencedType();
 
     if (this.definitionNames.has(referencedType)) {
@@ -465,7 +466,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
       };
     }
 
-    const metadata = BaseDataType.getOriginalMetadata(referencedType);
+    const metadata = BaseType.getOriginalMetadata(referencedType);
     const title = metadata.title;
 
     if (title) {
@@ -485,9 +486,9 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
     };
   }
 
-  visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
-  visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
-  visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
+  visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
+  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
     switch (type.kind) {
       case "simple":
         return this.parsePrimitive(type);
@@ -496,7 +497,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
       case "tuple":
         return this.parseTuple(type, children as R[]);
       case "record":
-        return this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
+        return this.parseRecordOf(type, children as RecordVisitChild<R>[]);
       case "dictionary":
         return this.parseDict(type, children as R[]);
       case "set":
@@ -527,7 +528,7 @@ class DataTypeJsonSchemaGenerator implements DataTypeVisitor<R> {
 
 /** Translates given DataType into a JSON Schema. */
 export const toJsonSchema = (
-  type: AnyDataType,
+  type: AnyType,
   options: ParseToJsonSchemaOptions = {},
   include$schemaProperty = true,
 ): JSONSchema6 | undefined => {

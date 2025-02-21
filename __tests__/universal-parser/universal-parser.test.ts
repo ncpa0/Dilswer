@@ -1,10 +1,10 @@
+import { RecordVisitChild } from "@DataTypes/types";
 import {
-  AnyDataType,
-  DataType,
-  DataTypeVisitor,
+  AnyType,
   parseWith,
-  RecordOf,
-  RecordOfVisitChild,
+  RecordType,
+  Type,
+  TypeVisitor,
 } from "../../src/index";
 
 describe("parseWith", () => {
@@ -12,19 +12,19 @@ describe("parseWith", () => {
     type TestParsedFormat = {
       name: string;
       simpleType?: string;
-      children: TestParsedFormat[] | RecordOfVisitChild<TestParsedFormat>[];
+      children: TestParsedFormat[] | RecordVisitChild<TestParsedFormat>[];
     };
 
-    class TestVisitor implements DataTypeVisitor<TestParsedFormat> {
+    class TestVisitor implements TypeVisitor<TestParsedFormat> {
       visit(
-        dataType: Exclude<AnyDataType, RecordOf>,
+        dataType: Exclude<AnyType, RecordType>,
         children?: TestParsedFormat[],
       ): TestParsedFormat;
       visit(
-        dataType: RecordOf,
-        children?: RecordOfVisitChild<TestParsedFormat>[],
+        dataType: RecordType,
+        children?: RecordVisitChild<TestParsedFormat>[],
       ): TestParsedFormat;
-      visit(dataType: AnyDataType, children: any[] = []): TestParsedFormat {
+      visit(dataType: AnyType, children: any[] = []): TestParsedFormat {
         return {
           name: dataType.kind,
           simpleType: dataType.kind === "simple"
@@ -41,12 +41,12 @@ describe("parseWith", () => {
 
     const parsed = parseWith(
       new TestVisitor(),
-      DataType.RecordOf({
-        foo: DataType.String,
-        bar: DataType.Number,
-        baz: DataType.RecordOf({
-          qux: DataType.Boolean,
-          quux: DataType.ArrayOf(DataType.String),
+      Type.Record({
+        foo: Type.String,
+        bar: Type.Number,
+        baz: Type.Record({
+          qux: Type.Boolean,
+          quux: Type.Array(Type.String),
         }),
       }),
     );
@@ -103,8 +103,8 @@ describe("parseWith", () => {
 
     const visitor = {
       visit(
-        type: AnyDataType,
-        children?: Node[] | RecordOfVisitChild<Node>[],
+        type: AnyType,
+        children?: Node[] | RecordVisitChild<Node>[],
       ): Node {
         switch (type.kind) {
           case "simple":
@@ -114,7 +114,7 @@ describe("parseWith", () => {
               typeName: "record",
               children: children
                 && Object.fromEntries(
-                  (children as RecordOfVisitChild<Node>[]).map(
+                  (children as RecordVisitChild<Node>[]).map(
                     ({ propertyName, child }) => [propertyName, child],
                   ),
                 ),
@@ -125,10 +125,10 @@ describe("parseWith", () => {
       },
     };
 
-    const type = DataType.RecordOf({
-      foo: DataType.String,
-      bar: DataType.ArrayOf(DataType.Number),
-      baz: DataType.OneOf(DataType.String, DataType.Number),
+    const type = Type.Record({
+      foo: Type.String,
+      bar: Type.Array(Type.Number),
+      baz: Type.OneOf(Type.String, Type.Number),
     });
 
     const nodeTree = parseWith(visitor, type);

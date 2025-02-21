@@ -4,17 +4,28 @@ const ark = require("arktype");
 const zod = require("zod");
 const valibot = require("valibot");
 
+const validOnly = process.argv.includes("--valid-only");
+
 const Bench = require("benchmark");
 /**
  * @type {import("../src/index")}
  */
 const dilswer = require("../dist/cjs/index.cjs");
+const { instance } = require("valibot");
 const {
   compileFastValidator,
   Type,
-  createValidator,
-  ensureDataType,
+  validator,
 } = dilswer;
+
+async function main() {
+  await large();
+  await medium();
+  await small();
+  await mini();
+  await micro();
+  // await deeplyNestedRecord();
+}
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 /**
@@ -24,23 +35,24 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
  * @param {any} correctData
  * @returns
  */
-const checkSchemasCorrect = (schemas, correctData) => {
-  const validate = createValidator(schemas.dilswer);
+const checkSchemasCorrect = (schemas, correctData, incorrectData) => {
+  const validate = validator(schemas.dilswer);
   const fastValidate = compileFastValidator(schemas.dilswer);
 
   const zodResult = schemas.zod.safeParse(correctData);
   const valibotResult = valibot.safeParse(schemas.valibot, correctData);
   const arktResult = schemas.arkttype(correctData);
-
   const dilswerResult = validate(correctData);
   const fastDilswerResult = fastValidate(correctData);
+
+  // console.log("arktResult", arktResult);
 
   if (
     !dilswerResult
     || !fastDilswerResult
     || !zodResult.success
     || !valibotResult.success
-    || !arktResult
+    || (arktResult instanceof ark.type.errors)
   ) {
     console.log("Schemas are incorrect");
     console.log("Dilswer:", dilswerResult);
@@ -48,7 +60,34 @@ const checkSchemasCorrect = (schemas, correctData) => {
     console.log("Zod:", zodResult);
     console.log("Valibot:", valibotResult);
     console.log("ArkType:", arktResult);
-    return false;
+    throw new Error("Schemas are incorrect");
+  }
+
+  const zodInvalidResult = schemas.zod.safeParse(incorrectData);
+  const valibotInvalidResult = valibot.safeParse(
+    schemas.valibot,
+    incorrectData,
+  );
+  const arktInvalidResult = schemas.arkttype(incorrectData);
+  const dilswerInvalidResult = validate(incorrectData);
+  const fastDilswerInvalidResult = fastValidate(incorrectData);
+
+  // console.log("arktInvalidResult", arktInvalidResult);
+
+  if (
+    dilswerInvalidResult
+    || fastDilswerInvalidResult
+    || zodInvalidResult.success
+    || valibotInvalidResult.success
+    || !(arktInvalidResult instanceof ark.type.errors)
+  ) {
+    console.log("Schemas are incorrect");
+    console.log("Dilswer:", dilswerInvalidResult);
+    console.log("Fast Dilswer:", fastDilswerInvalidResult);
+    console.log("Zod:", zodInvalidResult);
+    console.log("Valibot:", valibotInvalidResult);
+    console.log("ArkType:", arktInvalidResult);
+    throw new Error("Schemas are incorrect");
   }
 
   return true;
@@ -77,7 +116,11 @@ const checkSchemasCorrect = (schemas, correctData) => {
  * @returns
  */
 const runSuiteForSample = (name, data, schemas) => {
-  const validate = createValidator(schemas.dilswer);
+  if (validOnly && name.includes("invalid")) {
+    return;
+  }
+
+  const validate = validator(schemas.dilswer);
   const fastValidate = compileFastValidator(schemas.dilswer);
 
   console.log(separator + "\n");
@@ -86,7 +129,7 @@ const runSuiteForSample = (name, data, schemas) => {
       `\u001b[1m\u001b[37mValidators benchmark, sample: \u001b[33m${name}\u001b[0m`,
     );
     suite
-      .add("Dilswer createValidator", function() {
+      .add("Dilswer validator", function() {
         validate(data);
       })
       .add("Dilswer compileFastValidator", function() {
@@ -168,7 +211,7 @@ const micro = async () => {
 
 const mini = async () => {
   const miniSchames = {
-    dilswer: Type.RecordOf({
+    dilswer: Type.Record({
       foo: Type.String,
       bar: Type.Number,
     }),
@@ -187,7 +230,7 @@ const mini = async () => {
     bar: "def",
   };
 
-  checkSchemasCorrect(miniSchames, validData);
+  checkSchemasCorrect(miniSchames, validData, invalidData);
 
   await runSuiteForSample("mini - valid", validData, miniSchames);
   await runSuiteForSample("mini - invalid", invalidData, miniSchames);
@@ -195,11 +238,11 @@ const mini = async () => {
 
 const small = async () => {
   const smallSchemas = {
-    dilswer: Type.RecordOf({
+    dilswer: Type.Record({
       foo: Type.String,
       bar: Type.Number,
       baz: Type.Boolean,
-      qux: Type.ArrayOf(Type.String),
+      qux: Type.Array(Type.String),
       quux: Type.Null,
     }),
     zod: zod.object({
@@ -249,7 +292,7 @@ const small = async () => {
     quux: null,
   };
 
-  checkSchemasCorrect(smallSchemas, validData);
+  checkSchemasCorrect(smallSchemas, validData, invalidData1);
 
   await runSuiteForSample("small - valid", validData, smallSchemas);
   await runSuiteForSample("small - invalid 1", invalidData1, smallSchemas);
@@ -258,16 +301,16 @@ const small = async () => {
 
 const medium = async () => {
   const mediumSchemas = {
-    dilswer: Type.RecordOf({
+    dilswer: Type.Record({
       foo: Type.String,
       bar: Type.Number,
       baz: Type.Boolean,
-      qux: Type.ArrayOf(
-        Type.RecordOf({
+      qux: Type.Array(
+        Type.Record({
           quux: Type.String,
           quuz: Type.Number,
           corge: Type.Boolean,
-          grault: Type.ArrayOf(Type.String),
+          grault: Type.Array(Type.String),
           garply: Type.Null,
         }),
       ),
@@ -305,13 +348,13 @@ const medium = async () => {
       foo: "string",
       bar: "number",
       baz: "boolean",
-      qux: {
+      qux: ark.type({
         quux: "string",
         quuz: "number",
         corge: "boolean",
         grault: "string[]",
         garply: "null",
-      },
+      }).array(),
       waldo: "null",
     }),
   };
@@ -430,7 +473,7 @@ const medium = async () => {
     waldo: null,
   };
 
-  checkSchemasCorrect(mediumSchemas, validData);
+  checkSchemasCorrect(mediumSchemas, validData, invalidData1);
 
   await runSuiteForSample("medium - valid", validData, mediumSchemas);
   await runSuiteForSample("medium - invalid 1", invalidData1, mediumSchemas);
@@ -438,31 +481,31 @@ const medium = async () => {
 
 const large = async () => {
   const largeSchemas = {
-    dilswer: Type.RecordOf({
+    dilswer: Type.Record({
       foo: Type.String,
       bar: Type.Number,
       baz: Type.Boolean,
-      qux: Type.ArrayOf(
-        Type.RecordOf({
+      qux: Type.Array(
+        Type.Record({
           quux: Type.StringInt,
           quuz: Type.Int,
           corge: Type.Boolean,
-          grault: Type.ArrayOf(
-            Type.RecordOf({
+          grault: Type.Array(
+            Type.Record({
               garply: Type.String,
               waldo: Type.StringNumeral,
               fred: Type.Boolean,
-              plugh: Type.ArrayOf(Type.String, Type.Number, Type.Boolean),
+              plugh: Type.Array(Type.String, Type.Number, Type.Boolean),
               xyzzy: Type.Null,
             }),
           ),
           thud: Type.Function,
           paparapr: Type.Dict(Type.String, Type.Number),
           regexp: Type.InstanceOf(RegExp),
-          entries: Type.ArrayOf(
+          entries: Type.Array(
             Type.Tuple(
               Type.String,
-              Type.RecordOf({
+              Type.Record({
                 value: Type.String,
                 done: Type.Boolean,
               }),
@@ -493,7 +536,7 @@ const large = async () => {
             }),
           ),
           thud: zod.function(),
-          paparapr: zod.record(zod.number()),
+          paparapr: zod.record(zod.union([zod.string(), zod.number()])),
           regexp: zod.instanceof(RegExp),
           entries: zod.array(
             zod.tuple([
@@ -503,6 +546,7 @@ const large = async () => {
           ),
         }),
       ),
+      wibble: zod.null(),
     }),
     valibot: valibot.object({
       foo: valibot.string(),
@@ -544,25 +588,25 @@ const large = async () => {
       foo: "string",
       bar: "number",
       baz: "boolean",
-      qux: {
+      qux: ark.type({
         quux: "string",
         quuz: "number",
         corge: "boolean",
-        grault: [
-          {
-            garply: "string",
-            waldo: "string",
-            fred: "boolean",
-            plugh: "(string | number | boolean)[]",
-            xyzzy: "null",
-          },
-        ],
+        grault: ark.type({
+          garply: "string",
+          waldo: "string",
+          fred: "boolean",
+          plugh: "(string | number | boolean)[]",
+          xyzzy: "null",
+        }).array(),
         thud: "Function",
-        paparapr: "number",
+        paparapr: ark.type({
+          "[string | symbol]": "number | string",
+        }),
         regexp: "RegExp",
         entries: ark.type(["string", { value: "string", done: "boolean" }])
           .array(),
-      },
+      }).array(),
       wibble: "null",
     }),
   };
@@ -2295,295 +2339,11 @@ const large = async () => {
     wibble: null,
   };
 
-  checkSchemasCorrect(largeSchemas, validData);
+  checkSchemasCorrect(largeSchemas, validData, invalidData1);
 
   await runSuiteForSample("large - valid", validData, largeSchemas);
   await runSuiteForSample("large - invalid 1", invalidData1, largeSchemas);
   await runSuiteForSample("large - invalid 2", invalidData2, largeSchemas);
 };
-
-// const deeplyNestedRecord = async () => {
-//   const sample = Type.RecordOf({
-//     foo: Type.String,
-//     bar: Type.Number,
-//     baz: Type.Boolean,
-//     qux: Type.StringNumeral,
-//     quux: Type.StringInt,
-//     quuz: Type.OneOf(Type.Literal("a"), Type.Literal("b"), Type.Literal("c")),
-//     corge: Type.Int,
-//     grault: Type.RecordOf({
-//       foo: Type.String,
-//       bar: Type.Number,
-//       baz: Type.Boolean,
-//       qux: Type.StringNumeral,
-//       quux: Type.StringInt,
-//       quuz: Type.OneOf(Type.Literal("a"), Type.Literal("b"), Type.Literal("c")),
-//       corge: Type.Int,
-//       grault: Type.RecordOf({
-//         foo: Type.String,
-//         bar: Type.Number,
-//         baz: Type.Boolean,
-//         qux: Type.StringNumeral,
-//         quux: Type.StringInt,
-//         quuz: Type.OneOf(
-//           Type.Literal("a"),
-//           Type.Literal("b"),
-//           Type.Literal("c"),
-//         ),
-//         corge: Type.Int,
-//         grault: Type.RecordOf({
-//           foo: Type.String,
-//           bar: Type.Number,
-//           baz: Type.Boolean,
-//           qux: Type.StringNumeral,
-//           quux: Type.StringInt,
-//           quuz: Type.OneOf(
-//             Type.Literal("a"),
-//             Type.Literal("b"),
-//             Type.Literal("c"),
-//           ),
-//           corge: Type.Int,
-//           grault: Type.RecordOf({
-//             foo: Type.String,
-//             bar: Type.Number,
-//             baz: Type.Boolean,
-//             qux: Type.StringNumeral,
-//             quux: Type.StringInt,
-//             quuz: Type.OneOf(
-//               Type.Literal("a"),
-//               Type.Literal("b"),
-//               Type.Literal("c"),
-//             ),
-//             corge: Type.Int,
-//             grault: Type.RecordOf({
-//               foo: Type.String,
-//               bar: Type.Number,
-//               baz: Type.Boolean,
-//               qux: Type.StringNumeral,
-//               quux: Type.StringInt,
-//               quuz: Type.OneOf(
-//                 Type.Literal("a"),
-//                 Type.Literal("b"),
-//                 Type.Literal("c"),
-//               ),
-//               corge: Type.Int,
-//               grault: Type.RecordOf({
-//                 foo: Type.String,
-//                 bar: Type.Number,
-//                 baz: Type.Boolean,
-//                 qux: Type.StringNumeral,
-//                 quux: Type.StringInt,
-//                 quuz: Type.OneOf(
-//                   Type.Literal("a"),
-//                   Type.Literal("b"),
-//                   Type.Literal("c"),
-//                 ),
-//                 corge: Type.Int,
-//               }),
-//             }),
-//           }),
-//         }),
-//       }),
-//     }),
-//   });
-
-//   const validData = {
-//     foo: "cv39487nb50983457nv8 3n7589vn459873cm4",
-//     bar: -12445,
-//     baz: true,
-//     qux: "123.135235",
-//     quux: "1230000",
-//     quuz: "a",
-//     corge: 123,
-//     grault: {
-//       foo: "dflwpe",
-//       bar: 0o777,
-//       baz: false,
-//       qux: "12",
-//       quux: "0",
-//       quuz: "b",
-//       corge: 0,
-//       grault: {
-//         foo: "",
-//         bar: 0,
-//         baz: true,
-//         qux: ".21398167123",
-//         quux: "1111111111111111111111",
-//         quuz: "c",
-//         corge: -123,
-//         grault: {
-//           foo: "dflwpe",
-//           bar: 0o777,
-//           baz: false,
-//           qux: "12",
-//           quux: "0",
-//           quuz: "b",
-//           corge: 0,
-//           grault: {
-//             foo: "",
-//             bar: 0,
-//             baz: true,
-//             qux: ".21398167123",
-//             quux: "1111111111111111111111",
-//             quuz: "c",
-//             corge: -123,
-//             grault: {
-//               foo: "",
-//               bar: 0,
-//               baz: true,
-//               qux: ".21398167123",
-//               quux: "1111111111111111111111",
-//               quuz: "c",
-//               corge: -123,
-//               grault: {
-//                 foo: "",
-//                 bar: 0,
-//                 baz: true,
-//                 qux: ".21398167123",
-//                 quux: "1111111111111111111111",
-//                 quuz: "c",
-//                 corge: -123,
-//               },
-//             },
-//           },
-//         },
-//       },
-//     },
-//   };
-
-//   const invalidData1 = {
-//     foo: "cv39487nb50983457nv8 3n7589vn459873cm4",
-//     bar: -12445,
-//     baz: true,
-//     qux: "123.135235",
-//     quux: "1230000",
-//     quuz: "a",
-//     corge: 123,
-//     grault: {
-//       foo: "dflwpe",
-//       bar: "0o777",
-//       baz: false,
-//       qux: "12",
-//       quux: "0",
-//       quuz: "b",
-//       corge: 0,
-//       grault: {
-//         foo: "",
-//         bar: 0,
-//         baz: true,
-//         qux: ".21398167123",
-//         quux: "1111111111111111111111",
-//         quuz: "c",
-//         corge: -123,
-//         grault: {
-//           foo: "dflwpe",
-//           bar: 0o777,
-//           baz: false,
-//           qux: "12",
-//           quux: "0",
-//           quuz: "b",
-//           corge: 0,
-//           grault: {
-//             foo: "",
-//             bar: 0,
-//             baz: true,
-//             qux: ".21398167123",
-//             quux: "1111111111111111111111",
-//             quuz: "c",
-//             corge: -123,
-//             grault: {
-//               foo: "",
-//               bar: 0,
-//               baz: true,
-//               qux: ".21398167123",
-//               quux: "1111111111111111111111",
-//               quuz: "c",
-//               corge: -123,
-//               grault: {},
-//             },
-//           },
-//         },
-//       },
-//     },
-//   };
-
-//   const invalidData2 = {
-//     foo: "cv39487nb50983457nv8 3n7589vn459873cm4",
-//     bar: -12445,
-//     baz: true,
-//     qux: "123.135235",
-//     quux: "1230000",
-//     quuz: "a",
-//     corge: 123,
-//     grault: {
-//       foo: "dflwpe",
-//       bar: 0o777,
-//       baz: false,
-//       qux: "12",
-//       quux: "0",
-//       quuz: "b",
-//       corge: 0,
-//       grault: {
-//         foo: "",
-//         bar: 0,
-//         baz: true,
-//         qux: ".21398167123",
-//         quux: "1111111111111111111111",
-//         quuz: "c",
-//         corge: -123,
-//         grault: {
-//           foo: "dflwpe",
-//           bar: 0o777,
-//           baz: false,
-//           qux: "12",
-//           quux: "0",
-//           quuz: "b",
-//           corge: 0,
-//           grault: {
-//             foo: "",
-//             bar: 0,
-//             baz: true,
-//             qux: ".21398167123",
-//             quux: "1111111111111111111111",
-//             quuz: "c",
-//             corge: -123,
-//             grault: {
-//               foo: "",
-//               bar: 0,
-//               baz: true,
-//               qux: ".21398167123",
-//               quux: "1111111111111111111111",
-//               quuz: "c",
-//               corge: -123.1,
-//             },
-//           },
-//         },
-//       },
-//     },
-//   };
-
-//   ensureDataType(sample, validData);
-
-//   await runSuiteForSample("deeply nested record - valid", sample, validData);
-//   await runSuiteForSample(
-//     "deeply nested record - invalid 1",
-//     sample,
-//     invalidData1,
-//   );
-//   await runSuiteForSample(
-//     "deeply nested record - invalid 2",
-//     sample,
-//     invalidData2,
-//   );
-// };
-
-async function main() {
-  await large();
-  await medium();
-  await small();
-  await mini();
-  await micro();
-  // await deeplyNestedRecord();
-}
 
 main();

@@ -1,28 +1,31 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
-import type {
-  Circular,
-  CircularRef,
-  InstanceOf,
-  SimpleDataType,
-  Tuple,
-} from "@DataTypes/data-types";
-import { BaseDataType, StringMatching } from "@DataTypes/data-types";
+
+import { BaseType } from "@DataTypes/data-types";
 import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
-  AllOf,
-  AnyDataType,
-  ArrayOf,
-  BasicDataType,
-  Custom,
-  DataTypeVisitor,
-  Dict,
-  Literal,
-  OneOf,
-  RecordOf,
-  RecordOfVisitChild,
-  SetOf,
+  AnyType,
+  BasicType,
+  RecordVisitChild,
+  TypeVisitor,
 } from "@DataTypes/types";
-import { Enum, EnumMember } from "@DataTypes/types";
+import type { ArrayType } from "@DataTypes/types/array";
+import type { CustomType } from "@DataTypes/types/custom";
+import type { DictType } from "@DataTypes/types/dict";
+import { EnumType } from "@DataTypes/types/enum";
+import { EnumMemberType } from "@DataTypes/types/enum-member";
+import type { FunctionType } from "@DataTypes/types/function";
+import type { InstanceOfType } from "@DataTypes/types/instance";
+import type { IntersectionType } from "@DataTypes/types/intersection";
+import type { LiteralType } from "@DataTypes/types/literal";
+import type { RecordType } from "@DataTypes/types/record";
+import type {
+  RecursiveType,
+  RecursiveTypeReference,
+} from "@DataTypes/types/recursive";
+import type { SetType } from "@DataTypes/types/set";
+import { StringMatchingType } from "@DataTypes/types/string-matching";
+import type { TupleType } from "@DataTypes/types/tuple";
+import type { UnionType } from "@DataTypes/types/union";
 import { TsFileScope } from "@TsTypeGenerator/file-scope";
 import { NameGenerator } from "@TsTypeGenerator/name-generator";
 import type {
@@ -96,7 +99,7 @@ export class ExternalTypeImportProxy {
 
 type R = TsBuilder;
 
-class DataTypeTsGenerator implements DataTypeVisitor<R> {
+class DataTypeTsGenerator implements TypeVisitor<R> {
   fileScope: TsFileScope;
 
   constructor(private options: TsParsingOptions) {
@@ -130,7 +133,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
   }
 
   private getExternalTypeImport = function(
-    type: any,
+    _: any,
   ): ExternalTypeImportProxy | undefined {
     return undefined;
   };
@@ -148,8 +151,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     // default behavior for compact mode: do nothing
   };
 
-  private tsAddMetadataToBuilder(builder: TsBaseBuilder, type: AnyDataType) {
-    const metadata = BaseDataType.getOriginalMetadata(type);
+  private tsAddMetadataToBuilder(builder: TsBaseBuilder, type: AnyType) {
+    const metadata = BaseType.getOriginalMetadata(type);
 
     if (metadata.title) {
       builder.setIsTitled(true);
@@ -163,7 +166,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return metadata;
   }
 
-  private parseFunctionType(type: SimpleDataType<"function">) {
+  private parseFunctionType(type: FunctionType) {
     const externalImport = this.getExternalTypeImport(type);
 
     if (externalImport) {
@@ -180,7 +183,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return builder;
   }
 
-  private parsePrimitive(type: BasicDataType): R {
+  private parsePrimitive(type: BasicType): R {
     let builder: TsBaseBuilder & TsBuilder;
 
     switch (type.simpleType) {
@@ -217,7 +220,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return builder;
   }
 
-  private parseArrayOf(type: ArrayOf, children: Array<R> = []): R {
+  private parseArrayOf(type: ArrayType, children: Array<R> = []): R {
     const builder = new TsArrayBuilder();
     this.tsAddMetadataToBuilder(builder, type);
 
@@ -226,7 +229,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseTuple(type: Tuple, children: Array<R> = []): R {
+  private parseTuple(type: TupleType, children: Array<R> = []): R {
     const builder = new TsTupleBuilder();
     this.tsAddMetadataToBuilder(builder, type);
 
@@ -236,8 +239,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
   }
 
   private parseRecordOf(
-    type: RecordOf,
-    children: RecordOfVisitChild<R>[] = [],
+    type: RecordType,
+    children: RecordVisitChild<R>[] = [],
   ): R {
     const builder = new TsRecordBuilder();
     this.tsAddMetadataToBuilder(builder, type);
@@ -250,7 +253,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseDict(type: Dict, children: Array<R> = []): R {
+  private parseDict(type: DictType, children: Array<R> = []): R {
     const builder = new TsDictBuilder();
     this.tsAddMetadataToBuilder(builder, type);
 
@@ -259,7 +262,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseSetOf(type: SetOf, children: Array<R> = []): R {
+  private parseSetOf(type: SetType, children: Array<R> = []): R {
     const builder = new TsSetBuilder();
     this.tsAddMetadataToBuilder(builder, type);
 
@@ -268,7 +271,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseOneOf(type: OneOf, children: Array<R>): R {
+  private parseOneOf(type: UnionType, children: Array<R>): R {
     const builder = new TsUnionBuilder();
     this.tsAddMetadataToBuilder(builder, type);
 
@@ -277,7 +280,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseAllOf(type: AllOf, children: Array<R>): R {
+  private parseAllOf(type: IntersectionType, children: Array<R>): R {
     const builder = new TsIntersectionBuilder();
     this.tsAddMetadataToBuilder(builder, type);
 
@@ -286,15 +289,15 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseLiteral(type: Literal): R {
+  private parseLiteral(type: LiteralType): R {
     const builder = new TsLiteralBuilder(type.literal);
     this.tsAddMetadataToBuilder(builder, type);
 
     return builder;
   }
 
-  private parseEnum(type: Enum): R {
-    const metadata = Enum.getOriginalMetadata(type);
+  private parseEnum(type: EnumType): R {
+    const metadata = EnumType.getOriginalMetadata(type);
 
     let typeName = metadata.enumName;
 
@@ -318,8 +321,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return builder;
   }
 
-  private parseEnumMember(type: EnumMember): R {
-    const metadata = EnumMember.getOriginalMetadata(type);
+  private parseEnumMember(type: EnumMemberType): R {
+    const metadata = EnumMemberType.getOriginalMetadata(type);
     const externalImport = this.getExternalTypeImport(type);
 
     const typeName = metadata.enumName ?? externalImport?.typeName;
@@ -341,7 +344,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return builder;
   }
 
-  private parseInstanceOf(type: InstanceOf): R {
+  private parseInstanceOf(type: InstanceOfType): R {
     const constructor = type.instanceOf as new() => unknown;
 
     let typeName = constructor.name;
@@ -364,7 +367,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseCustom(type: Custom): R {
+  private parseCustom(type: CustomType): R {
     const externalImport = this.getExternalTypeImport(type);
 
     if (externalImport) {
@@ -382,8 +385,8 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return builder;
   }
 
-  private parseStringMatching(type: StringMatching): R {
-    const { tsPattern } = StringMatching.getOriginalMetadata(type);
+  private parseStringMatching(type: StringMatchingType): R {
+    const { tsPattern } = StringMatchingType.getOriginalMetadata(type);
 
     const builder = new TsStringMatchingBuilder(tsPattern);
     this.tsAddMetadataToBuilder(builder, type);
@@ -391,7 +394,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return this.addFileExportAndResolveBuilder(builder);
   }
 
-  private parseCircular(type: Circular, children: R[]): R {
+  private parseCircular(type: RecursiveType, children: R[]): R {
     const childType = type.type;
     const [actualType] = children;
 
@@ -404,10 +407,10 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return actualType;
   }
 
-  private parseCircularRef(type: CircularRef): R {
+  private parseCircularRef(type: RecursiveTypeReference): R {
     const referencedType = type._getReferencedType();
 
-    const metadata = BaseDataType.getOriginalMetadata(referencedType);
+    const metadata = BaseType.getOriginalMetadata(referencedType);
     const title = metadata.title;
 
     if (this.circulars.has(referencedType)) {
@@ -427,11 +430,11 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
     return new TsNamedReference(typeName);
   }
 
-  private circulars: Map<AnyDataType, string> = new Map();
+  private circulars: Map<AnyType, string> = new Map();
 
-  visit(dataType: Exclude<AnyDataType, RecordOf>, children?: R[]): R;
-  visit(dataType: RecordOf, children?: RecordOfVisitChild<R>[]): R;
-  visit(type: AnyDataType, children?: (R | RecordOfVisitChild<R>)[]): R {
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
+  visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
+  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
     switch (type.kind) {
       case "simple":
         return this.parsePrimitive(type);
@@ -440,7 +443,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
       case "tuple":
         return this.parseTuple(type, children as R[]);
       case "record":
-        return this.parseRecordOf(type, children as RecordOfVisitChild<R>[]);
+        return this.parseRecordOf(type, children as RecordVisitChild<R>[]);
       case "dictionary":
         return this.parseDict(type, children as R[]);
       case "set":
@@ -474,7 +477,7 @@ class DataTypeTsGenerator implements DataTypeVisitor<R> {
  * DataType.
  */
 export const toTsType = (
-  dataType: AnyDataType,
+  dataType: AnyType,
   options?: Partial<TsParsingOptions>,
 ): string => {
   try {
