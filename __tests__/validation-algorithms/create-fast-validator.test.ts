@@ -4,7 +4,7 @@ import type {
   ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
-import { AnyDataType, compileFastValidator, Type } from "../../src";
+import { AnyType, compileFastValidator, Type } from "../../src";
 
 const TRUE_SYM = Symbol("true");
 type True = typeof TRUE_SYM;
@@ -19,7 +19,7 @@ type AssertEqual<T, U> = [T] extends [U]
   : AssertionFailed<"Values are not equal", { T: T; U: U }>
   : AssertionFailed<"Values are not equal", { T: T; U: U }>;
 
-type AssertType<T, U extends AnyDataType> = AssertEqual<
+type AssertType<T, U extends AnyType> = AssertEqual<
   T,
   ReWrap<ParseDataType<U>>
 >;

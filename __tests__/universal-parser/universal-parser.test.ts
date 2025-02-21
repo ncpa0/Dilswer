@@ -1,10 +1,10 @@
 import { RecordVisitChild } from "@DataTypes/types";
 import {
-  AnyDataType,
-  DataTypeVisitor,
+  AnyType,
   parseWith,
   RecordType,
   Type,
+  TypeVisitor,
 } from "../../src/index";
 
 describe("parseWith", () => {
@@ -15,16 +15,16 @@ describe("parseWith", () => {
       children: TestParsedFormat[] | RecordVisitChild<TestParsedFormat>[];
     };
 
-    class TestVisitor implements DataTypeVisitor<TestParsedFormat> {
+    class TestVisitor implements TypeVisitor<TestParsedFormat> {
       visit(
-        dataType: Exclude<AnyDataType, RecordType>,
+        dataType: Exclude<AnyType, RecordType>,
         children?: TestParsedFormat[],
       ): TestParsedFormat;
       visit(
         dataType: RecordType,
         children?: RecordVisitChild<TestParsedFormat>[],
       ): TestParsedFormat;
-      visit(dataType: AnyDataType, children: any[] = []): TestParsedFormat {
+      visit(dataType: AnyType, children: any[] = []): TestParsedFormat {
         return {
           name: dataType.kind,
           simpleType: dataType.kind === "simple"
@@ -103,7 +103,7 @@ describe("parseWith", () => {
 
     const visitor = {
       visit(
-        type: AnyDataType,
+        type: AnyType,
         children?: Node[] | RecordVisitChild<Node>[],
       ): Node {
         switch (type.kind) {

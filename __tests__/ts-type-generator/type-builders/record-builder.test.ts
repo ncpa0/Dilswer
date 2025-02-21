@@ -1,10 +1,10 @@
-import { OptionalField, toTsType, Type } from "../../../src/index";
+import { toTsType, Type } from "../../../src/index";
 
 describe("TsRecordBuilder", () => {
   it("should correctly generate a simple record type", () => {
     const dt = Type.Record({
       foo: Type.String,
-      bar: OptionalField(Type.Number),
+      bar: Type.Option(Type.Number),
     });
 
     const tsType = toTsType(dt);
@@ -18,7 +18,7 @@ describe("TsRecordBuilder", () => {
   it("should correctly generate a simple record type with title and description", () => {
     const dt = Type.Record({
       foo: Type.String,
-      bar: OptionalField(Type.Number),
+      bar: Type.Option(Type.Number),
     });
 
     dt.setTitle("MyRec");
