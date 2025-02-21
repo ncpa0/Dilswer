@@ -2,7 +2,7 @@ import type { CircularType } from "@DataTypes/circular-type-utils";
 import { BaseType } from "@DataTypes/data-types";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { ReWrap } from "@DataTypes/type-utils";
-import type { AnyDataType, TypeVisitor } from "@DataTypes/types";
+import type { AnyType, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import type { StandardSchemaV1 } from "standard-schema";
 
@@ -18,9 +18,9 @@ import type { StandardSchemaV1 } from "standard-schema";
  *
  * This Set should be cleared after each validation pass.
  */
-export const validatedCircularValues = new Map<AnyDataType, Set<any>>();
+export const validatedCircularValues = new Map<AnyType, Set<any>>();
 
-export const wasCircValidated = (type: AnyDataType, data: unknown) => {
+export const wasCircValidated = (type: AnyType, data: unknown) => {
   let set = validatedCircularValues.get(type);
 
   if (!set) {
@@ -41,7 +41,7 @@ export class RecursiveTypeReference extends BaseType {
   readonly kind = "circularRef";
 
   /** This is the type this reference points to. */
-  get type(): AnyDataType {
+  get type(): AnyType {
     return this.parent.type;
   }
 
@@ -50,7 +50,7 @@ export class RecursiveTypeReference extends BaseType {
   }
 
   /** @internal */
-  _getReferencedType(): AnyDataType {
+  _getReferencedType(): AnyType {
     return this.parent.type;
   }
 
@@ -77,7 +77,7 @@ export class RecursiveTypeReference extends BaseType {
   }
 }
 
-export class RecursiveType<DT extends AnyDataType = any> extends BaseType {
+export class RecursiveType<DT extends AnyType = any> extends BaseType {
   readonly kind = "circular";
   readonly type: DT;
 

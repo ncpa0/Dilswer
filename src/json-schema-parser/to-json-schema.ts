@@ -2,8 +2,8 @@ import { BaseType } from "@DataTypes/data-types";
 import { Type } from "@DataTypes/Type";
 import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
-  AnyDataType,
-  BasicDataType,
+  AnyType,
+  BasicType,
   RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/types";
@@ -60,7 +60,7 @@ export type ParseToJsonSchemaOptions = {
   customParser?: {
     Set?: (
       setItemsSchemas: JSONSchema6[],
-      original: Set<AnyDataType[]>,
+      original: Set<AnyType[]>,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Custom?: (
@@ -69,15 +69,15 @@ export type ParseToJsonSchemaOptions = {
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Undefined?: (
-      dataType: BasicDataType,
+      dataType: BasicType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Symbol?: (
-      dataType: BasicDataType,
+      dataType: BasicType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     Function?: (
-      dataType: BasicDataType,
+      dataType: BasicType,
       options: ParseToJsonSchemaOptions,
     ) => JSONSchema6 | undefined;
     InstanceOf?: (
@@ -98,7 +98,7 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
     ParseToJsonSchemaOptions["customParser"],
     undefined
   >;
-  private definitionNames: Map<AnyDataType, string> = new Map();
+  private definitionNames: Map<AnyType, string> = new Map();
   definitions: Map<string, JSONSchema6Definition> = new Map();
 
   constructor(private options: ParseToJsonSchemaOptions) {
@@ -112,7 +112,7 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
     );
   }
 
-  private assignMetadataToSchema(schema: JSONSchema6, type: AnyDataType) {
+  private assignMetadataToSchema(schema: JSONSchema6, type: AnyType) {
     const meta = BaseType.getOriginalMetadata(type);
 
     if (meta.title) schema.title = meta.title;
@@ -120,7 +120,7 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
     if (meta.format) schema.format = meta.format;
   }
 
-  private parsePrimitive(type: BasicDataType): R {
+  private parsePrimitive(type: BasicType): R {
     let schema: R = {};
 
     this.assignMetadataToSchema(schema, type);
@@ -273,7 +273,7 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
     if (this.customParser.Set) {
       return this.customParser.Set(
         children.filter(isDefined),
-        type as any as Set<AnyDataType[]>,
+        type as any as Set<AnyType[]>,
         this.options,
       );
     }
@@ -486,9 +486,9 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
     };
   }
 
-  visit(dataType: Exclude<AnyDataType, RecordType>, children?: R[]): R;
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
   visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
-  visit(type: AnyDataType, children?: (R | RecordVisitChild<R>)[]): R {
+  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
     switch (type.kind) {
       case "simple":
         return this.parsePrimitive(type);
@@ -528,7 +528,7 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
 
 /** Translates given DataType into a JSON Schema. */
 export const toJsonSchema = (
-  type: AnyDataType,
+  type: AnyType,
   options: ParseToJsonSchemaOptions = {},
   include$schemaProperty = true,
 ): JSONSchema6 | undefined => {

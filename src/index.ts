@@ -1,36 +1,25 @@
 import { BaseType } from "@DataTypes/data-types";
 import { Type } from "@DataTypes/Type";
-import { AnyDataType } from "@DataTypes/types";
-import {
-  And,
-  Exclude,
-  Omit,
-  OptionalField,
-  Partial,
-  Pick,
-  Required,
-} from "@Intrinsic/index";
+import { AnyType } from "@DataTypes/types";
+import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
 import { parseWith } from "@UniversalParser/universal-parser";
 import { compileFastValidator } from "@Validation/compile-fast-validator";
 import { validator } from "@Validation/create-validator";
-import { ensureValid } from "@Validation/ensure-data-type";
+import { assertType } from "@Validation/ensure-data-type";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
-const assertValid = ensureValid;
-
-export type { GetDataType } from "@DataTypes/type-utils";
+export type { Infer } from "@DataTypes/type-utils";
 export type {
-  AllDataTypes,
-  AnyDataType,
-  BasicDataType,
+  AnyType,
+  BasicType,
   BasicTypeNames,
-  ComplexDataType,
+  ComplexType,
   FieldDescriptor,
   RecordTypeSchema,
   TypeMetadata,
-  TypeVisitor as DataTypeVisitor,
+  TypeVisitor,
 } from "@DataTypes/types";
 export type { ArrayType } from "@DataTypes/types/array";
 export type { BooleanType } from "@DataTypes/types/boolean";
@@ -74,18 +63,16 @@ export type {
  * Metadata must be explicitly set on the DataType, otherwise it
  * will be an empty object.
  */
-const getMetadata = <T extends Record<any, any>>(dt: AnyDataType) =>
+const getMetadata = <T extends Record<any, any>>(dt: AnyType) =>
   BaseType.getMetadata<T>(dt);
 
 export {
   And,
-  assertValid,
+  assertType,
   compileFastValidator,
-  ensureValid,
   Exclude,
   getMetadata,
   Omit,
-  OptionalField,
   parseWith,
   Partial,
   Pick,
@@ -99,16 +86,14 @@ export {
 
 export default {
   And,
-  assertValid,
+  assertType,
   validator,
   compileFastValidator,
   ValidationError,
   Type,
-  ensureValid,
   Exclude,
   getMetadata,
   Omit,
-  OptionalField,
   Partial,
   Pick,
   Required,

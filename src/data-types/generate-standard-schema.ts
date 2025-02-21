@@ -1,14 +1,14 @@
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "standard-schema";
-import type { GetDataType } from "./type-utils";
-import type { AnyDataType } from "./types";
+import type { Infer } from "./type-utils";
+import type { AnyType } from "./types";
 
-export function getStandardSchemaProps<Self extends AnyDataType>(
-  type: AnyDataType,
+export function getStandardSchemaProps<Self extends AnyType>(
+  type: AnyType,
 ): StandardSchemaV1.Props<
   any,
-  GetDataType<Self>
+  Infer<Self>
 > {
   const root = Path.init("$");
 

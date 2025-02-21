@@ -6,9 +6,9 @@ import type {
   ParseBasicDataType,
 } from "@DataTypes/type-utils";
 import type {
-  AnyDataType,
-  BasicDataType,
-  ComplexDataType,
+  AnyType,
+  BasicType,
+  ComplexType,
   RecordTypeSchema,
 } from "./types";
 import type { ArrayType } from "./types/array";
@@ -75,7 +75,7 @@ type MapTupleType<T extends any[], W extends ReplacementType<any>> = T extends [
 ] ? [ReplaceIfRef<A, W>, ...MapTupleType<B, W>]
   : [];
 
-type CircularTypesMap<D extends AnyDataType, W extends ReplacementType<any>> = {
+type CircularTypesMap<D extends AnyType, W extends ReplacementType<any>> = {
   array: D extends ArrayType<infer T>
     ? Array<MapToUnion<T, ChangeDefault<W, any>>>
     : never;
@@ -98,19 +98,19 @@ type CircularTypesMap<D extends AnyDataType, W extends ReplacementType<any>> = {
   enumUnion: D extends EnumType<infer T> ? T : never;
   enumMember: D extends EnumMemberType<infer T> ? T : never;
   instanceOf: D extends InstanceType<infer T> ? InstanceType<T> : never;
-  custom: D extends ComplexDataType ? GetTypeFromCustom<D> : never;
+  custom: D extends ComplexType ? GetTypeFromCustom<D> : never;
   stringMatching: D extends StringMatchingType<infer T> ? T : never;
   circular: D extends RecursiveType ? GetTypeFromCircular<D> : never;
 };
 
 type ReplaceCircularRefs<
-  D extends AnyDataType,
+  D extends AnyType,
   W extends ReplacementType<any>,
 > = D["kind"] extends keyof CircularTypesMap<D, W>
   ? CircularTypesMap<D, W>[D["kind"]]
   : D;
 
-export type CircularType<T extends AnyDataType> = ReplaceCircularRefs<
+export type CircularType<T extends AnyType> = ReplaceCircularRefs<
   T,
   ReplacementType<
     ReplaceCircularRefs<
@@ -127,7 +127,7 @@ export type CircularType<T extends AnyDataType> = ReplaceCircularRefs<
   >
 >;
 
-export type GetTypeFromCircular<D extends ComplexDataType> = D extends
+export type GetTypeFromCircular<D extends ComplexType> = D extends
   RecursiveType<
     infer T
   > ? CircularType<T>
@@ -136,6 +136,6 @@ export type GetTypeFromCircular<D extends ComplexDataType> = D extends
 export type ParseCircularDataType<
   D,
   W extends ReplacementType<any>,
-> = D extends BasicDataType ? ParseBasicDataType<D["simpleType"]>
-  : D extends ComplexDataType ? ReplaceCircularRefs<D, W>
+> = D extends BasicType ? ParseBasicDataType<D["simpleType"]>
+  : D extends ComplexType ? ReplaceCircularRefs<D, W>
   : never;

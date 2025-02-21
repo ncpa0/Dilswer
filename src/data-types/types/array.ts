@@ -1,13 +1,13 @@
 import { BaseType } from "@DataTypes/data-types";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
-import type { AnyDataType, TypeVisitor } from "@DataTypes/types";
+import type { AnyType, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "standard-schema";
 import { UnionType } from "./union";
 
-export class ArrayType<DT extends AnyDataType[] = any[]> extends BaseType {
+export class ArrayType<DT extends AnyType[] = any[]> extends BaseType {
   readonly kind = "array";
   private readonly union;
 
