@@ -1,5 +1,5 @@
 import Ajv from "ajv";
-import { OptionalField, toJsonSchema, Type } from "../../src";
+import { toJsonSchema, Type } from "../../src";
 
 enum Enum {
   A = "A",
@@ -202,7 +202,7 @@ describe("toJsonSchema", () => {
         "Creation Timestamp",
       ),
       list: Type.Array(Type.String),
-      dictionary: OptionalField(
+      dictionary: Type.Option(
         Type.Record({ foo: Type.Unknown }).setDescription(
           "This field is optional.",
         ),
@@ -257,7 +257,7 @@ describe("toJsonSchema", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          self: OptionalField(self),
+          self: Type.Option(self),
         }).setTitle("SelfReferencingRecord")
       );
 
@@ -385,7 +385,7 @@ describe("toJsonSchema", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          children: OptionalField(
+          children: Type.Option(
             Type.OneOf(
               Type.Tuple(self),
               Type.Tuple(self, self),
@@ -420,7 +420,7 @@ describe("toJsonSchema", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          children: OptionalField(
+          children: Type.Option(
             Type.OneOf(
               self,
               Type.Record({
@@ -457,7 +457,7 @@ describe("toJsonSchema", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          children: OptionalField(
+          children: Type.Option(
             Type.AllOf(
               self,
               Type.Record({

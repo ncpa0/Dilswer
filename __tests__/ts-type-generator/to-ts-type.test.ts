@@ -1,5 +1,5 @@
 import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
-import { getMetadata, OptionalField, toTsType, Type } from "../../src/index";
+import { getMetadata, toTsType, Type } from "../../src/index";
 
 enum Enum {
   A = "A",
@@ -517,7 +517,7 @@ describe("toTsType", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          self: OptionalField(self),
+          self: Type.Option(self),
         }).setTitle("SelfReferencingRecord")
       );
 
@@ -638,7 +638,7 @@ describe("toTsType", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          children: OptionalField(
+          children: Type.Option(
             Type.OneOf(
               Type.Tuple(self),
               Type.Tuple(self, self),
@@ -665,7 +665,7 @@ describe("toTsType", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          children: OptionalField(
+          children: Type.Option(
             Type.OneOf(
               self,
               Type.Record({
@@ -694,7 +694,7 @@ describe("toTsType", () => {
       const typeDef = Type.Recursive((self) =>
         Type.Record({
           name: Type.String,
-          children: OptionalField(
+          children: Type.Option(
             Type.AllOf(
               self,
               Type.Record({
