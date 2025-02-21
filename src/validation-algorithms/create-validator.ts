@@ -1,5 +1,5 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
-import type { AnyDataType } from "@DataTypes/types";
+import type { AnyType } from "@DataTypes/types";
 import { validatedCircularValues } from "@DataTypes/types/recursive";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
@@ -14,15 +14,15 @@ type ValidationResults<T> = {
   value: T;
 };
 
-export function validator<DT extends AnyDataType>(
+export function validator<DT extends AnyType>(
   dataType: DT,
 ): (data: unknown) => data is ReWrap<ParseDataType<DT>>;
-export function validator<DT extends AnyDataType>(
+export function validator<DT extends AnyType>(
   dataType: DT,
   options: { details: true },
 ): (data: unknown) => ValidationResults<ReWrap<ParseDataType<DT>>>;
 export function validator(
-  dataType: AnyDataType,
+  dataType: AnyType,
   options?: { details: true },
 ) {
   if (options?.details) {

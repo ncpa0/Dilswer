@@ -1,9 +1,9 @@
 import type { GetTypeFromCircular } from "@DataTypes/circular-type-utils";
 import type {
-  AnyDataType,
-  BasicDataType,
+  AnyType,
+  BasicType,
   BasicTypeNames,
-  ComplexDataType,
+  ComplexType,
   FieldDescriptor,
   RecordTypeSchema,
 } from "./types";
@@ -28,10 +28,10 @@ export type ParseDataTypeIntersectionTuple<
   ? ParseDataTypeIntersectionTuple<B, U & ParseDataType<A>>
   : U;
 
-export type GetDescriptorType<T extends AnyDataType | FieldDescriptor> =
-  T extends { kind: any } ? T : T extends FieldDescriptor ? T["type"] : T;
+export type GetDescriptorType<T extends AnyType | FieldDescriptor> = T extends
+  { kind: any } ? T : T extends FieldDescriptor ? T["type"] : T;
 
-type IsRequiredDescriptor<T extends AnyDataType | FieldDescriptor> = T extends
+type IsRequiredDescriptor<T extends AnyType | FieldDescriptor> = T extends
   FieldDescriptor ? T["required"] : true;
 
 export type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T>
@@ -77,71 +77,70 @@ export type ExcludeOptional<S extends RecordTypeSchema> = EnsureStringType<
   >
 >;
 
-export type GetTypeFromArrayOf<D extends ComplexDataType> = D extends ArrayType<
+export type GetTypeFromArrayOf<D extends ComplexType> = D extends ArrayType<
   infer T
 > ? T[number]
   : never;
 
-export type GetFieldDescriptorsFromSetOf<D extends ComplexDataType> = D extends
+export type GetFieldDescriptorsFromSetOf<D extends ComplexType> = D extends
   SetType<infer T> ? T[number] : never;
 
-export type GetTypeFromRecordOf<D extends ComplexDataType> = D extends
+export type GetTypeFromRecordOf<D extends ComplexType> = D extends
   RecordType<infer T> ? T : never;
 
-export type GetTypeFromDict<D extends ComplexDataType> = D extends
-  DictType<infer T> ? T[number]
+export type GetTypeFromDict<D extends ComplexType> = D extends DictType<infer T>
+  ? T[number]
   : never;
 
-export type GetTypeFromOneOf<D extends ComplexDataType> = D extends UnionType<
+export type GetTypeFromOneOf<D extends ComplexType> = D extends UnionType<
   infer T
 > ? T[number]
   : never;
 
-export type GetTypeFromAllOf<D extends ComplexDataType> = D extends
+export type GetTypeFromAllOf<D extends ComplexType> = D extends
   IntersectionType<
     infer T
   > ? ParseDataTypeIntersectionTuple<T>
   : never;
 
-export type GetTypeFromLiteral<D extends ComplexDataType> = D extends
-  LiteralType<
-    infer T
-  > ? T
+export type GetTypeFromLiteral<D extends ComplexType> = D extends LiteralType<
+  infer T
+> ? T
   : never;
 
-export type GetTypeFromEnum<D extends ComplexDataType> = D extends
-  EnumType<infer T> ? T
+export type GetTypeFromEnum<D extends ComplexType> = D extends EnumType<infer T>
+  ? T
   : never;
 
-export type GetTypeFromInstanceOf<D extends ComplexDataType> = D extends
+export type GetTypeFromInstanceOf<D extends ComplexType> = D extends
   InstanceOfType<infer T> ? Static<T> : never;
 
 export type GetFnAssertType<T> = T extends (v: any) => v is infer R ? R
   : unknown;
 
-export type GetTypeFromCustom<D extends ComplexDataType> = D extends CustomType<
+export type GetTypeFromCustom<D extends ComplexType> = D extends CustomType<
   infer F
 > ? GetFnAssertType<F>
   : never;
 
-export type GetTypeFromEnumMember<D extends ComplexDataType> = D extends
+export type GetTypeFromEnumMember<D extends ComplexType> = D extends
   EnumMemberType<infer T> ? T : never;
 
-export type RepackTuple<T extends AnyDataType[]> = T extends [
-  infer A extends AnyDataType,
-  ...infer B extends AnyDataType[],
+export type RepackTuple<T extends AnyType[]> = T extends [
+  infer A extends AnyType,
+  ...infer B extends AnyType[],
 ] ? [ParseDataType<A>, ...RepackTuple<B>]
   : [];
 
-export type GetTypeFromTuple<D extends ComplexDataType> = D extends TupleType<
+export type GetTypeFromTuple<D extends ComplexType> = D extends TupleType<
   infer T
 > ? RepackTuple<T>
   : never;
 
-export type GetTypeFromStringMatching<D extends ComplexDataType> = D extends
+export type GetTypeFromStringMatching<D extends ComplexType> = D extends
   StringMatchingType<infer T> ? T : never;
 
-type TypeMap<D extends ComplexDataType> = {
+type TypeMap<D extends ComplexType> = {
   array: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
   tuple: GetTypeFromTuple<D>;
   record: ParseRecordType<GetTypeFromRecordOf<D>>;
@@ -158,7 +157,7 @@ type TypeMap<D extends ComplexDataType> = {
   circular: GetTypeFromCircular<D>;
 };
 
-export type ParseComplexType<D extends ComplexDataType> = D["kind"] extends
+export type ParseComplexType<D extends ComplexType> = D["kind"] extends
   keyof TypeMap<D> ? TypeMap<D>[D["kind"]] : never;
 
 export type ParseBasicDataType<D extends BasicTypeNames> = {
@@ -175,9 +174,9 @@ export type ParseBasicDataType<D extends BasicTypeNames> = {
   stringinteger: `${number}`;
 }[D];
 
-export type ParseDataType<D> = D extends BasicDataType
+export type ParseDataType<D> = D extends BasicType
   ? ParseBasicDataType<D["simpleType"]>
-  : D extends ComplexDataType ? ParseComplexType<D>
+  : D extends ComplexType ? ParseComplexType<D>
   : never;
 
 export type ParseRecordType<S extends RecordTypeSchema> =
@@ -192,4 +191,4 @@ export type ParseRecordType<S extends RecordTypeSchema> =
     >;
   };
 
-export type GetDataType<D extends AnyDataType> = ReWrap<ParseDataType<D>>;
+export type Infer<D extends AnyType> = ReWrap<ParseDataType<D>>;

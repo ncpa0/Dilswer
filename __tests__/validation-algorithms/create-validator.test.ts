@@ -1,11 +1,10 @@
 import type {
-  GetDataType,
+  Infer,
   ParseDataType,
   ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
-import { InstanceOfType } from "@DataTypes/types/instance";
-import { AnyDataType, OptionalField, Type, validator } from "../../src";
+import { AnyDataType, Type, validator } from "../../src";
 
 const TRUE_SYM = Symbol("true");
 type True = typeof TRUE_SYM;
@@ -17,8 +16,8 @@ class AssertionFailed<Reason, Values = never> {
 type AssertEqual<T, U> = [T] extends [U]
   ? [U] extends [T] ? T extends object ? AssertEqual<keyof T, keyof U>
     : True
-  : AssertionFailed<"Values are not equal", { T: T; U: U }>
-  : AssertionFailed<"Values are not equal", { T: T; U: U }>;
+  : AssertionFailed<"Values are not equal", [T, U]>
+  : AssertionFailed<"Values are not equal", [T, U]>;
 
 type AssertType<T, U extends AnyDataType> = AssertEqual<
   T,
@@ -28,7 +27,7 @@ type AssertType<T, U extends AnyDataType> = AssertEqual<
 type AssertValidator<T, V extends (data: unknown) => data is any> = V extends (
   data: unknown,
 ) => data is infer R ? AssertEqual<T, R>
-  : AssertionFailed<"Given type is not a assertion function", { T: T; V: V }>;
+  : AssertionFailed<"Given type is not a assertion function", [T, V]>;
 
 /**
  * A dummy function for asserting the type T provided is equal to
@@ -1138,10 +1137,10 @@ describe("createValidator", () => {
           expect(validate({ bar: 1 })).toEqual(false);
         });
 
-        it("should validate for optional properties defined with OptionalField", () => {
+        it("should validate for optional properties defined with Type.Option", () => {
           const typeDef = Type.Record({
             foo: Type.String,
-            bar: OptionalField(Type.Number),
+            bar: Type.Option(Type.Number),
           });
 
           type ExpectedType = {
@@ -2280,11 +2279,11 @@ describe("createValidator", () => {
           it("scenario 5", () => {
             const typeDef = Type.Recursive((self) =>
               Type.Record({
-                a: OptionalField(
+                a: Type.Option(
                   Type.Record({
-                    b: OptionalField(
+                    b: Type.Option(
                       Type.Record({
-                        ref: OptionalField(self),
+                        ref: Type.Option(self),
                       }),
                     ),
                   }),
@@ -2656,7 +2655,7 @@ describe("createValidator", () => {
                   Type.Tuple(
                     Type.Record({
                       a: Type.Boolean,
-                      b: OptionalField(self),
+                      b: Type.Option(self),
                     }),
                   ),
                 )
@@ -3077,7 +3076,7 @@ describe("createValidator", () => {
 
           const validate = validator(typeDef);
 
-          const data: GetDataType<typeof typeDef> = {
+          const data: Infer<typeof typeDef> = {
             tag: "div",
             children: [
               {
@@ -3102,7 +3101,7 @@ describe("createValidator", () => {
 
           expect(validate(data)).toEqual(false);
 
-          const data2: GetDataType<typeof typeDef> = {
+          const data2: Infer<typeof typeDef> = {
             tag: "section",
             children: [
               {
@@ -4219,10 +4218,10 @@ describe("createValidator", () => {
           expect(validate({ bar: 1 }).success).toEqual(false);
         });
 
-        it("should validate for optional properties defined with OptionalField", () => {
+        it("should validate for optional properties defined with Type.Option", () => {
           const typeDef = Type.Record({
             foo: Type.String,
-            bar: OptionalField(Type.Number),
+            bar: Type.Option(Type.Number),
           });
 
           type ExpectedType = {
@@ -5358,11 +5357,11 @@ describe("createValidator", () => {
           it("scenario 5", () => {
             const typeDef = Type.Recursive((self) =>
               Type.Record({
-                a: OptionalField(
+                a: Type.Option(
                   Type.Record({
-                    b: OptionalField(
+                    b: Type.Option(
                       Type.Record({
-                        ref: OptionalField(self),
+                        ref: Type.Option(self),
                       }),
                     ),
                   }),
@@ -5737,7 +5736,7 @@ describe("createValidator", () => {
                   Type.Tuple(
                     Type.Record({
                       a: Type.Boolean,
-                      b: OptionalField(self),
+                      b: Type.Option(self),
                     }),
                   ),
                 )
@@ -6159,7 +6158,7 @@ describe("createValidator", () => {
 
           const validate = validator(typeDef, { details: true });
 
-          const data: GetDataType<typeof typeDef> = {
+          const data: Infer<typeof typeDef> = {
             tag: "div",
             children: [
               {
@@ -6184,7 +6183,7 @@ describe("createValidator", () => {
 
           expect(validate(data).success).toEqual(false);
 
-          const data2: GetDataType<typeof typeDef> = {
+          const data2: Infer<typeof typeDef> = {
             tag: "section",
             children: [
               {

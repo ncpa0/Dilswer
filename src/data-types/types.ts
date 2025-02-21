@@ -32,7 +32,7 @@ export interface RecordVisitChild<R> {
 }
 
 export interface TypeVisitor<R = any> {
-  visit(dataType: Exclude<AnyDataType, RecordType>, children?: R[]): R;
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
   visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
 }
 
@@ -49,7 +49,7 @@ export type BasicTypeNames =
   | "stringnumeral"
   | "stringinteger";
 
-export type BasicDataType =
+export type BasicType =
   | BooleanType
   | FunctionType
   | IntegerType
@@ -62,7 +62,7 @@ export type BasicDataType =
   | UndefinedType
   | UnknownType;
 
-export type ComplexDataType =
+export type ComplexType =
   | ArrayType
   | CustomType
   | DictType
@@ -97,17 +97,20 @@ export type DataTypeKind =
   | "circular"
   | "circularRef";
 
-export type AnyDataType = BasicDataType | ComplexDataType;
-
-export type AllDataTypes = AnyDataType;
+export type AnyType = BasicType | ComplexType;
 
 export type FieldDescriptor = {
   readonly required?: boolean;
-  readonly type: AnyDataType;
+  readonly type: AnyType;
+};
+
+export type OptionalField<DT extends AnyType> = {
+  readonly required: false;
+  readonly type: DT;
 };
 
 export interface RecordTypeSchema {
-  readonly [key: string]: FieldDescriptor | AnyDataType;
+  readonly [key: string]: FieldDescriptor | AnyType;
 }
 
 export type TypeMetadata<T extends Record<any, any> = Record<any, any>> = {

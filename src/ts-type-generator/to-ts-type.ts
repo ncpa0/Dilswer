@@ -3,8 +3,8 @@
 import { BaseType } from "@DataTypes/data-types";
 import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
-  AnyDataType,
-  BasicDataType,
+  AnyType,
+  BasicType,
   RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/types";
@@ -151,7 +151,7 @@ class DataTypeTsGenerator implements TypeVisitor<R> {
     // default behavior for compact mode: do nothing
   };
 
-  private tsAddMetadataToBuilder(builder: TsBaseBuilder, type: AnyDataType) {
+  private tsAddMetadataToBuilder(builder: TsBaseBuilder, type: AnyType) {
     const metadata = BaseType.getOriginalMetadata(type);
 
     if (metadata.title) {
@@ -183,7 +183,7 @@ class DataTypeTsGenerator implements TypeVisitor<R> {
     return builder;
   }
 
-  private parsePrimitive(type: BasicDataType): R {
+  private parsePrimitive(type: BasicType): R {
     let builder: TsBaseBuilder & TsBuilder;
 
     switch (type.simpleType) {
@@ -430,11 +430,11 @@ class DataTypeTsGenerator implements TypeVisitor<R> {
     return new TsNamedReference(typeName);
   }
 
-  private circulars: Map<AnyDataType, string> = new Map();
+  private circulars: Map<AnyType, string> = new Map();
 
-  visit(dataType: Exclude<AnyDataType, RecordType>, children?: R[]): R;
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
   visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
-  visit(type: AnyDataType, children?: (R | RecordVisitChild<R>)[]): R {
+  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
     switch (type.kind) {
       case "simple":
         return this.parsePrimitive(type);
@@ -477,7 +477,7 @@ class DataTypeTsGenerator implements TypeVisitor<R> {
  * DataType.
  */
 export const toTsType = (
-  dataType: AnyDataType,
+  dataType: AnyType,
   options?: Partial<TsParsingOptions>,
 ): string => {
   try {

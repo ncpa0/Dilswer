@@ -1,7 +1,7 @@
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type {
-  AnyDataType,
-  BasicDataType,
+  AnyType,
+  BasicType,
   RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/types";
@@ -214,17 +214,17 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     array: false,
   };
 
-  private circValidationFnNames: Map<AnyDataType, string> = new Map();
+  private circValidationFnNames: Map<AnyType, string> = new Map();
 
   private _counter1 = 0;
   private _counter2 = 0;
   private _counter3 = 0;
 
-  private knownTypes = new Map<AnyDataType, string>();
+  private knownTypes = new Map<AnyType, string>();
 
   constructor() {}
 
-  public getUniqueStringForType(type: AnyDataType) {
+  public getUniqueStringForType(type: AnyType) {
     if (this.knownTypes.has(type)) {
       return this.knownTypes.get(type)!;
     }
@@ -243,7 +243,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     return `_$v${++this._counter2}`;
   }
 
-  private visitPrimitive(type: BasicDataType): R {
+  private visitPrimitive(type: BasicType): R {
     switch (type.simpleType) {
       case "boolean":
         return new ValidateGenerator(
@@ -616,9 +616,9 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     );
   }
 
-  visit(dataType: Exclude<AnyDataType, RecordType>, children?: R[]): R;
+  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
   visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
-  visit(type: AnyDataType, children?: (R | RecordVisitChild<R>)[]): R {
+  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
     switch (type.kind) {
       case "simple":
         return this.visitPrimitive(type);
@@ -731,7 +731,7 @@ const circTracker = /* js */ `
  * best performance, you should compile the validator
  * ahead-of-time and reuse it.
  */
-export const compileFastValidator = <DT extends AnyDataType>(
+export const compileFastValidator = <DT extends AnyType>(
   dataType: DT,
 ): (data: unknown) => data is ReWrap<ParseDataType<DT>> => {
   const visitor = new DataTypeValidatorVisitor();

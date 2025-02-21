@@ -1,14 +1,15 @@
 import type {
-  AnyDataType,
-  BasicDataType,
+  AnyType,
+  BasicType,
   FieldDescriptor,
   RecordTypeSchema,
 } from "@DataTypes/types";
 import { RecordType } from "@DataTypes/types/record";
 import { UnionType } from "@DataTypes/types/union";
 
-type GetType<T extends AnyDataType | FieldDescriptor> = T extends
-  FieldDescriptor ? T["type"] : T;
+type GetType<T extends AnyType | FieldDescriptor> = T extends FieldDescriptor
+  ? T["type"]
+  : T;
 
 export type RequiredRecord<R extends RecordTypeSchema> = RecordType<
   {
@@ -49,7 +50,6 @@ export type SumRecord<
   } & R2
 >;
 
-export type ExcludeOneOf<U extends UnionType, E extends BasicDataType> =
-  UnionType<
-    Array<Exclude<U["oneOf"][number], E>>
-  >;
+export type ExcludeOneOf<U extends UnionType, E extends BasicType> = UnionType<
+  Array<Exclude<U["oneOf"][number], E>>
+>;

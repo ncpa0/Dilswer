@@ -1,4 +1,4 @@
-import type { AnyDataType, RecordTypeSchema } from "./types";
+import type { AnyType, OptionalField, RecordTypeSchema } from "./types";
 import { ArrayType } from "./types/array";
 import { BooleanType } from "./types/boolean";
 import { CustomType } from "./types/custom";
@@ -62,22 +62,22 @@ export const Type = {
   Record<TS extends RecordTypeSchema>(args: TS) {
     return new RecordType(args);
   },
-  Dict<DT extends AnyDataType[]>(...args: DT) {
+  Dict<DT extends AnyType[]>(...args: DT) {
     return new DictType(args);
   },
-  Array<DT extends AnyDataType[]>(...args: DT) {
+  Array<DT extends AnyType[]>(...args: DT) {
     return new ArrayType(args);
   },
-  Tuple<DT extends AnyDataType[]>(...args: DT) {
+  Tuple<DT extends AnyType[]>(...args: DT) {
     return new TupleType(args);
   },
-  Set<DT extends AnyDataType[]>(...args: DT) {
+  Set<DT extends AnyType[]>(...args: DT) {
     return new SetType(args);
   },
-  OneOf<DT extends AnyDataType[]>(...args: DT) {
+  OneOf<DT extends AnyType[]>(...args: DT) {
     return new UnionType(args);
   },
-  AllOf<DT extends AnyDataType[]>(...args: DT) {
+  AllOf<DT extends AnyType[]>(...args: DT) {
     return new IntersectionType(args);
   },
   Literal<V extends string | number | boolean>(value: V) {
@@ -102,9 +102,15 @@ export const Type = {
   StringMatching<T extends string>(pattern: RegExp) {
     return new StringMatchingType<T>(pattern);
   },
-  Recursive<DT extends AnyDataType>(
+  Recursive<DT extends AnyType>(
     getDataType: (ref: RecursiveTypeReference) => DT,
   ) {
     return new RecursiveType(getDataType);
+  },
+  Option<DT extends AnyType>(type: DT): OptionalField<DT> {
+    return {
+      type,
+      required: false,
+    };
   },
 };

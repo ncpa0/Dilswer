@@ -1,15 +1,10 @@
 import type {
-  GetDataType,
+  Infer,
   ParseDataType,
   ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
-import {
-  AnyDataType,
-  compileFastValidator,
-  OptionalField,
-  Type,
-} from "../../src";
+import { AnyDataType, compileFastValidator, Type } from "../../src";
 
 const TRUE_SYM = Symbol("true");
 type True = typeof TRUE_SYM;
@@ -1137,10 +1132,10 @@ describe("createFastValidator", () => {
         expect(validate({ bar: 1 })).toEqual(false);
       });
 
-      it("should validate for optional properties defined with OptionalField", () => {
+      it("should validate for optional properties defined with Type.Option", () => {
         const typeDef = Type.Record({
           foo: Type.String,
-          bar: OptionalField(Type.Number),
+          bar: Type.Option(Type.Number),
         });
 
         type ExpectedType = {
@@ -2252,11 +2247,11 @@ describe("createFastValidator", () => {
         it("scenario 5", () => {
           const typeDef = Type.Recursive((self) =>
             Type.Record({
-              a: OptionalField(
+              a: Type.Option(
                 Type.Record({
-                  b: OptionalField(
+                  b: Type.Option(
                     Type.Record({
-                      ref: OptionalField(self),
+                      ref: Type.Option(self),
                     }),
                   ),
                 }),
@@ -2623,7 +2618,7 @@ describe("createFastValidator", () => {
                 Type.Tuple(
                   Type.Record({
                     a: Type.Boolean,
-                    b: OptionalField(self),
+                    b: Type.Option(self),
                   }),
                 ),
               )
@@ -3044,7 +3039,7 @@ describe("createFastValidator", () => {
 
         const validate = compileFastValidator(typeDef);
 
-        const data: GetDataType<typeof typeDef> = {
+        const data: Infer<typeof typeDef> = {
           tag: "div",
           children: [
             {
@@ -3069,7 +3064,7 @@ describe("createFastValidator", () => {
 
         expect(validate(data)).toEqual(false);
 
-        const data2: GetDataType<typeof typeDef> = {
+        const data2: Infer<typeof typeDef> = {
           tag: "section",
           children: [
             {

@@ -1,4 +1,4 @@
-import type { AnyDataType } from "@DataTypes/types";
+import type { AnyType } from "@DataTypes/types";
 import { concatPath } from "@Utilities/concat-object-path";
 import type { Path } from "@Validation/path";
 import { StandardSchemaV1 } from "standard-schema";
@@ -17,12 +17,12 @@ export class ValidationError extends TypeError {
   private readonly [ValidationErrorSymbol] = true;
 
   private path: Path;
-  expectedValueType: AnyDataType | string;
+  expectedValueType: AnyType | string;
   receivedValue: unknown;
 
   constructor(
     path: Path,
-    expected: AnyDataType | string,
+    expected: AnyType | string,
     value: unknown,
     customMessage?: string,
   ) {
