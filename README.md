@@ -202,7 +202,7 @@ const router = t.router({
 })
 ```
 
-For the best performance, type schemas passed to the other libraries should get compiled via the `.compileStd()` method.
+For the best performance, type schemas passed to the other libraries should get compiled via the `.compile()` method.
 The compiled schemas do not provide as detailed error messages but are order of magnitude faster.
 
 ```ts
@@ -211,7 +211,7 @@ const router = t.router({
     .input(
       Type.Record({
         name: Type.String,
-      }).compileStd()
+      }).compile()
     )
     .query(async ({ input }) => {
       return `Hello, ${input.name}!`;

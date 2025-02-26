@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/restrict-plus-operands */
 
-import { BaseType } from "@DataTypes/data-types";
+import { BaseType } from "@DataTypes/base-type";
 import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {
   AnyType,

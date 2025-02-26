@@ -105,7 +105,7 @@ export abstract class BaseType {
    * Compiled validator is much faster than default, but provides less informations in
    * case of validation failure.
    */
-  compileStd() {
+  compile() {
     const fastValidator = compileFastValidator(this as any);
     this.compiledValidatorRef.fn = (value: any) => {
       if (fastValidator(value)) {

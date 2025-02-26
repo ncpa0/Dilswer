@@ -1,5 +1,5 @@
+import { BaseType } from "@DataTypes/base-type";
 import type { CircularType } from "@DataTypes/circular-type-utils";
-import { BaseType } from "@DataTypes/data-types";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { ReWrap } from "@DataTypes/type-utils";
 import type { AnyType, TypeVisitor } from "@DataTypes/types";

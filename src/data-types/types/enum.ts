@@ -1,4 +1,4 @@
-import { BaseType, MetadataSymbol } from "@DataTypes/data-types";
+import { BaseType, MetadataSymbol } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { TypeMetadata, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
