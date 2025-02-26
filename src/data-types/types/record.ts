@@ -75,7 +75,7 @@ export class RecordType<
   }
 
   ["~validate"](path: Path, value: unknown): void {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    if (typeof value !== "object" || value === null) {
       throw new ValidationError(path, this, value);
     }
 
@@ -102,7 +102,7 @@ export class RecordType<
   }
 
   ["~matches"](value: any): boolean {
-    if (typeof value !== "object" || value === null || Array.isArray(value)) {
+    if (typeof value !== "object" || value === null) {
       return false;
     }
 

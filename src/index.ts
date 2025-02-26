@@ -55,6 +55,7 @@ export type {
   TsParsingMode,
   TsParsingOptions,
 } from "@TsTypeGenerator/parser-options";
+export type { FastValidator } from "@Validation/compile-fast-validator";
 
 /**
  * Retrieves the metadata of a DataType, like title, description

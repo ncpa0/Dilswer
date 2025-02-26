@@ -23,6 +23,44 @@ import type { StringMatchingType } from "@DataTypes/types/string-matching";
 import type { TupleType } from "@DataTypes/types/tuple";
 import type { UnionType } from "@DataTypes/types/union";
 
+const KNOWN_GLOBAL_CLASSES = new Map<new(...args: any[]) => any, string>([
+  [Map, "Map"],
+  [Set, "Set"],
+  [RegExp, "RegExp"],
+  [Date, "Date"],
+  [Error, "Error"],
+  [EvalError, "EvalError"],
+  [RangeError, "RangeError"],
+  [ReferenceError, "ReferenceError"],
+  [SyntaxError, "SyntaxError"],
+  [TypeError, "TypeError"],
+  [URIError, "URIError"],
+  [AggregateError, "AggregateError"],
+  [Array, "Array"],
+  [Object, "Object"],
+  [WeakMap, "WeakMap"],
+  [WeakSet, "WeakSet"],
+  [Function, "Function"],
+  [String, "String"],
+  [Number, "Number"],
+  [Boolean, "Boolean"],
+  [Int8Array, "Int8Array"],
+  [Uint8Array, "Uint8Array"],
+  [Uint8ClampedArray, "Uint8ClampedArray"],
+  [Int16Array, "Int16Array"],
+  [Uint16Array, "Uint16Array"],
+  [Int32Array, "Int32Array"],
+  [Uint32Array, "Uint32Array"],
+  [Float32Array, "Float32Array"],
+  [Float64Array, "Float64Array"],
+  [BigInt64Array, "BigInt64Array"],
+  [BigUint64Array, "BigUint64Array"],
+  [SharedArrayBuffer, "SharedArrayBuffer"],
+  [ArrayBuffer, "ArrayBuffer"],
+  [DataView, "DataView"],
+  [Promise, "Promise"],
+]);
+
 const propertyAccessor = (propertyName: string) => {
   if (propertyName.match(/^[a-zA-Z_$][a-zA-Z_$0-9]*$/)) {
     return `.${propertyName}`;
@@ -62,7 +100,10 @@ class ConditionBuilder {
   }
 }
 
-const condition = (type: "&&" | "||") => new ConditionBuilder(type);
+const $dependency = (depName: string) =>
+  `_$getDependency(${JSON.stringify(depName)})`;
+
+const $condition = (type: "&&" | "||") => new ConditionBuilder(type);
 
 const $type = (
   varname: string,
@@ -89,10 +130,6 @@ const $defineFn = (fnName: string, argName: string, body: string) => {
       return `${fnName}(${varname})`;
     },
   };
-};
-
-const $iife = (passedArg: string, argName: string, body: string) => {
-  return `((${argName}) => ${body})(${passedArg})`;
 };
 
 const $defineRegexp = (name: string, regexp: RegExp) => {
@@ -145,10 +182,6 @@ const $notNaN = (varname: string) => {
   return `!Number.isNaN(${varname})`;
 };
 
-const $not = (condition: string) => {
-  return `!(${condition})`;
-};
-
 const $has = (varname: string, key: string) => {
   return `${_serialize(key)} in ${varname}`;
 };
@@ -167,38 +200,92 @@ const $ternary = (condition: string | ConditionBuilder) => {
   };
 };
 
-class ValidateGenerator {
-  declarations: string[] = [];
-  dependencies: Array<[string, any]> = [];
+const $length = (varname: string, is: ">" | "<" | "==", than: number) => {
+  switch (is) {
+    case ">":
+      return `${varname}.length > ${than}`;
+    case "<":
+      return `${varname}.length < ${than}`;
+    case "==":
+      return `${varname}.length === ${than}`;
+  }
+};
 
+const $every = (
+  generator: DataTypeValidatorVisitor,
+  varname: string,
+  predicate: (elementName: string) => string,
+) => {
+  const elemName = generator.getUniqueVarName();
+  return `_$every(${varname}, (${elemName}) => ${predicate(elemName)})`;
+};
+
+const $everyObjectValue = (
+  generator: DataTypeValidatorVisitor,
+  varname: string,
+  predicate: (elementName: string) => string,
+) => {
+  const elemName = generator.getUniqueVarName();
+  return `_$everyObjectValue(${varname}, (${elemName}) => ${
+    predicate(elemName)
+  })`;
+};
+
+const $everyInSet = (
+  generator: DataTypeValidatorVisitor,
+  varname: string,
+  predicate: (elementName: string) => string,
+) => {
+  const elemName = generator.getUniqueVarName();
+  return `_$everyInSet(${varname}, (${elemName}) => ${predicate(elemName)})`;
+};
+
+const $charCode = (varname: string, is: number | [number, number]) => {
+  if (Array.isArray(is)) {
+    return `${varname}.charCodeAt(0) >= ${
+      is[0]
+    } && ${varname}.charCodeAt(0) <= ${is[1]}`;
+  }
+  return `${varname}.charCodeAt(0) === ${is}`;
+};
+
+const $charCount = (
+  varname: string,
+  char: string,
+  is: ">" | "==" | "<",
+  expected: number,
+) => {
+  return $length(`${varname}.split(${JSON.stringify(char)})`, is, expected + 1);
+};
+
+const $instanceof = (
+  generator: DataTypeValidatorVisitor,
+  varname: string,
+  constructor: new(...args: any[]) => any,
+) => {
+  if (KNOWN_GLOBAL_CLASSES.has(constructor)) {
+    return `(${varname} instanceof ${KNOWN_GLOBAL_CLASSES.get(constructor)})`;
+  }
+
+  const name = generator.getUniqueVarName();
+  generator.addDependency(name, constructor);
+  return `(${varname} instanceof ${$dependency(name)})`;
+};
+
+class ValidateGenerator {
   constructor(
-    children: ValidateGenerator[] | undefined | null,
     private get$validate: (
       varname: string,
       self: ValidateGenerator,
-    ) => ConditionBuilder,
-  ) {
-    this.addChildren(children ?? []);
-  }
-
-  addChildren(children: ValidateGenerator[]) {
-    this.declarations.push(...children.flatMap((c) => c.declarations));
-    this.dependencies.push(...children.flatMap((c) => c.dependencies));
-    return this;
-  }
+    ) => ConditionBuilder | string,
+  ) {}
 
   $validate(varname: string) {
-    return this.get$validate(varname, this).build();
-  }
-
-  addDeclare(inlined: string) {
-    this.declarations.push(inlined);
-    return this;
-  }
-
-  addDependency(name: string, value: any) {
-    this.dependencies.push([name, value]);
-    return this;
+    const validate = this.get$validate(varname, this);
+    if (typeof validate === "string") {
+      return validate;
+    }
+    return validate.build();
   }
 }
 
@@ -208,10 +295,12 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   includes = {
     stringNumeral: false,
     stringInteger: false,
-    circular: false,
+    recursive: false,
     set: false,
     dict: false,
     array: false,
+    custom: false,
+    instanceof: false,
   };
 
   private circValidationFnNames: Map<AnyType, string> = new Map();
@@ -222,7 +311,25 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
   private knownTypes = new Map<AnyType, string>();
 
+  public outerDeclarations: string[] = [];
+  public innerDeclarations: string[] = [];
+  public dependencies: Array<[string, any]> = [];
+
   constructor() {}
+
+  public addDeclaration(type: "inner" | "outer", inlined: string) {
+    if (type === "inner") {
+      this.innerDeclarations.push(inlined);
+    } else {
+      this.outerDeclarations.push(inlined);
+    }
+    return this;
+  }
+
+  public addDependency(name: string, value: any) {
+    this.dependencies.push([name, value]);
+    return this;
+  }
 
   public getUniqueStringForType(type: AnyType) {
     if (this.knownTypes.has(type)) {
@@ -247,63 +354,69 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     switch (type.simpleType) {
       case "boolean":
         return new ValidateGenerator(
-          null,
-          (varname) => condition("&&").add($type(varname, "boolean")),
+          (varname) => $condition("&&").add($type(varname, "boolean")),
         );
       case "integer":
         return new ValidateGenerator(
-          null,
           (varname) =>
-            condition("&&").add($type(varname, "number")).add(
+            $condition("&&").add($type(varname, "number")).add(
               $isInteger(varname),
             ),
         );
       case "null":
         return new ValidateGenerator(
-          null,
-          (varname) => condition("&&").add($equal(varname, null)),
+          (varname) => $condition("&&").add($equal(varname, null)),
         );
       case "number":
         return new ValidateGenerator(
-          null,
           (varname) =>
-            condition("&&").add($type(varname, "number")).add($notNaN(varname)),
+            $condition("&&").add($type(varname, "number")).add(
+              $notNaN(varname),
+            ),
         );
       case "string":
         return new ValidateGenerator(
-          null,
-          (varname) => condition("&&").add($type(varname, "string")),
+          (varname) => $condition("&&").add($type(varname, "string")),
         );
       case "stringinteger":
         this.includes.stringInteger = true;
         return new ValidateGenerator(
-          null,
           (varname) =>
-            condition("&&").add(`_$validateStringInteger(${varname})`),
+            $condition("&&")
+              .add($type(varname, "string"))
+              .add($length(varname, ">", 0))
+              .add(
+                $every(this, varname, char => $charCode(char, [48, 57])),
+              ),
         );
       case "stringnumeral":
         this.includes.stringNumeral = true;
         return new ValidateGenerator(
-          null,
           (varname) =>
-            condition("&&").add(`_$validateStringNumeral(${varname})`),
+            $condition("&&").add($type(varname, "string"))
+              .add($length(varname, ">", 0))
+              .add(
+                $every(this, varname, char =>
+                  $condition("||")
+                    .add($charCode(char, [48, 57]))
+                    .add($charCode(char, 46))
+                    .build()),
+              )
+              .add($charCount(varname, ".", "<", 2)),
         );
       case "unknown":
-        return new ValidateGenerator(null, () => condition("&&"));
+        return new ValidateGenerator(() => "true");
       case "function":
         return new ValidateGenerator(
-          null,
-          (varname) => condition("&&").add($type(varname, "function")),
+          (varname) => $type(varname, "function"),
         );
       case "symbol":
         return new ValidateGenerator(
-          null,
-          (varname) => condition("&&").add($type(varname, "symbol")),
+          (varname) => $type(varname, "symbol"),
         );
       case "undefined":
         return new ValidateGenerator(
-          null,
-          (varname) => condition("&&").add($type(varname, "undefined")),
+          (varname) => $type(varname, "undefined"),
         );
     }
   }
@@ -314,39 +427,27 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     if (children && children.length > 0) {
       const oneof = this.visitOneOf(type["union"], children);
 
-      const itemName = this.getUniqueVarName();
-
-      const v = oneof.$validate(itemName);
-
-      return new ValidateGenerator([oneof], (varname) =>
-        condition("&&")
+      return new ValidateGenerator((varname) =>
+        $condition("&&")
           .add($isArray(varname))
-          .add(`_$every(${varname}, (${itemName}) => ${v})`));
+          .add($every(this, varname, elem => oneof.$validate(elem)))
+      );
     }
 
     return new ValidateGenerator(
-      children,
-      (varname) => condition("&&").add($isArray(varname)),
+      (varname) => $isArray(varname),
     );
   }
 
   private visitTuple(type: TupleType, children?: Array<R>): R {
-    const generator = this;
-
-    return new ValidateGenerator(null, (varname, v) => {
-      const cond = condition("&&")
+    return new ValidateGenerator((varname) => {
+      const cond = $condition("&&")
         .add($isArray(varname))
-        .add($equal(`${varname}.length`, type.tuple.length));
+        .add($length(varname, "==", type.tuple.length));
 
       if (children && children.length > 0) {
         for (const [index, c] of children.entries()) {
-          const argName = generator.getUniqueVarName();
-
-          cond.add(
-            $iife(`${varname}[${index}]`, argName, c.$validate(argName)),
-          );
-
-          v.addChildren([c]);
+          cond.add(c.$validate(`${varname}[${index}]`));
         }
       }
 
@@ -358,11 +459,10 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     type: RecordType,
     children: RecordVisitChild<R>[] = [],
   ): R {
-    const getRecordConditions = (varName: string, v: ValidateGenerator) => {
-      const cond = condition("&&")
+    const getRecordConditions = (varName: string) => {
+      const cond = $condition("&&")
         .add($type(varName, "object"))
-        .add($laxNotEqual(varName, null))
-        .add($not($isArray(varName)));
+        .add($laxNotEqual(varName, null));
 
       if (children && children.length > 0) {
         for (const c of children) {
@@ -372,7 +472,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
           if (c.required !== true) {
             cond.add(
               $ternary(
-                condition("&&")
+                $condition("&&")
                   .add($has(varName, c.propertyName))
                   .add($notEqual(nextName, undefined)),
               )
@@ -383,15 +483,13 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
             cond.add($has(varName, c.propertyName));
             cond.add(c.child.$validate(nextName));
           }
-
-          v.addChildren([c.child]);
         }
       }
 
       return cond;
     };
 
-    return new ValidateGenerator(null, (varname, v) => {
+    return new ValidateGenerator((varname) => {
       if (varname.split(/\[|\./).length > 2) {
         const fnName = this.getUniqueFnName();
         const argName = this.getUniqueVarName();
@@ -399,13 +497,13 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         const validateFn = $defineFn(
           fnName,
           argName,
-          getRecordConditions(argName, v).build(),
+          getRecordConditions(argName).build(),
         );
-        v.addDeclare(validateFn.declaration);
+        this.addDeclaration("inner", validateFn.declaration);
 
-        return condition("&&").add(validateFn.$invokeWith(varname));
+        return validateFn.$invokeWith(varname);
       } else {
-        return getRecordConditions(varname, v);
+        return getRecordConditions(varname);
       }
     });
   }
@@ -413,31 +511,23 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   private visitDict(type: DictType, children?: Array<R>): R {
     this.includes.dict = true;
 
-    const getBaseDictConditions = (varName: string) => {
-      return condition("&&")
+    const isDictConditions = (varName: string) => {
+      return $condition("&&")
         .add($type(varName, "object"))
-        .add($laxNotEqual(varName, null))
-        .add($not($isArray(varName)));
+        .add($laxNotEqual(varName, null));
     };
 
     if (children && children.length > 0) {
       const oneof = this.visitOneOf(type["union"], children);
-
-      const itemName = this.getUniqueVarName();
-
-      const v = oneof.$validate(itemName);
-
       return new ValidateGenerator(
-        [oneof],
         (varname) =>
-          getBaseDictConditions(varname).add(
-            `_$everyObjectValue(${varname}, (${itemName}) => ${v})`,
+          isDictConditions(varname).add(
+            $everyObjectValue(this, varname, elem => oneof.$validate(elem)),
           ),
       );
     } else {
       return new ValidateGenerator(
-        children,
-        (varname) => getBaseDictConditions(varname),
+        (varname) => isDictConditions(varname),
       );
     }
   }
@@ -446,7 +536,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     this.includes.set = true;
 
     const getBaseSetConditions = (varName: string) => {
-      return condition("&&")
+      return $condition("&&")
         .add($type(varName, "object"))
         .add($laxNotEqual(varName, null))
         .add($isSet(varName));
@@ -454,49 +544,38 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
     if (children && children.length > 0) {
       const oneof = this.visitOneOf(type["union"], children);
-
-      const itemName = this.getUniqueVarName();
-
-      const v = oneof.$validate(itemName);
-
       return new ValidateGenerator(
-        [oneof],
         (varname) =>
           getBaseSetConditions(varname).add(
-            `_$everyInSet(${varname}, (${itemName}) => ${v})`,
+            $everyInSet(this, varname, elem => oneof.$validate(elem)),
           ),
       );
     }
 
     return new ValidateGenerator(
-      children,
       (varname) => getBaseSetConditions(varname),
     );
   }
 
   private visitOneOf(type: UnionType, children: Array<R>): R {
-    return new ValidateGenerator(null, (varname, v) => {
-      const cond = condition("||");
+    return new ValidateGenerator((varname) => {
+      const cond = $condition("||");
 
       for (const c of children) {
         cond.add(c.$validate(varname));
       }
-
-      v.addChildren(children);
 
       return cond;
     });
   }
 
   private visitAllOf(type: IntersectionType, children: Array<R>): R {
-    return new ValidateGenerator(null, (varname, v) => {
-      const cond = condition("&&");
+    return new ValidateGenerator((varname) => {
+      const cond = $condition("&&");
 
       for (const c of children) {
         cond.add(c.$validate(varname));
       }
-
-      v.addChildren(children);
 
       return cond;
     });
@@ -504,8 +583,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
   private visitLiteral(type: LiteralType): R {
     return new ValidateGenerator(
-      null,
-      (varname) => condition("&&").add($equal(varname, type.literal)),
+      (varname) => $equal(varname, type.literal),
     );
   }
 
@@ -514,8 +592,8 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
       Number.isNaN(Number(key))
     );
 
-    return new ValidateGenerator(null, (varname) => {
-      const cond = condition("||");
+    return new ValidateGenerator((varname) => {
+      const cond = $condition("||");
 
       for (const key of enumKeys) {
         const member = type.enumInstance[key];
@@ -528,43 +606,44 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
   private visitEnumMember(type: EnumMemberType): R {
     return new ValidateGenerator(
-      null,
-      (varname) => condition("&&").add($equal(varname, type.enumMember)),
+      (varname) => $equal(varname, type.enumMember),
     );
   }
 
   private visitInstanceOf(type: InstanceOfType): R {
-    const classDepName = this.getUniqueVarName();
+    if (!KNOWN_GLOBAL_CLASSES.has(type.instanceOf)) {
+      this.includes.instanceof = true;
+    }
 
-    return new ValidateGenerator(null, (varname) =>
-      condition("&&").add(
-        `${varname} instanceof _$getDependency("${classDepName}")`,
-      )).addDependency(classDepName, type.instanceOf);
+    return new ValidateGenerator((varname) =>
+      $condition("&&")
+        .add($instanceof(this, varname, type.instanceOf))
+    );
   }
 
   private visitCustom(type: CustomType): R {
-    const customDepName = this.getUniqueVarName();
+    this.includes.custom = true;
 
+    const customDepName = this.getUniqueVarName();
+    this.addDependency(customDepName, type.custom);
     return new ValidateGenerator(
-      null,
-      (varname) =>
-        condition("&&").add(`_$getDependency("${customDepName}")(${varname})`),
-    ).addDependency(customDepName, type.custom);
+      (varname) => `${$dependency(customDepName)}(${varname})`,
+    );
   }
 
   private visitStringMatching(type: StringMatchingType): R {
     const regexp = $defineRegexp(this.getUniqueVarName(), type.pattern);
 
+    this.addDeclaration("outer", regexp.declaration);
     return new ValidateGenerator(
-      null,
       (varname) =>
-        condition("&&").add($type(varname, "string")).add(
-          regexp.$test(varname),
-        ),
-    ).addDeclare(regexp.declaration);
+        $condition("&&")
+          .add($type(varname, "string"))
+          .add(regexp.$test(varname)),
+    );
   }
 
-  private visitCircular(circular: RecursiveType, children: R[]): R {
+  private visitRecursive(circular: RecursiveType, children: R[]): R {
     const [childSchema] = children;
     const child = circular.type;
 
@@ -577,32 +656,33 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         validatorFnName,
         argName,
         $ternary(
-          `_$wasCircValidated(${_serialize(typeUniqueName)}, ${argName})`,
+          `_$wasRecursivelyValidated(${
+            _serialize(typeUniqueName)
+          }, ${argName})`,
         )
           .then("true")
           .else(childSchema.$validate(argName)),
       );
 
-      this.includes.circular = true;
+      this.includes.recursive = true;
 
+      this.addDeclaration("inner", validateFn.declaration);
       return new ValidateGenerator(
-        children,
-        (varname) => condition("&&").add(validateFn.$invokeWith(varname)),
-      ).addDeclare(validateFn.declaration);
+        (varname) => validateFn.$invokeWith(varname),
+      );
     }
 
     return childSchema;
   }
 
-  private visitCircularRef(type: RecursiveTypeReference): R {
+  private visitRecursiveRef(type: RecursiveTypeReference): R {
     const referencedType = type._getReferencedType();
 
     if (this.circValidationFnNames.has(referencedType)) {
       const validatorFnName = this.circValidationFnNames.get(referencedType)!;
 
       return new ValidateGenerator(
-        null,
-        (varname) => condition("&&").add(`${validatorFnName}(${varname})`),
+        (varname) => `${validatorFnName}(${varname})`,
       );
     }
 
@@ -611,8 +691,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     this.circValidationFnNames.set(referencedType, validatorFnName);
 
     return new ValidateGenerator(
-      null,
-      (varname) => condition("&&").add(`${validatorFnName}(${varname})`),
+      (varname) => `${validatorFnName}(${varname})`,
     );
   }
 
@@ -649,9 +728,9 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
       case "stringMatching":
         return this.visitStringMatching(type);
       case "circular":
-        return this.visitCircular(type, children as R[]);
+        return this.visitRecursive(type, children as R[]);
       case "circularRef":
-        return this.visitCircularRef(type);
+        return this.visitRecursiveRef(type);
     }
   }
 }
@@ -659,57 +738,42 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 const e = eval;
 
 const every = /* js */ `
-    const _$every = (_$arr, _$predicate) => {
-      for (let _$i = 0; _$i < _$arr.length; _$i++) {
-        if (!_$predicate(_$arr[_$i]))
-          return false;
-      }
-      return true;
-    };
+  function _$every(_$arr, _$predicate) {
+    for (let _$i = 0; _$i < _$arr.length; _$i++) {
+      if (!_$predicate(_$arr[_$i]))
+        return false;
+    }
+    return true;
+  };
 `.trim();
 
 const everyInSet = /* js */ `
-    const _$everyInSet = (_$set, _$predicate) => {
-      for (let _$item of _$set) {
-        if (!_$predicate(_$item))
-          return false;
-      }
-      return true;
-    };
+  function _$everyInSet(_$set, _$predicate) {
+    for (let _$item of _$set) {
+      if (!_$predicate(_$item))
+        return false;
+    }
+    return true;
+  };
 `.trim();
 
 const everyObjectValue = /* js */ `
-    const _$everyObjectValue = (_$obj, _$predicate) => {
-      for (let _$key in _$obj) {
-        if (!_$predicate(_$obj[_$key]))
-          return false;
-      }
-      return true;
-    };
+  function _$everyObjectValue(_$obj, _$predicate) {
+    for (let _$key in _$obj) {
+      if (!_$predicate(_$obj[_$key]))
+        return false;
+    }
+    return true;
+  };
 `.trim();
 
-const strNumeralValidator = /* js */ `
-    const _$STRING_NUMERAL_ALLOWED_CHARS = ["0","1","2","3","4","5","6","7","8","9","."];
-    const _$validateStringNumeral = (_$d) => typeof _$d === "string" &&
-        _$d.length !== 0 &&
-        _$d.split(".").length < 3 &&
-        _$every(_$d, (_$char) => _$STRING_NUMERAL_ALLOWED_CHARS.includes(_$char));
-`.trim();
-
-const strIntValidator = /* js */ `
-    const _$STRING_INTEGER_ALLOWED_CHARS = ["0","1","2","3","4","5","6","7","8","9"];
-    const _$validateStringInteger = (_$d) => typeof _$d === "string" &&
-        _$d.length !== 0 &&
-        _$every(_$d, (_$char) => _$STRING_INTEGER_ALLOWED_CHARS.includes(_$char));
-`.trim();
-
-const circTracker = /* js */ `
-    const _$validatedCircularValues = new Map();
-    const _$wasCircValidated = (_$tn, _$d) => {
-      let _$set = _$validatedCircularValues.get(_$tn);
+const recursiveTracker = /* js */ `
+    const _$validatedRecursiveValues = new Map();
+    function _$wasRecursivelyValidated(_$tn, _$d) {
+      let _$set = _$validatedRecursiveValues.get(_$tn);
       if (!_$set) {
         _$set = new Set([_$d]);
-        _$validatedCircularValues.set(_$tn, _$set);
+        _$validatedRecursiveValues.set(_$tn, _$set);
         return false;
       }
       if (_$set.has(_$d)) {
@@ -719,6 +783,11 @@ const circTracker = /* js */ `
       return false;
     };
 `.trim();
+
+export interface FastValidator<DT extends AnyType> {
+  (data: unknown): data is ReWrap<ParseDataType<DT>>;
+  asString(name?: string): string;
+}
 
 /**
  * Compile a validation function for the given data type.
@@ -733,60 +802,73 @@ const circTracker = /* js */ `
  */
 export const compileFastValidator = <DT extends AnyType>(
   dataType: DT,
-): (data: unknown) => data is ReWrap<ParseDataType<DT>> => {
+): FastValidator<DT> => {
   const visitor = new DataTypeValidatorVisitor();
 
   const generator = dataType._acceptVisitor(visitor);
 
   const validation = generator.$validate("data");
 
-  const declarations = [];
+  const outerDeclarations: string[] = [];
+  const innerDeclarations: string[] = [];
 
   if (
     visitor.includes.array
     || visitor.includes.stringInteger
     || visitor.includes.stringNumeral
   ) {
-    declarations.push(every);
+    outerDeclarations.push(every);
   }
-
   if (visitor.includes.set) {
-    declarations.push(everyInSet);
+    outerDeclarations.push(everyInSet);
   }
-
   if (visitor.includes.dict) {
-    declarations.push(everyObjectValue);
+    outerDeclarations.push(everyObjectValue);
+  }
+  if (visitor.outerDeclarations) {
+    outerDeclarations.push(...visitor.outerDeclarations);
   }
 
-  if (visitor.includes.stringInteger) {
-    declarations.push(strIntValidator);
+  if (visitor.includes.recursive) {
+    innerDeclarations.push(recursiveTracker);
   }
-
-  if (visitor.includes.stringNumeral) {
-    declarations.push(strNumeralValidator);
-  }
-
-  if (visitor.includes.circular) {
-    declarations.push(circTracker);
-  }
-
-  if (generator.declarations) {
-    declarations.push(...generator.declarations);
+  if (visitor.innerDeclarations) {
+    innerDeclarations.push(...visitor.innerDeclarations);
   }
 
   const validatorStr = `(_$getDependency) => {
+  ${outerDeclarations.join("\n  ")}
   return function validate(data) {
-    ${declarations.join("\n    ")}
+    ${innerDeclarations.join("\n    ")}
     return ${validation};
   }
 }`;
 
-  const deps = new Map(generator.dependencies);
+  const deps = new Map(visitor.dependencies);
   const _$getDependency = (name: string): any => {
     return deps.get(name);
   };
 
-  const validator = e(validatorStr)(_$getDependency);
+  const evaluatedCode = e(validatorStr);
+
+  const validator = evaluatedCode(_$getDependency);
+
+  const { includes } = visitor;
+  validator.asString = (name = "validate") => {
+    if (includes.custom) {
+      throw new Error(
+        "Validators with Custom type validation cannot be compiled to standalone code",
+      );
+    }
+    if (includes.instanceof) {
+      throw new Error(
+        "Validators with InstanceOf type validation cannot be compiled to standalone code",
+      );
+    }
+    return `${outerDeclarations.join("\n")}\nfunction ${name}(data) {\n  ${
+      innerDeclarations.join("\n  ")
+    }\n  return ${validation}\n}`;
+  };
 
   return validator;
 };
