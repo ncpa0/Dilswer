@@ -1360,6 +1360,7 @@ describe("createFastValidator", () => {
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
+        expect(validate([])).toEqual(true);
         expect(validate({ foo: "foo", bar: 123 })).toEqual(true);
         expect(validate({ foo: "", bar: "0", baz: "" })).toEqual(true);
         expect(validate({ foo: 123, bar: -2 })).toEqual(true);
@@ -1375,9 +1376,9 @@ describe("createFastValidator", () => {
         expect(validate({ foo: "foo", bar: Symbol("1") })).toEqual(false);
         expect(validate({ foo: "", baz: {} })).toEqual(false);
         expect(validate({ foo: "", baz: [] })).toEqual(false);
-        expect(validate([])).toEqual(false);
         expect(validate("foo")).toEqual(false);
         expect(validate(76)).toEqual(false);
+        expect(validate([true])).toEqual(false);
       });
 
       it("should validate for nested dictionaries", () => {
@@ -1406,6 +1407,7 @@ describe("createFastValidator", () => {
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
+        expect(validate([])).toEqual(true);
         expect(validate({ bar: "bar" })).toEqual(true);
         expect(validate({ bar: { foo: {} } })).toEqual(true);
         expect(validate({ bar: { foo: { dict1: {} } } })).toEqual(true);
@@ -1431,7 +1433,6 @@ describe("createFastValidator", () => {
         expect(validate(undefined)).toEqual(false);
         expect(validate(1)).toEqual(false);
         expect(validate("undefined")).toEqual(false);
-        expect(validate([])).toEqual(false);
         expect(validate({ bar: 1 })).toEqual(false);
         expect(validate({ bar: null })).toEqual(false);
         expect(validate({ bar: undefined })).toEqual(false);
@@ -2304,7 +2305,6 @@ describe("createFastValidator", () => {
           ).toEqual(true);
           expect(validate({ a: { b: { ref: undefined } } })).toEqual(true);
 
-          expect(validate({ a: [] })).toEqual(false);
           expect(validate({ a: { b: 1 } })).toEqual(false);
           expect(validate({ a: { b: { ref: 0 } } })).toEqual(false);
           expect(

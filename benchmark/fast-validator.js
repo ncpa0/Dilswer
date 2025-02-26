@@ -45,8 +45,6 @@ const checkSchemasCorrect = (schemas, correctData, incorrectData) => {
   const dilswerResult = validate(correctData);
   const fastDilswerResult = fastValidate(correctData);
 
-  // console.log("arktResult", arktResult);
-
   if (
     !dilswerResult
     || !fastDilswerResult
@@ -111,11 +109,11 @@ const checkSchemasCorrect = (schemas, correctData, incorrectData) => {
 
 /**
  * @param {string} name
- * @param {any} data
+ * @param {() => any} getData
  * @param {{ dilswer: DilswerSchema; zod: ZodSchema; valibot: ValibotSchema; arkttype: ArkSchema; }} schemas
  * @returns
  */
-const runSuiteForSample = (name, data, schemas) => {
+const runSuiteForSample = (name, getData, schemas) => {
   if (validOnly && name.includes("invalid")) {
     return;
   }
@@ -130,19 +128,19 @@ const runSuiteForSample = (name, data, schemas) => {
     );
     suite
       .add("Dilswer validator", function() {
-        validate(data);
+        validate(getData());
       })
       .add("Dilswer compileFastValidator", function() {
-        fastValidate(data);
+        fastValidate(getData());
       })
       .add("Zod", () => {
-        schemas.zod.safeParse(data);
+        schemas.zod.safeParse(getData());
       })
       .add("Valibot", () => {
-        valibot.safeParse(schemas.valibot, data);
+        valibot.safeParse(schemas.valibot, getData());
       })
       .add("ArkType", () => {
-        schemas.arkttype(data);
+        schemas.arkttype(getData());
       })
       .on("start", function() {
         console.log("Running Suite: " + this.name);
@@ -182,26 +180,26 @@ const runSuiteForSample = (name, data, schemas) => {
 const separator = "\u001b[35m" + "-".repeat(65) + "\u001b[0m";
 
 const micro = async () => {
-  await runSuiteForSample("micro - valid 1", "asdasd", {
+  await runSuiteForSample("micro - valid 1", () => "asdasd", {
     dilswer: Type.String,
     zod: zod.string(),
     valibot: valibot.string(),
     arkttype: ark.type("string"),
   });
-  await runSuiteForSample("micro - valid 2", 42, {
+  await runSuiteForSample("micro - valid 2", () => 42, {
     dilswer: Type.Number,
     zod: zod.number(),
     valibot: valibot.number(),
     arkttype: ark.type("number"),
   });
 
-  await runSuiteForSample("micro - invalid 1", 42, {
+  await runSuiteForSample("micro - invalid 1", () => 42, {
     dilswer: Type.String,
     zod: zod.string(),
     valibot: valibot.string(),
     arkttype: ark.type("string"),
   });
-  await runSuiteForSample("micro - invalid 2", "asdasd", {
+  await runSuiteForSample("micro - invalid 2", () => "asdasd", {
     dilswer: Type.Number,
     zod: zod.number(),
     valibot: valibot.number(),
@@ -220,17 +218,17 @@ const mini = async () => {
     arkttype: ark.type({ foo: "string", bar: "number" }),
   };
 
-  const validData = {
+  const validData = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
-  };
+  });
 
-  const invalidData = {
+  const invalidData = () => ({
     foo: "abc",
     bar: "def",
-  };
+  });
 
-  checkSchemasCorrect(miniSchames, validData, invalidData);
+  checkSchemasCorrect(miniSchames, validData(), invalidData());
 
   await runSuiteForSample("mini - valid", validData, miniSchames);
   await runSuiteForSample("mini - invalid", invalidData, miniSchames);
@@ -268,31 +266,31 @@ const small = async () => {
     }),
   };
 
-  const validData = {
+  const validData = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
     qux: ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur"],
     quux: null,
-  };
+  });
 
-  const invalidData1 = {
+  const invalidData1 = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
     qux: ["lorem", "ipsum", "dolor", 1, "amet", "consectetur"],
     quux: null,
-  };
+  });
 
-  const invalidData2 = {
+  const invalidData2 = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: "true",
     qux: ["lorem", "ipsum", "dolor", "sit", "amet", "consectetur"],
     quux: null,
-  };
+  });
 
-  checkSchemasCorrect(smallSchemas, validData, invalidData1);
+  checkSchemasCorrect(smallSchemas, validData(), invalidData1());
 
   await runSuiteForSample("small - valid", validData, smallSchemas);
   await runSuiteForSample("small - invalid 1", invalidData1, smallSchemas);
@@ -302,6 +300,7 @@ const small = async () => {
 const medium = async () => {
   const mediumSchemas = {
     dilswer: Type.Record({
+      rangeError: Type.Option(Type.InstanceOf(RangeError)),
       foo: Type.String,
       bar: Type.Number,
       baz: Type.Boolean,
@@ -359,7 +358,7 @@ const medium = async () => {
     }),
   };
 
-  const validData = {
+  const validData = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
@@ -414,9 +413,9 @@ const medium = async () => {
       },
     ],
     waldo: null,
-  };
+  });
 
-  const invalidData1 = {
+  const invalidData1 = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
@@ -470,10 +469,10 @@ const medium = async () => {
         garply: null,
       },
     ],
-    waldo: null,
-  };
+    waldo: "null",
+  });
 
-  checkSchemasCorrect(mediumSchemas, validData, invalidData1);
+  checkSchemasCorrect(mediumSchemas, validData(), invalidData1());
 
   await runSuiteForSample("medium - valid", validData, mediumSchemas);
   await runSuiteForSample("medium - invalid 1", invalidData1, mediumSchemas);
@@ -589,12 +588,12 @@ const large = async () => {
       bar: "number",
       baz: "boolean",
       qux: ark.type({
-        quux: "string",
-        quuz: "number",
+        quux: "string.integer",
+        quuz: "number.integer",
         corge: "boolean",
         grault: ark.type({
           garply: "string",
-          waldo: "string",
+          waldo: "string.numeric",
           fred: "boolean",
           plugh: "(string | number | boolean)[]",
           xyzzy: "null",
@@ -611,7 +610,7 @@ const large = async () => {
     }),
   };
 
-  const validData = {
+  const validData = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
@@ -1185,9 +1184,9 @@ const large = async () => {
       },
     ],
     wibble: null,
-  };
+  });
 
-  const invalidData1 = {
+  const invalidData1 = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
@@ -1761,9 +1760,9 @@ const large = async () => {
       },
     ],
     wibble: null,
-  };
+  });
 
-  const invalidData2 = {
+  const invalidData2 = () => ({
     foo: "lorem ipsum dolor sit amet consectetur adipiscing elit",
     bar: 42,
     baz: true,
@@ -2337,9 +2336,9 @@ const large = async () => {
       },
     ],
     wibble: null,
-  };
+  });
 
-  checkSchemasCorrect(largeSchemas, validData, invalidData1);
+  checkSchemasCorrect(largeSchemas, validData(), invalidData1());
 
   await runSuiteForSample("large - valid", validData, largeSchemas);
   await runSuiteForSample("large - invalid 1", invalidData1, largeSchemas);

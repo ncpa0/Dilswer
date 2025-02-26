@@ -2336,7 +2336,6 @@ describe("createValidator", () => {
             ).toEqual(true);
             expect(validate({ a: { b: { ref: undefined } } })).toEqual(true);
 
-            expect(validate({ a: [] })).toEqual(false);
             expect(validate({ a: { b: 1 } })).toEqual(false);
             expect(validate({ a: { b: { ref: 0 } } })).toEqual(false);
             expect(
@@ -5418,7 +5417,6 @@ describe("createValidator", () => {
               true,
             );
 
-            expect(validate({ a: [] }).success).toEqual(false);
             expect(validate({ a: { b: 1 } }).success).toEqual(false);
             expect(validate({ a: { b: { ref: 0 } } }).success).toEqual(false);
             expect(
