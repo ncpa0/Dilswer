@@ -1,4 +1,4 @@
-import { DataTypeSymbol } from "@DataTypes/data-types";
+import { DataTypeSymbol } from "@DataTypes/base-type";
 import type { AnyType, FieldDescriptor } from "@DataTypes/types";
 
 export const isFieldDescriptor = (

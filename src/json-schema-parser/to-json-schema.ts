@@ -1,4 +1,4 @@
-import { BaseType } from "@DataTypes/data-types";
+import { BaseType } from "@DataTypes/base-type";
 import { Type } from "@DataTypes/Type";
 import { TypeKindNames } from "@DataTypes/type-kind-names";
 import type {

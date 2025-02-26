@@ -1,4 +1,4 @@
-import { BaseType } from "@DataTypes/data-types";
+import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";

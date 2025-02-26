@@ -1,4 +1,4 @@
-import { BaseType } from "@DataTypes/data-types";
+import { BaseType } from "@DataTypes/base-type";
 import { Type } from "@DataTypes/Type";
 import { AnyType } from "@DataTypes/types";
 import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
