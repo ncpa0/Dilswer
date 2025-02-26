@@ -28,7 +28,7 @@ export type { DictType } from "@DataTypes/types/dict";
 export type { EnumType } from "@DataTypes/types/enum";
 export type { EnumMemberType } from "@DataTypes/types/enum-member";
 export type { FunctionType } from "@DataTypes/types/function";
-export type { InstanceOfType as InstanceType } from "@DataTypes/types/instance";
+export type { InstanceOfType } from "@DataTypes/types/instance";
 export type { IntegerType } from "@DataTypes/types/integer";
 export type { IntersectionType } from "@DataTypes/types/intersection";
 export type { LiteralType } from "@DataTypes/types/literal";
