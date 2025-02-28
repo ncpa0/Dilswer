@@ -610,7 +610,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates string regex matcher", async () => {
       const e = endpoint(
-        Type.StringMatching(/^START.+END$/),
+        Type.String.matching(/^START.+END$/),
       );
 
       assert<AssertEndpoint<string, typeof e>>();
@@ -1187,7 +1187,7 @@ describe("validating via the Standard Schema", () => {
 
     it("correctly validates string regex matcher", async () => {
       const e = endpoint(
-        Type.StringMatching(/^START.+END$/).compile(),
+        Type.String.matching(/^START.+END$/).compile(),
       );
 
       await expect(e.post("START hello END")).resolves.toEqual({

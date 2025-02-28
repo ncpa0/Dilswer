@@ -232,8 +232,8 @@ describe("createFastValidator", () => {
       expect(validate(new Set(["foo"]))).toEqual(true);
     });
 
-    it("should validate against a string numeral", () => {
-      const typeDef = Type.StringNumeral;
+    it("should validate against a string float", () => {
+      const typeDef = Type.String.Float;
 
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -248,7 +248,195 @@ describe("createFastValidator", () => {
       expect(validate(".5")).toEqual(true);
       expect(validate("0.")).toEqual(true);
       expect(validate("2.")).toEqual(true);
+      expect(validate("-1")).toEqual(true);
+      expect(validate("-6.12")).toEqual(true);
+      expect(validate("-.0")).toEqual(true);
+      expect(validate("-.5")).toEqual(true);
+      expect(validate("-0.")).toEqual(true);
+      expect(validate("-2.")).toEqual(true);
 
+      expect(validate("1-")).toEqual(false);
+      expect(validate("6.-12")).toEqual(false);
+      expect(validate("6-.12")).toEqual(false);
+      expect(validate("6-1.12")).toEqual(false);
+      expect(validate(".0-")).toEqual(false);
+      expect(validate(".-5")).toEqual(false);
+      expect(validate("0.-")).toEqual(false);
+      expect(validate("2-.")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a positive string float", () => {
+      const typeDef = Type.String.Float.positive();
+
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
+      const validate = compileFastValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      expect(validate("1")).toEqual(true);
+      expect(validate("6.12")).toEqual(true);
+      expect(validate(".5")).toEqual(true);
+      expect(validate("2.")).toEqual(true);
+
+      expect(validate(".0")).toEqual(false);
+      expect(validate("0.")).toEqual(false);
+      expect(validate("0")).toEqual(false);
+      expect(validate("00.00")).toEqual(false);
+      expect(validate("0.0")).toEqual(false);
+      expect(validate("00.00.")).toEqual(false);
+      expect(validate("-0.0.0")).toEqual(false);
+      expect(validate("-1")).toEqual(false);
+      expect(validate("-6.12")).toEqual(false);
+      expect(validate("-.0")).toEqual(false);
+      expect(validate("-.5")).toEqual(false);
+      expect(validate("-0.")).toEqual(false);
+      expect(validate("-2.")).toEqual(false);
+      expect(validate("1-")).toEqual(false);
+      expect(validate("6.-12")).toEqual(false);
+      expect(validate("6-.12")).toEqual(false);
+      expect(validate("6-1.12")).toEqual(false);
+      expect(validate(".0-")).toEqual(false);
+      expect(validate(".-5")).toEqual(false);
+      expect(validate("0.-")).toEqual(false);
+      expect(validate("2-.")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a negative string float", () => {
+      const typeDef = Type.String.Float.negative();
+
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
+      const validate = compileFastValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      expect(validate("-1")).toEqual(true);
+      expect(validate("-6.12")).toEqual(true);
+      expect(validate("-.5")).toEqual(true);
+      expect(validate("-2.")).toEqual(true);
+
+      expect(validate("-.0")).toEqual(false);
+      expect(validate("-0.")).toEqual(false);
+      expect(validate("0")).toEqual(false);
+      expect(validate("0.0")).toEqual(false);
+      expect(validate("00.00")).toEqual(false);
+      expect(validate("-0")).toEqual(false);
+      expect(validate("-0.0")).toEqual(false);
+      expect(validate("-00.00")).toEqual(false);
+      expect(validate("00.00.")).toEqual(false);
+      expect(validate("-0.0.0")).toEqual(false);
+      expect(validate("1")).toEqual(false);
+      expect(validate("6.12")).toEqual(false);
+      expect(validate(".5")).toEqual(false);
+      expect(validate("2.")).toEqual(false);
+      expect(validate("1-")).toEqual(false);
+      expect(validate("6.-12")).toEqual(false);
+      expect(validate("6-.12")).toEqual(false);
+      expect(validate("6-1.12")).toEqual(false);
+      expect(validate(".0-")).toEqual(false);
+      expect(validate(".-5")).toEqual(false);
+      expect(validate("0.-")).toEqual(false);
+      expect(validate("2-.")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a zero string float", () => {
+      const typeDef = Type.String.Float.zero();
+
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
+      const validate = compileFastValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      expect(validate("0")).toEqual(true);
+      expect(validate("000")).toEqual(true);
+      expect(validate("0.0")).toEqual(true);
+      expect(validate("00.00")).toEqual(true);
+      expect(validate(".0")).toEqual(true);
+      expect(validate("0.")).toEqual(true);
+      expect(validate("0")).toEqual(true);
+      expect(validate("-000")).toEqual(true);
+      expect(validate("-0.0")).toEqual(true);
+      expect(validate("-00.00")).toEqual(true);
+      expect(validate("-.0")).toEqual(true);
+      expect(validate("-0.")).toEqual(true);
+      expect(validate("-.0")).toEqual(true);
+      expect(validate("-0.")).toEqual(true);
+
+      expect(validate("1")).toEqual(false);
+      expect(validate("6.12")).toEqual(false);
+      expect(validate(".5")).toEqual(false);
+      expect(validate("2.")).toEqual(false);
+      expect(validate("-1")).toEqual(false);
+      expect(validate("-6.12")).toEqual(false);
+      expect(validate("-.5")).toEqual(false);
+      expect(validate("-2.")).toEqual(false);
+      expect(validate("1-")).toEqual(false);
+      expect(validate("6.-12")).toEqual(false);
+      expect(validate("6-.12")).toEqual(false);
+      expect(validate("6-1.12")).toEqual(false);
+      expect(validate(".0-")).toEqual(false);
+      expect(validate(".-5")).toEqual(false);
+      expect(validate("0.-")).toEqual(false);
+      expect(validate("2-.")).toEqual(false);
       expect(validate(1)).toEqual(false);
       expect(validate(12345)).toEqual(false);
       expect(validate(1.1)).toEqual(false);
@@ -270,7 +458,7 @@ describe("createFastValidator", () => {
     });
 
     it("should validate against a string integer", () => {
-      const typeDef = Type.StringInt;
+      const typeDef = Type.String.Int;
 
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -282,6 +470,132 @@ describe("createFastValidator", () => {
       expect(validate("1")).toEqual(true);
       expect(validate("612")).toEqual(true);
 
+      expect(validate(".0")).toEqual(false);
+      expect(validate("8.5")).toEqual(false);
+      expect(validate("0.")).toEqual(false);
+      expect(validate("2.7")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a positive string integer", () => {
+      const typeDef = Type.String.Int.positive();
+
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
+      const validate = compileFastValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      expect(validate("1")).toEqual(true);
+      expect(validate("612")).toEqual(true);
+
+      expect(validate("0")).toEqual(false);
+      expect(validate("0000")).toEqual(false);
+      expect(validate("-0")).toEqual(false);
+      expect(validate("-1")).toEqual(false);
+      expect(validate("-612")).toEqual(false);
+      expect(validate(".0")).toEqual(false);
+      expect(validate("8.5")).toEqual(false);
+      expect(validate("0.")).toEqual(false);
+      expect(validate("2.7")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a negative string integer", () => {
+      const typeDef = Type.String.Int.negative();
+
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
+      const validate = compileFastValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      expect(validate("-1")).toEqual(true);
+      expect(validate("-612")).toEqual(true);
+
+      expect(validate("0")).toEqual(false);
+      expect(validate("0000")).toEqual(false);
+      expect(validate("-0")).toEqual(false);
+      expect(validate("1")).toEqual(false);
+      expect(validate("612")).toEqual(false);
+      expect(validate(".0")).toEqual(false);
+      expect(validate("8.5")).toEqual(false);
+      expect(validate("0.")).toEqual(false);
+      expect(validate("2.7")).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(12345)).toEqual(false);
+      expect(validate(1.1)).toEqual(false);
+      expect(validate(0.1)).toEqual(false);
+      expect(validate(1)).toEqual(false);
+      expect(validate(1.1805916207174113e21)).toEqual(false);
+      expect(validate("1.1805916207174113e+21")).toEqual(false);
+      expect(validate("FFF")).toEqual(false);
+      expect(validate("A10")).toEqual(false);
+      expect(validate(null)).toEqual(false);
+      expect(validate(undefined)).toEqual(false);
+      expect(validate("foo")).toEqual(false);
+      expect(validate(false)).toEqual(false);
+      expect(validate(Symbol())).toEqual(false);
+      expect(validate(() => ["foo"])).toEqual(false);
+      expect(validate(["foo"])).toEqual(false);
+      expect(validate({ foo: "foo" })).toEqual(false);
+      expect(validate(new Set(["foo"]))).toEqual(false);
+    });
+
+    it("should validate against a zero string integer", () => {
+      const typeDef = Type.String.Int.zero();
+
+      type ExpectedType = `${number}`;
+      assert<AssertType<ExpectedType, typeof typeDef>>();
+
+      const validate = compileFastValidator(typeDef);
+
+      assert<AssertValidator<ExpectedType, typeof validate>>();
+
+      expect(validate("0000")).toEqual(true);
+      expect(validate("0")).toEqual(true);
+      expect(validate("-0")).toEqual(true);
+
+      expect(validate("1")).toEqual(false);
+      expect(validate("612")).toEqual(false);
+      expect(validate("-1")).toEqual(false);
+      expect(validate("-612")).toEqual(false);
       expect(validate(".0")).toEqual(false);
       expect(validate("8.5")).toEqual(false);
       expect(validate("0.")).toEqual(false);
@@ -721,7 +1035,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate intersection of string and string numerals", () => {
-        const typeDef = Type.AllOf(Type.String, Type.StringNumeral);
+        const typeDef = Type.AllOf(Type.String, Type.String.Float);
 
         type ExpectedType = string & `${number}`;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1891,7 +2205,7 @@ describe("createFastValidator", () => {
 
     describe("for string matching pattern", () => {
       it("should validate the string against the pattern", () => {
-        const typeDef = Type.StringMatching(/^foo/);
+        const typeDef = Type.String.matching(/^foo/);
 
         type ExpectedType = string;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -1918,7 +2232,7 @@ describe("createFastValidator", () => {
       });
 
       it("should validate the string against the pattern and assert the type", () => {
-        const typeDef = Type.StringMatching<`bar.${string}`>(/^bar\./);
+        const typeDef = Type.String.matching<`bar.${string}`>(/^bar\./);
 
         type ExpectedType = `bar.${string}`;
         assert<AssertType<ExpectedType, typeof typeDef>>();
@@ -2802,7 +3116,7 @@ describe("createFastValidator", () => {
             Type.String,
             Type.Recursive((self) =>
               Type.Array(
-                Type.OneOf(Type.Number, Type.StringNumeral, self),
+                Type.OneOf(Type.Number, Type.String.Float, self),
               )
             ),
           );

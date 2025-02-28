@@ -211,13 +211,30 @@ const $length = (varname: string, is: ">" | "<" | "==", than: number) => {
   }
 };
 
+const $some = (
+  generator: DataTypeValidatorVisitor,
+  varname: string,
+  predicate: (elementName: string, index: string) => string,
+) => {
+  generator.includes.some = true;
+  const elemName = generator.getUniqueVarName();
+  const indexName = generator.getUniqueVarName();
+  return `_$some(${varname}, (${elemName}, ${indexName}) => ${
+    predicate(elemName, indexName)
+  })`;
+};
+
 const $every = (
   generator: DataTypeValidatorVisitor,
   varname: string,
-  predicate: (elementName: string) => string,
+  predicate: (elementName: string, index: string) => string,
 ) => {
+  generator.includes.every = true;
   const elemName = generator.getUniqueVarName();
-  return `_$every(${varname}, (${elemName}) => ${predicate(elemName)})`;
+  const indexName = generator.getUniqueVarName();
+  return `_$every(${varname}, (${elemName}, ${indexName}) => ${
+    predicate(elemName, indexName)
+  })`;
 };
 
 const $everyObjectValue = (
@@ -293,6 +310,8 @@ type R = ValidateGenerator;
 
 class DataTypeValidatorVisitor implements TypeVisitor<R> {
   includes = {
+    some: false,
+    every: false,
     stringNumeral: false,
     stringInteger: false,
     recursive: false,
@@ -380,26 +399,186 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         );
       case "stringinteger":
         this.includes.stringInteger = true;
+        if (
+          type.options.negative === false
+          && type.options.positive === false
+        ) {
+          // String.Int.zero()
+          return new ValidateGenerator(
+            (varname) =>
+              $condition("&&")
+                .add($type(varname, "string"))
+                .add($length(varname, ">", 0))
+                .add(
+                  $every(
+                    this,
+                    varname,
+                    (char, index) =>
+                      $condition("||")
+                        .add($charCode(char, 48))
+                        .add(
+                          $condition("&&")
+                            .add($equal(index, 0))
+                            .add($charCode(char, 45)),
+                        )
+                        .build(),
+                  ),
+                ),
+          );
+        }
+        if (type.options.negative === false) {
+          // String.Int.positive()
+          return new ValidateGenerator(
+            (varname) =>
+              $condition("&&")
+                .add($type(varname, "string"))
+                .add($length(varname, ">", 0))
+                .add(
+                  $some(
+                    this,
+                    varname,
+                    (char) => $charCode(char, [49, 57]),
+                  ),
+                )
+                .add(
+                  $every(
+                    this,
+                    varname,
+                    (char) => $charCode(char, [48, 57]),
+                  ),
+                ),
+          );
+        }
+        if (type.options.positive === false) {
+          // String.Int.negative()
+          return new ValidateGenerator(
+            (varname) =>
+              $condition("&&")
+                .add($type(varname, "string"))
+                .add($length(varname, ">", 0))
+                .add($charCode(varname, 45))
+                .add(
+                  $some(
+                    this,
+                    varname,
+                    char => $charCode(char, [49, 57]),
+                  ),
+                )
+                .add(
+                  $every(
+                    this,
+                    varname,
+                    (char, index) =>
+                      $condition("||")
+                        .add($charCode(char, [48, 57]))
+                        .add($equal(index, 0))
+                        .build(),
+                  ),
+                ),
+          );
+        }
         return new ValidateGenerator(
           (varname) =>
             $condition("&&")
               .add($type(varname, "string"))
               .add($length(varname, ">", 0))
               .add(
-                $every(this, varname, char => $charCode(char, [48, 57])),
+                $every(
+                  this,
+                  varname,
+                  (char, index) =>
+                    $condition("||")
+                      .add($charCode(char, [48, 57]))
+                      .add(
+                        $condition("&&")
+                          .add($charCode(char, 45))
+                          .add($equal(index, 0)),
+                      ).build(),
+                ),
               ),
         );
       case "stringnumeral":
         this.includes.stringNumeral = true;
+        if (
+          type.options.negative === false
+          && type.options.positive === false
+        ) {
+          // String.Float.zero()
+          return new ValidateGenerator(
+            (varname) =>
+              $condition("&&")
+                .add($type(varname, "string"))
+                .add($length(varname, ">", 0))
+                .add(
+                  $every(this, varname, (char, index) =>
+                    $condition("||")
+                      .add($charCode(char, 48))
+                      .add($charCode(char, 46))
+                      .add(
+                        $condition("&&")
+                          .add($charCode(char, 45))
+                          .add($equal(index, 0)),
+                      )
+                      .build()),
+                )
+                .add($charCount(varname, ".", "<", 2)),
+          );
+        }
+        if (type.options.negative === false) {
+          // String.Float.positive()
+          return new ValidateGenerator(
+            (varname) =>
+              $condition("&&").add($type(varname, "string"))
+                .add($length(varname, ">", 0))
+                .add(
+                  $some(this, varname, char => $charCode(char, [49, 57])),
+                )
+                .add(
+                  $every(this, varname, (char) =>
+                    $condition("||")
+                      .add($charCode(char, [48, 57]))
+                      .add($charCode(char, 46))
+                      .build()),
+                )
+                .add($charCount(varname, ".", "<", 2)),
+          );
+        }
+        if (type.options.positive === false) {
+          // String.Float.negative()
+          return new ValidateGenerator(
+            (varname) =>
+              $condition("&&")
+                .add($type(varname, "string"))
+                .add($length(varname, ">", 0))
+                .add($charCode(varname, 45))
+                .add(
+                  $some(this, varname, char => $charCode(char, [49, 57])),
+                )
+                .add(
+                  $every(this, varname, (char, index) =>
+                    $condition("||")
+                      .add($equal(index, 0))
+                      .add($charCode(char, [48, 57]))
+                      .add($charCode(char, 46))
+                      .build()),
+                )
+                .add($charCount(varname, ".", "<", 2)),
+          );
+        }
         return new ValidateGenerator(
           (varname) =>
             $condition("&&").add($type(varname, "string"))
               .add($length(varname, ">", 0))
               .add(
-                $every(this, varname, char =>
+                $every(this, varname, (char, index) =>
                   $condition("||")
                     .add($charCode(char, [48, 57]))
                     .add($charCode(char, 46))
+                    .add(
+                      $condition("&&")
+                        .add($charCode(char, 45))
+                        .add($equal(index, 0)),
+                    )
                     .build()),
               )
               .add($charCount(varname, ".", "<", 2)),
@@ -737,10 +916,20 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
 const e = eval;
 
+const some = /* js */ `
+  function _$some(_$arr, _$predicate) {
+    for (let _$i = 0; _$i < _$arr.length; _$i++) {
+      if (_$predicate(_$arr[_$i], _$i))
+        return true;
+    }
+    return false;
+  };
+`.trim();
+
 const every = /* js */ `
   function _$every(_$arr, _$predicate) {
     for (let _$i = 0; _$i < _$arr.length; _$i++) {
-      if (!_$predicate(_$arr[_$i]))
+      if (!_$predicate(_$arr[_$i], _$i))
         return false;
     }
     return true;
@@ -812,12 +1001,11 @@ export const compileFastValidator = <DT extends AnyType>(
   const outerDeclarations: string[] = [];
   const innerDeclarations: string[] = [];
 
-  if (
-    visitor.includes.array
-    || visitor.includes.stringInteger
-    || visitor.includes.stringNumeral
-  ) {
+  if (visitor.includes.every) {
     outerDeclarations.push(every);
+  }
+  if (visitor.includes.some) {
+    outerDeclarations.push(some);
   }
   if (visitor.includes.set) {
     outerDeclarations.push(everyInSet);

@@ -41,9 +41,9 @@ export type {
 } from "@DataTypes/types/recursive";
 export type { SetType } from "@DataTypes/types/set";
 export type { StringType } from "@DataTypes/types/string";
+export type { StringFloatType as StringNumeralType } from "@DataTypes/types/string-float";
 export type { StringIntegerType } from "@DataTypes/types/string-integer";
 export type { StringMatchingType } from "@DataTypes/types/string-matching";
-export type { StringNumeralType } from "@DataTypes/types/string-numberal";
 export type { SymbolType } from "@DataTypes/types/symbol";
 export type { TupleType } from "@DataTypes/types/tuple";
 export type { UndefinedType } from "@DataTypes/types/undefined";

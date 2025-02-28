@@ -15,9 +15,9 @@ import type { RecordType } from "./types/record";
 import type { RecursiveType, RecursiveTypeReference } from "./types/recursive";
 import type { SetType } from "./types/set";
 import type { StringType } from "./types/string";
+import type { StringFloatType } from "./types/string-float";
 import type { StringIntegerType } from "./types/string-integer";
 import type { StringMatchingType } from "./types/string-matching";
-import type { StringNumeralType } from "./types/string-numberal";
 import type { SymbolType } from "./types/symbol";
 import type { TupleType } from "./types/tuple";
 import type { UndefinedType } from "./types/undefined";
@@ -57,7 +57,7 @@ export type BasicType =
   | NumberType
   | StringType
   | StringIntegerType
-  | StringNumeralType
+  | StringFloatType
   | SymbolType
   | UndefinedType
   | UnknownType;
