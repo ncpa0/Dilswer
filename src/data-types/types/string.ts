@@ -24,7 +24,7 @@ export class StringType extends BaseType {
     max: null,
   };
 
-  get options() {
+  get options(): Readonly<StringOptions> {
     return { ...this._options };
   }
 

@@ -19,7 +19,7 @@ export class NumberType extends BaseType {
     max: null,
   };
 
-  get options(): NumberOptions {
+  get options(): Readonly<NumberOptions> {
     return { ...this._options };
   }
 
