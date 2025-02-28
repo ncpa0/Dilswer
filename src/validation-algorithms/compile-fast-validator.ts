@@ -381,18 +381,26 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     switch (type.simpleType) {
       case "boolean":
         return new ValidateGenerator(
-          (varname) => $condition("&&").add($type(varname, "boolean")),
+          (varname) => $type(varname, "boolean"),
         );
       case "integer":
         return new ValidateGenerator(
-          (varname) =>
-            $condition("&&").add($type(varname, "number")).add(
-              $isInteger(varname),
-            ),
+          (varname) => {
+            const cond = $condition("&&")
+              .add($type(varname, "number"))
+              .add($isInteger(varname));
+            if (type.options.max != null) {
+              cond.add($lte(varname, type.options.max));
+            }
+            if (type.options.min != null) {
+              cond.add($gte(varname, type.options.min));
+            }
+            return cond;
+          },
         );
       case "null":
         return new ValidateGenerator(
-          (varname) => $condition("&&").add($equal(varname, null)),
+          (varname) => $equal(varname, null),
         );
       case "number":
         return new ValidateGenerator(
@@ -411,7 +419,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         );
       case "string":
         return new ValidateGenerator(
-          (varname) => $condition("&&").add($type(varname, "string")),
+          (varname) => $type(varname, "string"),
         );
       case "stringinteger":
         this.includes.stringInteger = true;
@@ -599,8 +607,6 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
               )
               .add($charCount(varname, ".", "<", 2)),
         );
-      case "unknown":
-        return new ValidateGenerator(() => "true");
       case "function":
         return new ValidateGenerator(
           (varname) => $type(varname, "function"),
@@ -613,6 +619,8 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         return new ValidateGenerator(
           (varname) => $type(varname, "undefined"),
         );
+      case "unknown":
+        return new ValidateGenerator(() => "true");
     }
   }
 

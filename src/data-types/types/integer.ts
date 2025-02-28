@@ -5,13 +5,39 @@ import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "standard-schema";
 
+type IntOptions = {
+  min: number | null;
+  max: number | null;
+};
+
 export class IntegerType extends BaseType {
   readonly kind = "simple";
   public readonly simpleType: "integer" = "integer";
 
+  protected _options: IntOptions = {
+    min: null,
+    max: null,
+  };
+
+  get options(): IntOptions {
+    return { ...this._options };
+  }
+
   constructor() {
     super();
     Object.freeze(this);
+  }
+
+  min(min: number): ComplexIntegerType {
+    const t = new ComplexIntegerType();
+    t._options.min = min;
+    return t;
+  }
+
+  max(max: number): ComplexIntegerType {
+    const t = new ComplexIntegerType();
+    t._options.max = max;
+    return t;
   }
 
   /** @internal */
@@ -37,5 +63,57 @@ export class IntegerType extends BaseType {
       typeof value === "number" && !Number.isNaN(value)
       && Number.isInteger(value)
     );
+  }
+}
+
+export class ComplexIntegerType extends IntegerType {
+  min(min: number): ComplexIntegerType {
+    const t = new ComplexIntegerType();
+    Object.assign(t._options, this._options);
+    t._options.min = min;
+    return t;
+  }
+
+  max(max: number): ComplexIntegerType {
+    const t = new ComplexIntegerType();
+    Object.assign(t._options, this._options);
+    t._options.max = max;
+    return t;
+  }
+
+  ["~validate"](path: Path, value: any): void {
+    if (
+      typeof value !== "number" || Number.isNaN(value)
+      || !Number.isInteger(value)
+    ) {
+      throw new ValidationError(path, this, value);
+    }
+
+    if (this._options.min !== null && value < this._options.min) {
+      throw new ValidationError(path, this, value);
+    }
+
+    if (this._options.max !== null && value > this._options.max) {
+      throw new ValidationError(path, this, value);
+    }
+  }
+
+  ["~matches"](value: any): boolean {
+    if (
+      typeof value !== "number" || Number.isNaN(value)
+      || !Number.isInteger(value)
+    ) {
+      return false;
+    }
+
+    if (this._options.min !== null && value < this._options.min) {
+      return false;
+    }
+
+    if (this._options.max !== null && value > this._options.max) {
+      return false;
+    }
+
+    return true;
   }
 }
