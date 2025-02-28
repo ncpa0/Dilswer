@@ -145,6 +145,14 @@ const $defineRegexp = (name: string, regexp: RegExp) => {
   };
 };
 
+const $lte = (name: string, value: number) => {
+  return `${name} <= ${value}`;
+};
+
+const $gte = (name: string, value: number) => {
+  return `${name} >= ${value}`;
+};
+
 const $equal = (
   varname: string,
   value: string | number | boolean | null | undefined,
@@ -388,10 +396,18 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         );
       case "number":
         return new ValidateGenerator(
-          (varname) =>
-            $condition("&&").add($type(varname, "number")).add(
-              $notNaN(varname),
-            ),
+          (varname) => {
+            let cond = $condition("&&")
+              .add($type(varname, "number"))
+              .add($notNaN(varname));
+            if (type.options.max != null) {
+              cond = cond.add($lte(varname, type.options.max!));
+            }
+            if (type.options.min != null) {
+              cond = cond.add($gte(varname, type.options.min!));
+            }
+            return cond;
+          },
         );
       case "string":
         return new ValidateGenerator(
