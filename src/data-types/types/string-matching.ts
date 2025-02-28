@@ -1,31 +1,13 @@
-import { BaseType, MetadataSymbol } from "@DataTypes/base-type";
+import { BaseType, MetadataSymbol, TypeMetadata } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeMetadata, TypeVisitor } from "@DataTypes/types";
+import type { Metadata, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "standard-schema";
 
-export class StringMatchingType<T extends string = string> extends BaseType {
-  /** @internal */
-  static getOriginalMetadata(dt: StringMatchingType) {
-    return dt[MetadataSymbol];
-  }
-
-  protected [MetadataSymbol]: TypeMetadata & {
-    tsPattern?: string;
-  } = {};
-
-  readonly kind = "stringMatching";
-  constructor(public readonly pattern: RegExp) {
-    super();
-    Object.freeze(this);
-  }
-
-  /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
-    return visitor.visit(this);
-  }
-
+export class StringMetadata<T extends StringMatchingType>
+  extends TypeMetadata<T, Metadata & { tsPattern?: string }>
+{
   /**
    * Sets the metadata for the TypeScript pattern. This is used
    * for generating appropriate TypeScript declarations (via
@@ -40,6 +22,35 @@ export class StringMatchingType<T extends string = string> extends BaseType {
    *       /^.+\..+$/
    *     ).setTsPattern("${string}.${string}");
    */
+  tsPattern(name: string): T {
+    this.container.tsPattern = name;
+    return this.type;
+  }
+}
+
+export class StringMatchingType<T extends string = string> extends BaseType {
+  /** @internal */
+  static getOriginalMetadata(dt: StringMatchingType) {
+    return dt[MetadataSymbol];
+  }
+
+  protected [MetadataSymbol]: Metadata & {
+    tsPattern?: string;
+  } = {};
+
+  public meta = new StringMetadata(this, this[MetadataSymbol]);
+
+  readonly kind = "stringMatching";
+  constructor(public readonly pattern: RegExp) {
+    super();
+    Object.freeze(this);
+  }
+
+  /** @internal */
+  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
+    return visitor.visit(this);
+  }
+
   setTsPattern(tsPattern: string) {
     this[MetadataSymbol].tsPattern = tsPattern;
 

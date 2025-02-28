@@ -1,5 +1,5 @@
 import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
-import { getMetadata, toTsType, Type } from "../../src/index";
+import { toTsType, Type } from "../../src/index";
 
 enum Enum {
   A = "A",
@@ -8,7 +8,7 @@ enum Enum {
 }
 
 const testDt = Type.Record({
-  uuid: Type.String.setDescription("User unique identifier"),
+  uuid: Type.String.meta.description("User unique identifier"),
   number: Type.Number,
   bool: Type.Boolean,
   stringSet: Type.Set(Type.String),
@@ -16,19 +16,19 @@ const testDt = Type.Record({
   unionArray: Type.Array(
     Type.Record({ foo: Type.String }),
     Type.Record({ bar: Type.String }),
-  ).setDescription("Array of two possible record types"),
+  ).meta.description("Array of two possible record types"),
   tuple: Type.Tuple(Type.String, Type.Number),
   namedTuple: Type.Tuple(
     Type.Array(Type.String),
-    Type.Enum(Enum).setEnumName("Enum"),
+    Type.Enum(Enum).meta.enumName("Enum"),
   )
-    .setTitle("A Tuple")
-    .setDescription("A tuple with a named type"),
+    .meta.title("A Tuple")
+    .meta.description("A tuple with a named type"),
   literalString: Type.Literal("literal"),
   literalNumber: Type.Literal(1),
   literalBoolean: Type.Literal(true),
-  enum: Type.Enum(Enum).setEnumName("Enum"),
-  bMember: Type.EnumMember(Enum.B).setEnumName("Enum").setMemberName("B"),
+  enum: Type.Enum(Enum).meta.enumName("Enum"),
+  bMember: Type.EnumMember(Enum.B).meta.enumName("Enum").meta.memberName("B"),
   recordIntersection: Type.AllOf(
     Type.Record({
       a: Type.String,
@@ -39,16 +39,16 @@ const testDt = Type.Record({
   ),
   dict: Type.Dict(Type.String),
   oneof: Type.OneOf(
-    Type.Record({ foo: Type.String }).setTitle("Foo Container"),
-    Type.Record({ bar: Type.String }).setTitle("Bar Container"),
+    Type.Record({ foo: Type.String }).meta.title("Foo Container"),
+    Type.Record({ bar: Type.String }).meta.title("Bar Container"),
   ),
   symbol: Type.Symbol,
   undef: Type.Undefined,
   customValidator: Type.Custom((value: any): value is any => true),
   stringMatching: Type.String.matching(/^foo$/),
   namedStringMatching: Type.String.matching(/^'foo'\..+$/)
-    .setTitle("Foo Matcher")
-    .setTsPattern("'foo'.${string}"),
+    .meta.title("Foo Matcher")
+    .meta.tsPattern("'foo'.${string}"),
   optionalSelfCopy: {
     required: false,
     type: Type.Record({
@@ -63,7 +63,7 @@ const testDt = Type.Record({
       unionArray: {
         required: false,
         type: Type.Array(
-          Type.Record({ foo: Type.String }).setTitle("Foo Container"),
+          Type.Record({ foo: Type.String }).meta.title("Foo Container"),
           Type.Record({ bar: Type.String }),
         ),
       },
@@ -76,13 +76,13 @@ const testDt = Type.Record({
       literalBoolean: { required: false, type: Type.Literal(true) },
       enum: {
         required: false,
-        type: Type.Enum(Enum).setEnumName("Enum"),
+        type: Type.Enum(Enum).meta.enumName("Enum"),
       },
       bMember: {
         required: false,
         type: Type.EnumMember(Enum.B)
-          .setEnumName("Enum")
-          .setMemberName("B"),
+          .meta.enumName("Enum")
+          .meta.memberName("B"),
       },
       recordIntersection: {
         required: false,
@@ -93,7 +93,7 @@ const testDt = Type.Record({
           Type.Record({
             b: Type.Number,
           }),
-        ).setTitle("SomeIntersection"),
+        ).meta.title("SomeIntersection"),
       },
       dict: { required: false, type: Type.Dict(Type.String) },
       oneof: {
@@ -104,12 +104,12 @@ const testDt = Type.Record({
         ),
       },
     })
-      .setTitle("Optional Test Record")
-      .setDescription(
+      .meta.title("Optional Test Record")
+      .meta.description(
         "A record identical to the parent record, but with all fields optional",
       ),
   },
-}).setTitle("Test Record");
+}).meta.title("Test Record");
 
 describe("toTsType", () => {
   it("should correctly generate a complex type with 'compact' mode", () => {
@@ -140,8 +140,8 @@ describe("toTsType", () => {
     describe("when exporting only main", () => {
       it("should not add `declare`", () => {
         const dt = Type.Record({
-          foo: Type.Array(Type.String).setTitle("FooList"),
-        }).setTitle("Main");
+          foo: Type.Array(Type.String).meta.title("FooList"),
+        }).meta.title("Main");
 
         const tsType = toTsType(dt, {
           declaration: false,
@@ -155,8 +155,8 @@ describe("toTsType", () => {
 
       it("should add `declare`", () => {
         const dt = Type.Record({
-          foo: Type.Array(Type.String).setTitle("FooList"),
-        }).setTitle("Main");
+          foo: Type.Array(Type.String).meta.title("FooList"),
+        }).meta.title("Main");
 
         const tsType = toTsType(dt, {
           declaration: true,
@@ -173,8 +173,8 @@ describe("toTsType", () => {
       it("should not add `declare`", () => {
         const dt = Type.Record({
           unnamed: Type.Array(Type.Number),
-          foo: Type.Array(Type.String).setTitle("FooList"),
-        }).setTitle("Main");
+          foo: Type.Array(Type.String).meta.title("FooList"),
+        }).meta.title("Main");
 
         const tsType = toTsType(dt, {
           declaration: false,
@@ -189,8 +189,8 @@ describe("toTsType", () => {
       it("should add `declare`", () => {
         const dt = Type.Record({
           unnamed: Type.Array(Type.Number),
-          foo: Type.Array(Type.String).setTitle("FooList"),
-        }).setTitle("Main");
+          foo: Type.Array(Type.String).meta.title("FooList"),
+        }).meta.title("Main");
 
         const tsType = toTsType(dt, {
           declaration: true,
@@ -207,8 +207,8 @@ describe("toTsType", () => {
       it("should not add `declare`", () => {
         const dt = Type.Record({
           unnamed: Type.Array(Type.Number),
-          foo: Type.Array(Type.String).setTitle("FooList"),
-        }).setTitle("Main");
+          foo: Type.Array(Type.String).meta.title("FooList"),
+        }).meta.title("Main");
 
         const tsType = toTsType(dt, {
           declaration: false,
@@ -223,8 +223,8 @@ describe("toTsType", () => {
       it("should add `declare`", () => {
         const dt = Type.Record({
           unnamed: Type.Array(Type.Number),
-          foo: Type.Array(Type.String).setTitle("FooList"),
-        }).setTitle("Main");
+          foo: Type.Array(Type.String).meta.title("FooList"),
+        }).meta.title("Main");
 
         const tsType = toTsType(dt, {
           declaration: true,
@@ -267,7 +267,7 @@ describe("toTsType", () => {
       class FooBar {}
 
       const dt = Type.Record({
-        foobar: Type.InstanceOf(FooBar).setTitle("FooBar"),
+        foobar: Type.InstanceOf(FooBar).meta.title("FooBar"),
       });
 
       const tsType = toTsType(dt, { mode: "named-expanded" });
@@ -322,7 +322,7 @@ describe("toTsType", () => {
       class FooBar {}
 
       const dt = Type.Record({
-        foobar: Type.InstanceOf(FooBar).setTitle("FooBar"),
+        foobar: Type.InstanceOf(FooBar).meta.title("FooBar"),
       });
 
       const tsType = toTsType(dt, {
@@ -346,7 +346,7 @@ describe("toTsType", () => {
       const type = Type.Record({
         foo: Type.Custom(
           (v): v is string => typeof v === "string",
-        ).setExtra(
+        ).meta.extra(
           {
             typeName: "CustomFoo",
             path: "./custom-validator.d.ts",
@@ -357,7 +357,7 @@ describe("toTsType", () => {
       const tsType = toTsType(type, {
         mode: "named-expanded",
         getExternalTypeImport(type) {
-          const meta = getMetadata<ExternalTypeImport>(type);
+          const meta = type.meta.get<ExternalTypeImport>();
           if (meta.extra) {
             return meta.extra;
           }
@@ -369,7 +369,7 @@ describe("toTsType", () => {
 
     it("with regular Enum", () => {
       const type = Type.Record({
-        foo: Type.Enum(Enum).setExtra(
+        foo: Type.Enum(Enum).meta.extra(
           {
             typeName: "MyEnum",
             path: "./enum.d.ts",
@@ -380,7 +380,7 @@ describe("toTsType", () => {
       const tsType = toTsType(type, {
         mode: "named-expanded",
         getExternalTypeImport(type) {
-          const meta = getMetadata<ExternalTypeImport>(type);
+          const meta = type.meta.get<ExternalTypeImport>();
           if (meta.extra) {
             return meta.extra;
           }
@@ -394,7 +394,7 @@ describe("toTsType", () => {
       const type = Type.Record({
         foo: Type.EnumMember(Enum.C)
           .setMemberName("C")
-          .setExtra(
+          .meta.extra(
             {
               typeName: "MyEnum",
               path: "./enum.d.ts",
@@ -405,7 +405,7 @@ describe("toTsType", () => {
       const tsType = toTsType(type, {
         mode: "named-expanded",
         getExternalTypeImport(type) {
-          const meta = getMetadata<ExternalTypeImport>(type);
+          const meta = type.meta.get<ExternalTypeImport>();
           if (meta.extra) {
             return meta.extra;
           }
@@ -417,7 +417,7 @@ describe("toTsType", () => {
 
     it("with regular Function as a type", () => {
       const type = Type.Record({
-        foo: Type.Function.setExtra(
+        foo: Type.Function.meta.extra(
           {
             typeName: "MyFunction",
             path: "./my-function.d.ts",
@@ -428,7 +428,7 @@ describe("toTsType", () => {
       const tsType = toTsType(type, {
         mode: "named-expanded",
         getExternalTypeImport(type) {
-          const meta = getMetadata<ExternalTypeImport>(type);
+          const meta = type.meta.get<ExternalTypeImport>();
           if (meta.extra) {
             return meta.extra;
           }
@@ -440,7 +440,7 @@ describe("toTsType", () => {
 
     it("with regular Function as a value", () => {
       const type = Type.Record({
-        foo: Type.Function.setExtra(
+        foo: Type.Function.meta.extra(
           {
             typeName: "myFunction",
             path: "./my-function.d.ts",
@@ -452,7 +452,7 @@ describe("toTsType", () => {
       const tsType = toTsType(type, {
         mode: "named-expanded",
         getExternalTypeImport(type) {
-          const meta = getMetadata<ExternalTypeImport>(type);
+          const meta = type.meta.get<ExternalTypeImport>();
           if (meta.extra) {
             return meta.extra;
           }
@@ -464,8 +464,8 @@ describe("toTsType", () => {
 
     it("and export it directly if it's a root type", () => {
       const foo = Type.Custom((v): v is string => typeof v === "string")
-        .setTitle("IsStringFn")
-        .setExtra(
+        .meta.title("IsStringFn")
+        .meta.extra(
           {
             typeName: "IsStringFn",
             path: "./is-string-fn.d.ts",
@@ -475,7 +475,7 @@ describe("toTsType", () => {
       const tsType = toTsType(foo, {
         mode: "named-expanded",
         getExternalTypeImport(type) {
-          const meta = getMetadata<ExternalTypeImport>(type);
+          const meta = type.meta.get<ExternalTypeImport>();
           if (meta.extra) {
             return meta.extra;
           }
@@ -505,7 +505,7 @@ describe("toTsType", () => {
         Type.Record({
           name: Type.String,
           children: Type.Array(self),
-        }).setTitle("Node")
+        }).meta.title("Node")
       );
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
@@ -518,7 +518,7 @@ describe("toTsType", () => {
         Type.Record({
           name: Type.String,
           self: Type.Option(self),
-        }).setTitle("SelfReferencingRecord")
+        }).meta.title("SelfReferencingRecord")
       );
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
@@ -545,7 +545,7 @@ describe("toTsType", () => {
               children: Type.Array(self),
             }),
           }),
-        }).setTitle("Node")
+        }).meta.title("Node")
       );
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });
@@ -561,9 +561,9 @@ describe("toTsType", () => {
             Type.Record({
               name: Type.Literal("span"),
               children: Type.Array(self),
-            }).setTitle("SpanNode"),
-          ).setTitle("SpanNodeList"),
-        }).setTitle("Node")
+            }).meta.title("SpanNode"),
+          ).meta.title("SpanNodeList"),
+        }).meta.title("Node")
       );
 
       const tsType = toTsType(typeDef, { mode: "named-expanded" });

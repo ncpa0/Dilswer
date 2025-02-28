@@ -21,11 +21,11 @@ describe("TsRecordBuilder", () => {
       bar: Type.Option(Type.Number),
     });
 
-    dt.setTitle("MyRec");
-    dt.setDescription("My record's description");
+    dt.meta.title("MyRec");
+    dt.meta.description("My record's description");
 
-    dt.recordOf.foo.setDescription("The foo field");
-    dt.recordOf.bar.type.setDescription("The bar field");
+    dt.recordOf.foo.meta.description("The foo field");
+    dt.recordOf.bar.type.meta.description("The bar field");
 
     const tsType = toTsType(dt);
 

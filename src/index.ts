@@ -17,8 +17,8 @@ export type {
   BasicTypeNames,
   ComplexType,
   FieldDescriptor,
+  Metadata as TypeMetadata,
   RecordTypeSchema,
-  TypeMetadata,
   TypeVisitor,
 } from "@DataTypes/types";
 export type { ArrayType } from "@DataTypes/types/array";
@@ -57,22 +57,11 @@ export type {
 } from "@TsTypeGenerator/parser-options";
 export type { FastValidator } from "@Validation/compile-fast-validator";
 
-/**
- * Retrieves the metadata of a DataType, like title, description
- * or examples.
- *
- * Metadata must be explicitly set on the DataType, otherwise it
- * will be an empty object.
- */
-const getMetadata = <T extends Record<any, any>>(dt: AnyType) =>
-  BaseType.getMetadata<T>(dt);
-
 export {
   And,
   assertType,
   compileFastValidator,
   Exclude,
-  getMetadata,
   Omit,
   parseWith,
   Partial,
@@ -93,7 +82,6 @@ export default {
   ValidationError,
   Type,
   Exclude,
-  getMetadata,
   Omit,
   Partial,
   Pick,

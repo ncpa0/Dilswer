@@ -1,4 +1,4 @@
-import type { DataTypeKind, TypeMetadata, TypeVisitor } from "@DataTypes/types";
+import type { DataTypeKind, Metadata, TypeVisitor } from "@DataTypes/types";
 import { compileFastValidator } from "@Validation/compile-fast-validator";
 import { Path } from "@Validation/path";
 
@@ -21,22 +21,73 @@ export const BasicDataTypes = {
   StringInt: "stringinteger",
 } as const;
 
-export abstract class BaseType {
-  /** Will return a copy. */
-  static getMetadata<T extends Record<any, any>>(
-    dt: BaseType,
-  ): TypeMetadata<T> {
-    return {
-      ...dt[MetadataSymbol],
-    };
+export class TypeMetadata<T extends BaseType, M extends Metadata = Metadata> {
+  constructor(public type: T, public container: M) {
   }
 
+  /**
+   * Retrieves the metadata of a DataType, like title, description
+   * or examples.
+   *
+   * Metadata must be explicitly set on the DataType, otherwise it
+   * will be an empty object.
+   */
+  get<Extra>(): Omit<M, "extra"> & { extra?: Extra } {
+    const copy = { ...this.container };
+    if (copy.extra) {
+      copy.extra = { ...copy.extra };
+    }
+    return copy as any;
+  }
+
+  /**
+   * Sets a metadata `description` property. This property can be
+   * later read by `getMetadata` and is also used by
+   * `toJsonSchema` to generate a JSON Schema.
+   */
+  description(description: string): T {
+    this.container.description = description;
+    return this.type;
+  }
+
+  /**
+   * Sets a metadata `title` property. This property can be later
+   * read by `getMetadata` and is also used by `toJsonSchema` to
+   * generate a JSON Schema.
+   */
+  title(name: string): T {
+    this.container.title = name;
+    return this.type;
+  }
+
+  /**
+   * Sets a metadata `format` property. This property can be
+   * later read by `getMetadata` and is also used by
+   * `toJsonSchema` to generate a JSON Schema.
+   */
+  format(format: string): T {
+    this.container.format = format;
+    return this.type;
+  }
+
+  /**
+   * Sets the extra metadata. The extra metadata can be anything.
+   * This metadata is not used by Dilswer, but can be by the
+   * Dilswer consumer.
+   */
+  extra(extra: Record<any, any>): T {
+    this.container.extra = extra;
+    return this.type;
+  }
+}
+
+export abstract class BaseType {
   /** @internal */
-  static getOriginalMetadata(dt: BaseType): TypeMetadata {
+  static getOriginalMetadata(dt: BaseType): Metadata {
     return dt[MetadataSymbol];
   }
 
-  protected [MetadataSymbol]: TypeMetadata = {};
+  protected [MetadataSymbol]: Metadata = {};
   protected [DataTypeSymbol] = true;
   readonly kind!: DataTypeKind;
   private compiledValidatorRef: {
@@ -55,45 +106,7 @@ export abstract class BaseType {
     return copy;
   }
 
-  /**
-   * Sets a metadata `description` property. This property can be
-   * later read by `getMetadata` and is also used by
-   * `toJsonSchema` to generate a JSON Schema.
-   */
-  setDescription<T extends BaseType>(this: T, description: string): T {
-    this[MetadataSymbol].description = description;
-    return this;
-  }
-
-  /**
-   * Sets a metadata `title` property. This property can be later
-   * read by `getMetadata` and is also used by `toJsonSchema` to
-   * generate a JSON Schema.
-   */
-  setTitle<T extends BaseType>(this: T, name: string): T {
-    this[MetadataSymbol].title = name;
-    return this;
-  }
-
-  /**
-   * Sets a metadata `format` property. This property can be
-   * later read by `getMetadata` and is also used by
-   * `toJsonSchema` to generate a JSON Schema.
-   */
-  setFormat<T extends BaseType>(this: T, format: string): T {
-    this[MetadataSymbol].format = format;
-    return this;
-  }
-
-  /**
-   * Sets the extra metadata. The extra metadata can be anything.
-   * This metadata is not used by Dilswer, but can be by the
-   * Dilswer consumer.
-   */
-  setExtra<T extends BaseType>(this: T, extra: Record<any, any>): T {
-    this[MetadataSymbol].extra = extra;
-    return this;
-  }
+  public meta = new TypeMetadata(this, this[MetadataSymbol]);
 
   /** @internal */
   abstract _acceptVisitor<R>(visitor: TypeVisitor<R>): R;

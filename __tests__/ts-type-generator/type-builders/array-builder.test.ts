@@ -12,8 +12,8 @@ describe("TsArrayBuilder", () => {
   it("should correctly generate a simple array type with title and description", () => {
     const dt = Type.Array(Type.Number);
 
-    dt.setTitle("MyArray");
-    dt.setDescription("My array description");
+    dt.meta.title("MyArray");
+    dt.meta.description("My array description");
 
     const tsType = toTsType(dt);
 
