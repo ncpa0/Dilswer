@@ -1,9 +1,23 @@
-import { BaseType, MetadataSymbol } from "@DataTypes/base-type";
+import { BaseType, MetadataSymbol, TypeMetadata } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeMetadata, TypeVisitor } from "@DataTypes/types";
+import type { Metadata, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "standard-schema";
+
+export class EnumMetadata<T extends EnumType>
+  extends TypeMetadata<T, Metadata & { enumName?: string }>
+{
+  /**
+   * Sets the metadata for the enum name. This is used for
+   * generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   */
+  enumName(name: string): T {
+    this.container.enumName = name;
+    return this.type;
+  }
+}
 
 export class EnumType<
   TEnumValue extends string | number = any,
@@ -11,15 +25,17 @@ export class EnumType<
   /** @internal */
   static getOriginalMetadata(
     dt: EnumType,
-  ): TypeMetadata & { enumName?: string } {
+  ): Metadata & { enumName?: string } {
     return dt[MetadataSymbol];
   }
 
-  protected [MetadataSymbol]: TypeMetadata & { enumName?: string } = {};
+  protected [MetadataSymbol]: Metadata & { enumName?: string } = {};
 
   readonly kind = "enumUnion";
   readonly enumInstance: Record<TEnumValue, any>;
   readonly memberNames: TEnumValue[];
+
+  public meta = new EnumMetadata(this, this[MetadataSymbol]);
 
   constructor(enumInstance: any) {
     super();

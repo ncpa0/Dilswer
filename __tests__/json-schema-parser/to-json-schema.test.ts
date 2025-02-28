@@ -197,21 +197,21 @@ describe("toJsonSchema", () => {
 
   it("should copy the properties from metadata", () => {
     const dt = Type.Record({
-      date: Type.String.setFormat("date-time"),
-      timestamp: Type.Int.setDescription("UNIX timestamp.").setTitle(
+      date: Type.String.meta.format("date-time"),
+      timestamp: Type.Int.meta.description("UNIX timestamp.").meta.title(
         "Creation Timestamp",
       ),
       list: Type.Array(Type.String),
       dictionary: Type.Option(
-        Type.Record({ foo: Type.Unknown }).setDescription(
+        Type.Record({ foo: Type.Unknown }).meta.description(
           "This field is optional.",
         ),
       ),
-    }).setTitle("Top Record");
+    }).meta.title("Top Record");
 
     dt.recordOf.list
-      .setTitle("List of strings")
-      .setDescription("This is a list of strings");
+      .meta.title("List of strings")
+      .meta.description("This is a list of strings");
 
     const schema = toJsonSchema(dt, { incompatibleTypes: "set-as-any" });
 
@@ -241,7 +241,7 @@ describe("toJsonSchema", () => {
         Type.Record({
           name: Type.String,
           children: Type.Array(self),
-        }).setTitle("Node")
+        }).meta.title("Node")
       );
 
       const schema = toJsonSchema(typeDef, {}, false);
@@ -258,7 +258,7 @@ describe("toJsonSchema", () => {
         Type.Record({
           name: Type.String,
           self: Type.Option(self),
-        }).setTitle("SelfReferencingRecord")
+        }).meta.title("SelfReferencingRecord")
       );
 
       const schema = toJsonSchema(typeDef, {}, false);
@@ -293,7 +293,7 @@ describe("toJsonSchema", () => {
               children: Type.Array(self),
             }),
           }),
-        }).setTitle("Node")
+        }).meta.title("Node")
       );
 
       const schema = toJsonSchema(typeDef, {}, false);
@@ -313,9 +313,9 @@ describe("toJsonSchema", () => {
             Type.Record({
               name: Type.Literal("span"),
               children: Type.Array(self),
-            }).setTitle("SpanNode"),
-          ).setTitle("SpanNodeList"),
-        }).setTitle("Node")
+            }).meta.title("SpanNode"),
+          ).meta.title("SpanNodeList"),
+        }).meta.title("Node")
       );
 
       const schema = toJsonSchema(typeDef, {}, false);

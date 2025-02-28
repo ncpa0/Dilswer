@@ -1,9 +1,34 @@
-import { BaseType, MetadataSymbol } from "@DataTypes/base-type";
+import { BaseType, MetadataSymbol, TypeMetadata } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeMetadata, TypeVisitor } from "@DataTypes/types";
+import type { Metadata, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "standard-schema";
+
+export class EnumMemberMetadata<T extends EnumMemberType> extends TypeMetadata<
+  T,
+  Metadata & { enumName?: string; memberName?: `${string}` }
+> {
+  /**
+   * Sets the metadata for the enum name. This is used for
+   * generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   */
+  enumName(name: string): T {
+    this.container.enumName = name;
+    return this.type;
+  }
+
+  /**
+   * Sets the metadata for the enum member name. This is used for
+   * generating appropriate TypeScript declarations (via
+   * `toTsType()`).
+   */
+  memberName(name: `${string}`): T {
+    this.container.memberName = name;
+    return this.type;
+  }
+}
 
 export class EnumMemberType<DT = any> extends BaseType {
   /** @internal */
@@ -11,10 +36,12 @@ export class EnumMemberType<DT = any> extends BaseType {
     return dt[MetadataSymbol];
   }
 
-  protected [MetadataSymbol]: TypeMetadata & {
+  protected [MetadataSymbol]: Metadata & {
     memberName?: `${string}`;
     enumName?: string;
   } = {};
+
+  public meta = new EnumMemberMetadata(this, this[MetadataSymbol]);
 
   readonly kind = "enumMember";
   constructor(public readonly enumMember: DT) {
