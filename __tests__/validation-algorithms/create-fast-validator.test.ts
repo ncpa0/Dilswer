@@ -88,6 +88,90 @@ describe("createFastValidator", () => {
       expect(validate(new Set(["foo"]))).toEqual(false);
     });
 
+    it("should validate against a constrained number", () => {
+      const defMin5 = Type.Number.min(5);
+      const defMax100 = Type.Number.max(100);
+      const defRange5to20 = defMin5.max(20);
+
+      type ExpectedType = number;
+      assert<AssertType<ExpectedType, typeof defMin5>>();
+      assert<AssertType<ExpectedType, typeof defMax100>>();
+      assert<AssertType<ExpectedType, typeof defRange5to20>>();
+
+      const validateMin5 = compileFastValidator(defMin5);
+      const validateMax100 = compileFastValidator(defMax100);
+      const validateRange = compileFastValidator(defRange5to20);
+
+      assert<AssertValidator<ExpectedType, typeof validateMin5>>();
+      assert<AssertValidator<ExpectedType, typeof validateMax100>>();
+      assert<AssertValidator<ExpectedType, typeof validateRange>>();
+
+      expect(validateMin5(5)).toEqual(true);
+      expect(validateMin5(5.1805916207174113e21)).toEqual(true);
+      expect(validateMin5(0xff)).toEqual(true);
+
+      expect(validateMin5(0x04)).toEqual(false);
+      expect(validateMin5(1)).toEqual(false);
+      expect(validateMin5(-20)).toEqual(false);
+      expect(validateMin5(4.99)).toEqual(false);
+      expect(validateMin5(null)).toEqual(false);
+      expect(validateMin5(NaN)).toEqual(false);
+      expect(validateMin5(undefined)).toEqual(false);
+      expect(validateMin5("foo")).toEqual(false);
+      expect(validateMin5(false)).toEqual(false);
+      expect(validateMin5(Symbol())).toEqual(false);
+      expect(validateMin5(() => ["foo"])).toEqual(false);
+      expect(validateMin5(["foo"])).toEqual(false);
+      expect(validateMin5({ foo: "foo" })).toEqual(false);
+      expect(validateMin5(new Set(["foo"]))).toEqual(false);
+
+      expect(validateMax100(1)).toEqual(true);
+      expect(validateMax100(99)).toEqual(true);
+      expect(validateMax100(100)).toEqual(true);
+      expect(validateMax100(-2100)).toEqual(true);
+      expect(validateMax100(1.1805916207174113e1)).toEqual(true);
+      expect(validateMax100(0xf)).toEqual(true);
+
+      expect(validateMax100(1.1805916207174113e21)).toEqual(false);
+      expect(validateMax100(101)).toEqual(false);
+      expect(validateMax100(100.1)).toEqual(false);
+      expect(validateMax100(0xffffff)).toEqual(false);
+      expect(validateMax100(null)).toEqual(false);
+      expect(validateMax100(NaN)).toEqual(false);
+      expect(validateMax100(undefined)).toEqual(false);
+      expect(validateMax100("foo")).toEqual(false);
+      expect(validateMax100(false)).toEqual(false);
+      expect(validateMax100(Symbol())).toEqual(false);
+      expect(validateMax100(() => ["foo"])).toEqual(false);
+      expect(validateMax100(["foo"])).toEqual(false);
+      expect(validateMax100({ foo: "foo" })).toEqual(false);
+      expect(validateMax100(new Set(["foo"]))).toEqual(false);
+
+      expect(validateRange(5)).toEqual(true);
+      expect(validateRange(10)).toEqual(true);
+      expect(validateRange(20)).toEqual(true);
+      expect(validateRange(1.1805916207174113e1)).toEqual(true);
+      expect(validateRange(0xa)).toEqual(true);
+
+      expect(validateRange(1)).toEqual(false);
+      expect(validateRange(1.1805916207174113e21)).toEqual(false);
+      expect(validateRange(-100)).toEqual(false);
+      expect(validateRange(-0)).toEqual(false);
+      expect(validateRange(4.99)).toEqual(false);
+      expect(validateRange(100.01)).toEqual(false);
+      expect(validateRange(2000)).toEqual(false);
+      expect(validateRange(null)).toEqual(false);
+      expect(validateRange(NaN)).toEqual(false);
+      expect(validateRange(undefined)).toEqual(false);
+      expect(validateRange("foo")).toEqual(false);
+      expect(validateRange(false)).toEqual(false);
+      expect(validateRange(Symbol())).toEqual(false);
+      expect(validateRange(() => ["foo"])).toEqual(false);
+      expect(validateRange(["foo"])).toEqual(false);
+      expect(validateRange({ foo: "foo" })).toEqual(false);
+      expect(validateRange(new Set(["foo"]))).toEqual(false);
+    });
+
     it("should validate against a integer", () => {
       const typeDef = Type.Int;
 

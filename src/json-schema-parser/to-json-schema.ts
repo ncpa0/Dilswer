@@ -137,6 +137,12 @@ class DataTypeJsonSchemaGenerator implements TypeVisitor<R> {
         break;
       case "number":
         schema.type = "number";
+        if (type.options.max != null) {
+          schema.maximum = type.options.max;
+        }
+        if (type.options.min != null) {
+          schema.minimum = type.options.min;
+        }
         break;
       case "string":
         schema.type = "string";
