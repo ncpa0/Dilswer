@@ -6,17 +6,23 @@ import { ValidationError } from "@Validation/validation-error/validation-error";
 import { type StandardSchemaV1 } from "standard-schema";
 import { UnionType } from "./union";
 
+type StringFloatOptions = {
+  positive: boolean;
+  negative: boolean;
+  zero: boolean;
+};
+
 export class StringFloatType extends BaseType {
   readonly kind = "simple";
   public readonly simpleType: "stringnumeral" = "stringnumeral";
 
-  protected _options = {
+  protected _options: StringFloatOptions = {
     positive: true,
     negative: true,
     zero: true,
   };
 
-  get options() {
+  get options(): Readonly<StringFloatOptions> {
     return { ...this._options };
   }
 
