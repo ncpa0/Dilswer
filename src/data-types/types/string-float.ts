@@ -3,12 +3,12 @@ import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { StandardSchemaV1 } from "standard-schema";
+import { type StandardSchemaV1 } from "standard-schema";
 import { UnionType } from "./union";
 
-export class StringIntegerType extends BaseType {
+export class StringFloatType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "stringinteger" = "stringinteger";
+  public readonly simpleType: "stringnumeral" = "stringnumeral";
 
   protected _options = {
     positive: true,
@@ -26,15 +26,15 @@ export class StringIntegerType extends BaseType {
   }
 
   positive() {
-    return new PositiveStringIntegerType();
+    return new PositiveStringFloatType();
   }
 
   negative() {
-    return new NegativeStringIntegerType();
+    return new NegativeStringFloatType();
   }
 
   zero() {
-    return new ZeroStringIntegerType();
+    return new ZeroStringFloatType();
   }
 
   /** @internal */
@@ -51,19 +51,24 @@ export class StringIntegerType extends BaseType {
       throw new ValidationError(path, this, value);
     }
 
-    if (value.length === 0) {
-      throw new ValidationError(path, this, value);
-    }
-
     let i = 0;
     if (value[0] === "-") {
       i++;
     }
+    let dotCount = 0;
     for (; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
       if (charCode >= 48 && charCode <= 57) {
         continue;
       }
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
+      throw new ValidationError(path, this, value);
+    }
+
+    if (dotCount > 1 || value.length === 0) {
       throw new ValidationError(path, this, value);
     }
   }
@@ -77,23 +82,29 @@ export class StringIntegerType extends BaseType {
     if (value[0] === "-") {
       i++;
     }
+    let dotCount = 0;
     for (; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
       if (charCode >= 48 && charCode <= 57) {
         continue;
       }
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
       return false;
     }
 
-    return value.length > 0;
+    return dotCount <= 1 && value.length > 0;
   }
 }
 
-export class ZeroStringIntegerType extends StringIntegerType {
+export class ZeroStringFloatType extends StringFloatType {
   constructor() {
     super();
     this._options.negative = false;
     this._options.positive = false;
+    Object.freeze(this);
   }
 
   positive(): never {
@@ -109,16 +120,16 @@ export class ZeroStringIntegerType extends StringIntegerType {
   }
 
   orPositive() {
-    return new UnionType<[ZeroStringIntegerType, PositiveStringIntegerType]>([
+    return new UnionType<[ZeroStringFloatType, PositiveStringFloatType]>([
       this,
-      new PositiveStringIntegerType(),
+      new PositiveStringFloatType(),
     ]);
   }
 
   orNegative() {
-    return new UnionType<[ZeroStringIntegerType, NegativeStringIntegerType]>([
+    return new UnionType<[ZeroStringFloatType, NegativeStringFloatType]>([
       this,
-      new NegativeStringIntegerType(),
+      new NegativeStringFloatType(),
     ]);
   }
 
@@ -126,20 +137,24 @@ export class ZeroStringIntegerType extends StringIntegerType {
     if (typeof value !== "string") {
       throw new ValidationError(path, this, value);
     }
-
-    if (value.length === 0) {
-      throw new ValidationError(path, this, value);
-    }
-
     let i = 0;
     if (value[0] === "-") {
       i++;
     }
+    let dotCount = 0;
     for (; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
-      if (charCode === 48) {
+      if (charCode == 48) {
         continue;
       }
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
+      throw new ValidationError(path, this, value);
+    }
+
+    if (dotCount > 1 || value.length === 0) {
       throw new ValidationError(path, this, value);
     }
   }
@@ -153,23 +168,29 @@ export class ZeroStringIntegerType extends StringIntegerType {
     if (value[0] === "-") {
       i++;
     }
+    let dotCount = 0;
     for (; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
-      if (charCode === 48) {
+      if (charCode == 48) {
+        continue;
+      }
+      if (charCode === 46) {
+        dotCount++;
         continue;
       }
       return false;
     }
 
-    return value.length > 0;
+    return dotCount <= 1 && value.length > 0;
   }
 }
 
-export class PositiveStringIntegerType extends StringIntegerType {
+export class PositiveStringFloatType extends StringFloatType {
   constructor() {
     super();
     this._options.negative = false;
     this._options.zero = false;
+    Object.freeze(this);
   }
 
   positive(): never {
@@ -185,9 +206,9 @@ export class PositiveStringIntegerType extends StringIntegerType {
   }
 
   orZero() {
-    return new UnionType<[PositiveStringIntegerType, ZeroStringIntegerType]>([
+    return new UnionType<[PositiveStringFloatType, ZeroStringFloatType]>([
       this,
-      new ZeroStringIntegerType(),
+      new ZeroStringFloatType(),
     ]);
   }
 
@@ -196,11 +217,8 @@ export class PositiveStringIntegerType extends StringIntegerType {
       throw new ValidationError(path, this, value);
     }
 
-    if (value.length === 0) {
-      throw new ValidationError(path, this, value);
-    }
-
     let hasNonZeroDigit = false;
+    let dotCount = 0;
     for (let i = 0; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
       if (charCode >= 49 && charCode <= 57) {
@@ -210,11 +228,14 @@ export class PositiveStringIntegerType extends StringIntegerType {
       if (charCode === 48) {
         continue;
       }
-
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
       throw new ValidationError(path, this, value);
     }
 
-    if (!hasNonZeroDigit) {
+    if (dotCount > 1 || !hasNonZeroDigit) {
       throw new ValidationError(path, this, value);
     }
   }
@@ -223,7 +244,9 @@ export class PositiveStringIntegerType extends StringIntegerType {
     if (typeof value !== "string") {
       return false;
     }
+
     let hasNonZeroDigit = false;
+    let dotCount = 0;
     for (let i = 0; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
       if (charCode >= 49 && charCode <= 57) {
@@ -233,14 +256,18 @@ export class PositiveStringIntegerType extends StringIntegerType {
       if (charCode === 48) {
         continue;
       }
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
       return false;
     }
 
-    return hasNonZeroDigit;
+    return dotCount <= 1 && hasNonZeroDigit;
   }
 }
 
-export class NegativeStringIntegerType extends StringIntegerType {
+export class NegativeStringFloatType extends StringFloatType {
   constructor() {
     super();
     this._options.positive = false;
@@ -261,9 +288,9 @@ export class NegativeStringIntegerType extends StringIntegerType {
   }
 
   orZero() {
-    return new UnionType<[NegativeStringIntegerType, ZeroStringIntegerType]>([
+    return new UnionType<[NegativeStringFloatType, ZeroStringFloatType]>([
       this,
-      new ZeroStringIntegerType(),
+      new ZeroStringFloatType(),
     ]);
   }
 
@@ -272,15 +299,12 @@ export class NegativeStringIntegerType extends StringIntegerType {
       throw new ValidationError(path, this, value);
     }
 
-    if (value.length === 0) {
-      throw new ValidationError(path, this, value);
-    }
-
     if (value[0] !== "-") {
       throw new ValidationError(path, this, value);
     }
 
     let hasNonZeroDigit = false;
+    let dotCount = 0;
     for (let i = 1; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
       if (charCode >= 49 && charCode <= 57) {
@@ -290,10 +314,14 @@ export class NegativeStringIntegerType extends StringIntegerType {
       if (charCode === 48) {
         continue;
       }
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
       throw new ValidationError(path, this, value);
     }
 
-    if (!hasNonZeroDigit) {
+    if (dotCount > 1 || !hasNonZeroDigit) {
       throw new ValidationError(path, this, value);
     }
   }
@@ -308,6 +336,7 @@ export class NegativeStringIntegerType extends StringIntegerType {
     }
 
     let hasNonZeroDigit = false;
+    let dotCount = 0;
     for (let i = 1; i < value.length; i++) {
       const charCode = value.charCodeAt(i);
       if (charCode >= 49 && charCode <= 57) {
@@ -317,9 +346,13 @@ export class NegativeStringIntegerType extends StringIntegerType {
       if (charCode === 48) {
         continue;
       }
+      if (charCode === 46) {
+        dotCount++;
+        continue;
+      }
       return false;
     }
 
-    return hasNonZeroDigit;
+    return dotCount <= 1 && hasNonZeroDigit;
   }
 }

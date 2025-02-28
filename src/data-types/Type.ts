@@ -16,9 +16,6 @@ import { RecordType } from "./types/record";
 import { RecursiveType, RecursiveTypeReference } from "./types/recursive";
 import { SetType } from "./types/set";
 import { StringType } from "./types/string";
-import { StringIntegerType } from "./types/string-integer";
-import { StringMatchingType } from "./types/string-matching";
-import { StringNumeralType } from "./types/string-numberal";
 import { SymbolType } from "./types/symbol";
 import { TupleType } from "./types/tuple";
 import { UndefinedType } from "./types/undefined";
@@ -52,12 +49,6 @@ export const Type = {
   },
   get Undefined() {
     return new UndefinedType();
-  },
-  get StringNumeral() {
-    return new StringNumeralType();
-  },
-  get StringInt() {
-    return new StringIntegerType();
   },
   Record<TS extends RecordTypeSchema>(args: TS) {
     return new RecordType(args);
@@ -98,9 +89,6 @@ export const Type = {
   },
   Custom<VF extends (v: any) => v is any>(validateFunction: VF) {
     return new CustomType(validateFunction);
-  },
-  StringMatching<T extends string>(pattern: RegExp) {
-    return new StringMatchingType<T>(pattern);
   },
   Recursive<DT extends AnyType>(
     getDataType: (ref: RecursiveTypeReference) => DT,

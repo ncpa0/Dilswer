@@ -39,7 +39,7 @@ const testDt = Type.Record({
   symbol: Type.Symbol,
   undef: Type.Undefined,
   customValidator: Type.Custom((value: any): value is any => true),
-  stringMatching: Type.StringMatching(/^foo$/),
+  stringMatching: Type.String.matching(/^foo$/),
   optionalSelfCopy: {
     required: false,
     type: Type.Record({
@@ -91,7 +91,7 @@ const testDt = Type.Record({
       },
       stringMatching: {
         required: false,
-        type: Type.StringMatching(/foo.+[0-9]$/gi),
+        type: Type.String.matching(/foo.+[0-9]$/gi),
       },
     }),
   },
