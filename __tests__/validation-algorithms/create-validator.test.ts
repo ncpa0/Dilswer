@@ -63,6 +63,85 @@ describe("createValidator", () => {
         expect(validate(new Set(["foo"]))).toEqual(false);
       });
 
+      it("should validate against a constrained string", () => {
+        const typeDefMax = Type.String.len({ max: 6 });
+        const typeDefMin = Type.String.len({ min: 6 });
+        const typeDefRange = typeDefMax.len({ min: 2 });
+
+        type ExpectedType = string;
+        assert<AssertType<ExpectedType, typeof typeDefMax>>();
+        assert<AssertType<ExpectedType, typeof typeDefMin>>();
+        assert<AssertType<ExpectedType, typeof typeDefRange>>();
+
+        const validateMax = validator(typeDefMax);
+        const validateMin = validator(typeDefMin);
+        const validateRange = validator(typeDefRange);
+
+        assert<AssertValidator<ExpectedType, typeof validateMax>>();
+        assert<AssertValidator<ExpectedType, typeof validateMin>>();
+        assert<AssertValidator<ExpectedType, typeof validateRange>>();
+
+        expect(validateMax("")).toEqual(true);
+        expect(validateMax("a")).toEqual(true);
+        expect(validateMax("ab")).toEqual(true);
+        expect(validateMax("abc")).toEqual(true);
+        expect(validateMax("abcd")).toEqual(true);
+        expect(validateMax("abcde")).toEqual(true);
+        expect(validateMax("abcdef")).toEqual(true);
+
+        expect(validateMax("abcdefg")).toEqual(false);
+        expect(validateMax("asfh2938erulksdnmf")).toEqual(false);
+        expect(validateMax(null)).toEqual(false);
+        expect(validateMax(undefined)).toEqual(false);
+        expect(validateMax(1)).toEqual(false);
+        expect(validateMax(false)).toEqual(false);
+        expect(validateMax(Symbol())).toEqual(false);
+        expect(validateMax(() => ["foo"])).toEqual(false);
+        expect(validateMax(["foo"])).toEqual(false);
+        expect(validateMax({ foo: "foo" })).toEqual(false);
+        expect(validateMax(new Set(["foo"]))).toEqual(false);
+
+        expect(validateMin("abcdef")).toEqual(true);
+        expect(validateMin("abcdefg")).toEqual(true);
+        expect(validateMin("asfh2938erulksdnmf")).toEqual(true);
+
+        expect(validateMin("")).toEqual(false);
+        expect(validateMin("a")).toEqual(false);
+        expect(validateMin("ab")).toEqual(false);
+        expect(validateMin("abc")).toEqual(false);
+        expect(validateMin("abcd")).toEqual(false);
+        expect(validateMin("abcde")).toEqual(false);
+        expect(validateMin(null)).toEqual(false);
+        expect(validateMin(undefined)).toEqual(false);
+        expect(validateMin(1)).toEqual(false);
+        expect(validateMin(false)).toEqual(false);
+        expect(validateMin(Symbol())).toEqual(false);
+        expect(validateMin(() => ["foo"])).toEqual(false);
+        expect(validateMin(["foo"])).toEqual(false);
+        expect(validateMin({ foo: "foo" })).toEqual(false);
+        expect(validateMin(new Set(["foo"]))).toEqual(false);
+
+        expect(validateRange("ab")).toEqual(true);
+        expect(validateRange("abc")).toEqual(true);
+        expect(validateRange("abcd")).toEqual(true);
+        expect(validateRange("abcde")).toEqual(true);
+        expect(validateRange("abcdef")).toEqual(true);
+
+        expect(validateRange("abcdefg")).toEqual(false);
+        expect(validateRange("")).toEqual(false);
+        expect(validateRange("a")).toEqual(false);
+        expect(validateRange("asfh2938erulksdnmf")).toEqual(false);
+        expect(validateRange(null)).toEqual(false);
+        expect(validateRange(undefined)).toEqual(false);
+        expect(validateRange(1)).toEqual(false);
+        expect(validateRange(false)).toEqual(false);
+        expect(validateRange(Symbol())).toEqual(false);
+        expect(validateRange(() => ["foo"])).toEqual(false);
+        expect(validateRange(["foo"])).toEqual(false);
+        expect(validateRange({ foo: "foo" })).toEqual(false);
+        expect(validateRange(new Set(["foo"]))).toEqual(false);
+      });
+
       it("should validate against a number", () => {
         const typeDef = Type.Number;
 
@@ -3689,6 +3768,81 @@ describe("createValidator", () => {
         expect(validate(new Set(["foo"])).success).toEqual(false);
       });
 
+      it("should validate against a constrained string", () => {
+        const typeDefMax = Type.String.len({ max: 6 });
+        const typeDefMin = Type.String.len({ min: 6 });
+        const typeDefRange = typeDefMax.len({ min: 2 });
+
+        type ExpectedType = string;
+        assert<AssertType<ExpectedType, typeof typeDefMax>>();
+        assert<AssertType<ExpectedType, typeof typeDefMin>>();
+        assert<AssertType<ExpectedType, typeof typeDefRange>>();
+
+        const validateMax = validator(typeDefMax, { details: true });
+        const validateMin = validator(typeDefMin, { details: true });
+        const validateRange = validator(typeDefRange, { details: true });
+
+        expect(validateMax("").success).toEqual(true);
+        expect(validateMax("a").success).toEqual(true);
+        expect(validateMax("ab").success).toEqual(true);
+        expect(validateMax("abc").success).toEqual(true);
+        expect(validateMax("abcd").success).toEqual(true);
+        expect(validateMax("abcde").success).toEqual(true);
+        expect(validateMax("abcdef").success).toEqual(true);
+
+        expect(validateMax("abcdefg").success).toEqual(false);
+        expect(validateMax("asfh2938erulksdnmf").success).toEqual(false);
+        expect(validateMax(null).success).toEqual(false);
+        expect(validateMax(undefined).success).toEqual(false);
+        expect(validateMax(1).success).toEqual(false);
+        expect(validateMax(false).success).toEqual(false);
+        expect(validateMax(Symbol()).success).toEqual(false);
+        expect(validateMax(() => ["foo"]).success).toEqual(false);
+        expect(validateMax(["foo"]).success).toEqual(false);
+        expect(validateMax({ foo: "foo" }).success).toEqual(false);
+        expect(validateMax(new Set(["foo"])).success).toEqual(false);
+
+        expect(validateMin("abcdef").success).toEqual(true);
+        expect(validateMin("abcdefg").success).toEqual(true);
+        expect(validateMin("asfh2938erulksdnmf").success).toEqual(true);
+
+        expect(validateMin("").success).toEqual(false);
+        expect(validateMin("a").success).toEqual(false);
+        expect(validateMin("ab").success).toEqual(false);
+        expect(validateMin("abc").success).toEqual(false);
+        expect(validateMin("abcd").success).toEqual(false);
+        expect(validateMin("abcde").success).toEqual(false);
+        expect(validateMin(null).success).toEqual(false);
+        expect(validateMin(undefined).success).toEqual(false);
+        expect(validateMin(1).success).toEqual(false);
+        expect(validateMin(false).success).toEqual(false);
+        expect(validateMin(Symbol()).success).toEqual(false);
+        expect(validateMin(() => ["foo"]).success).toEqual(false);
+        expect(validateMin(["foo"]).success).toEqual(false);
+        expect(validateMin({ foo: "foo" }).success).toEqual(false);
+        expect(validateMin(new Set(["foo"])).success).toEqual(false);
+
+        expect(validateRange("ab").success).toEqual(true);
+        expect(validateRange("abc").success).toEqual(true);
+        expect(validateRange("abcd").success).toEqual(true);
+        expect(validateRange("abcde").success).toEqual(true);
+        expect(validateRange("abcdef").success).toEqual(true);
+
+        expect(validateRange("abcdefg").success).toEqual(false);
+        expect(validateRange("").success).toEqual(false);
+        expect(validateRange("a").success).toEqual(false);
+        expect(validateRange("asfh2938erulksdnmf").success).toEqual(false);
+        expect(validateRange(null).success).toEqual(false);
+        expect(validateRange(undefined).success).toEqual(false);
+        expect(validateRange(1).success).toEqual(false);
+        expect(validateRange(false).success).toEqual(false);
+        expect(validateRange(Symbol()).success).toEqual(false);
+        expect(validateRange(() => ["foo"]).success).toEqual(false);
+        expect(validateRange(["foo"]).success).toEqual(false);
+        expect(validateRange({ foo: "foo" }).success).toEqual(false);
+        expect(validateRange(new Set(["foo"])).success).toEqual(false);
+      });
+
       it("should validate against a number", () => {
         const typeDef = Type.Number;
 
@@ -3711,6 +3865,86 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+      });
+
+      it("should validate against a constrained number", () => {
+        const defMin5 = Type.Number.min(5);
+        const defMax100 = Type.Number.max(100);
+        const defRange5to20 = defMin5.max(20);
+
+        type ExpectedType = number;
+        assert<AssertType<ExpectedType, typeof defMin5>>();
+        assert<AssertType<ExpectedType, typeof defMax100>>();
+        assert<AssertType<ExpectedType, typeof defRange5to20>>();
+
+        const validateMin5 = validator(defMin5, { details: true });
+        const validateMax100 = validator(defMax100, { details: true });
+        const validateRange = validator(defRange5to20, { details: true });
+
+        expect(validateMin5(5).success).toEqual(true);
+        expect(validateMin5(5.1805916207174113e21).success).toEqual(true);
+        expect(validateMin5(0xff).success).toEqual(true);
+
+        expect(validateMin5(0x04).success).toEqual(false);
+        expect(validateMin5(1).success).toEqual(false);
+        expect(validateMin5(-20).success).toEqual(false);
+        expect(validateMin5(4.99).success).toEqual(false);
+        expect(validateMin5(null).success).toEqual(false);
+        expect(validateMin5(NaN).success).toEqual(false);
+        expect(validateMin5(undefined).success).toEqual(false);
+        expect(validateMin5("foo").success).toEqual(false);
+        expect(validateMin5(false).success).toEqual(false);
+        expect(validateMin5(Symbol()).success).toEqual(false);
+        expect(validateMin5(() => ["foo"]).success).toEqual(false);
+        expect(validateMin5(["foo"]).success).toEqual(false);
+        expect(validateMin5({ foo: "foo" }).success).toEqual(false);
+        expect(validateMin5(new Set(["foo"])).success).toEqual(false);
+
+        expect(validateMax100(1).success).toEqual(true);
+        expect(validateMax100(99).success).toEqual(true);
+        expect(validateMax100(100).success).toEqual(true);
+        expect(validateMax100(-2100).success).toEqual(true);
+        expect(validateMax100(1.1805916207174113e1).success).toEqual(true);
+        expect(validateMax100(0xf).success).toEqual(true);
+
+        expect(validateMax100(1.1805916207174113e21).success).toEqual(false);
+        expect(validateMax100(101).success).toEqual(false);
+        expect(validateMax100(100.1).success).toEqual(false);
+        expect(validateMax100(0xffffff).success).toEqual(false);
+        expect(validateMax100(null).success).toEqual(false);
+        expect(validateMax100(NaN).success).toEqual(false);
+        expect(validateMax100(undefined).success).toEqual(false);
+        expect(validateMax100("foo").success).toEqual(false);
+        expect(validateMax100(false).success).toEqual(false);
+        expect(validateMax100(Symbol()).success).toEqual(false);
+        expect(validateMax100(() => ["foo"]).success).toEqual(false);
+        expect(validateMax100(["foo"]).success).toEqual(false);
+        expect(validateMax100({ foo: "foo" }).success).toEqual(false);
+        expect(validateMax100(new Set(["foo"])).success).toEqual(false);
+
+        expect(validateRange(5).success).toEqual(true);
+        expect(validateRange(10).success).toEqual(true);
+        expect(validateRange(20).success).toEqual(true);
+        expect(validateRange(1.1805916207174113e1).success).toEqual(true);
+        expect(validateRange(0xa).success).toEqual(true);
+
+        expect(validateRange(1).success).toEqual(false);
+        expect(validateRange(1.1805916207174113e21).success).toEqual(false);
+        expect(validateRange(-100).success).toEqual(false);
+        expect(validateRange(-0).success).toEqual(false);
+        expect(validateRange(4.99).success).toEqual(false);
+        expect(validateRange(100.01).success).toEqual(false);
+        expect(validateRange(2000).success).toEqual(false);
+        expect(validateRange(null).success).toEqual(false);
+        expect(validateRange(NaN).success).toEqual(false);
+        expect(validateRange(undefined).success).toEqual(false);
+        expect(validateRange("foo").success).toEqual(false);
+        expect(validateRange(false).success).toEqual(false);
+        expect(validateRange(Symbol()).success).toEqual(false);
+        expect(validateRange(() => ["foo"]).success).toEqual(false);
+        expect(validateRange(["foo"]).success).toEqual(false);
+        expect(validateRange({ foo: "foo" }).success).toEqual(false);
+        expect(validateRange(new Set(["foo"])).success).toEqual(false);
       });
 
       it("should validate against a integer", () => {
@@ -3738,6 +3972,84 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+      });
+
+      it("should validate against a constrained integer", () => {
+        const defMin199 = Type.Int.min(199);
+        const defMax0 = Type.Int.max(0);
+        const defRange = defMax0.min(-100);
+
+        type ExpectedType = number;
+        assert<AssertType<ExpectedType, typeof defMin199>>();
+        assert<AssertType<ExpectedType, typeof defMax0>>();
+        assert<AssertType<ExpectedType, typeof defRange>>();
+
+        const validateMin = validator(defMin199, { details: true });
+        const validateMax = validator(defMax0, { details: true });
+        const validateRange = validator(defRange, { details: true });
+
+        expect(validateMin(199).success).toEqual(true);
+        expect(validateMin(200.0).success).toEqual(true);
+        expect(validateMin(1.1805916207174113e21).success).toEqual(true);
+        expect(validateMin(0xfff).success).toEqual(true);
+
+        expect(validateMin(198).success).toEqual(false);
+        expect(validateMin(1).success).toEqual(false);
+        expect(validateMin(0).success).toEqual(false);
+        expect(validateMin(-113).success).toEqual(false);
+        expect(validateMin(-1130).success).toEqual(false);
+        expect(validateMin(1.2).success).toEqual(false);
+        expect(validateMin(0.9).success).toEqual(false);
+        expect(validateMin(NaN).success).toEqual(false);
+        expect(validateMin(null).success).toEqual(false);
+        expect(validateMin(undefined).success).toEqual(false);
+        expect(validateMin("foo").success).toEqual(false);
+        expect(validateMin(false).success).toEqual(false);
+        expect(validateMin(Symbol()).success).toEqual(false);
+        expect(validateMin(() => ["foo"]).success).toEqual(false);
+        expect(validateMin(["foo"]).success).toEqual(false);
+        expect(validateMin({ foo: "foo" }).success).toEqual(false);
+        expect(validateMin(new Set(["foo"])).success).toEqual(false);
+
+        expect(validateMax(-1).success).toEqual(true);
+        expect(validateMax(0).success).toEqual(true);
+        expect(validateMax(-123).success).toEqual(true);
+        expect(validateMax(-0xff).success).toEqual(true);
+
+        expect(validateMax(0.01).success).toEqual(false);
+        expect(validateMax(1).success).toEqual(false);
+        expect(validateMax(200).success).toEqual(false);
+        expect(validateMax(1.2).success).toEqual(false);
+        expect(validateMax(0.9).success).toEqual(false);
+        expect(validateMax(NaN).success).toEqual(false);
+        expect(validateMax(null).success).toEqual(false);
+        expect(validateMax(undefined).success).toEqual(false);
+        expect(validateMax("foo").success).toEqual(false);
+        expect(validateMax(false).success).toEqual(false);
+        expect(validateMax(Symbol()).success).toEqual(false);
+        expect(validateMax(() => ["foo"]).success).toEqual(false);
+        expect(validateMax(["foo"]).success).toEqual(false);
+        expect(validateMax({ foo: "foo" }).success).toEqual(false);
+        expect(validateMax(new Set(["foo"])).success).toEqual(false);
+
+        expect(validateRange(0).success).toEqual(true);
+        expect(validateRange(-50).success).toEqual(true);
+        expect(validateRange(-99).success).toEqual(true);
+
+        expect(validateRange(2).success).toEqual(false);
+        expect(validateRange(-101).success).toEqual(false);
+        expect(validateRange(1.2).success).toEqual(false);
+        expect(validateRange(0.9).success).toEqual(false);
+        expect(validateRange(NaN).success).toEqual(false);
+        expect(validateRange(null).success).toEqual(false);
+        expect(validateRange(undefined).success).toEqual(false);
+        expect(validateRange("foo").success).toEqual(false);
+        expect(validateRange(false).success).toEqual(false);
+        expect(validateRange(Symbol()).success).toEqual(false);
+        expect(validateRange(() => ["foo"]).success).toEqual(false);
+        expect(validateRange(["foo"]).success).toEqual(false);
+        expect(validateRange({ foo: "foo" }).success).toEqual(false);
+        expect(validateRange(new Set(["foo"])).success).toEqual(false);
       });
 
       it("should validate against a boolean", () => {

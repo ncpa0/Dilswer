@@ -208,14 +208,22 @@ const $ternary = (condition: string | ConditionBuilder) => {
   };
 };
 
-const $length = (varname: string, is: ">" | "<" | "==", than: number) => {
+const $length = (
+  varname: string,
+  is: ">" | "<" | "==" | "<=" | ">=",
+  than: number,
+) => {
   switch (is) {
+    case "==":
+      return `${varname}.length === ${than}`;
     case ">":
       return `${varname}.length > ${than}`;
     case "<":
       return `${varname}.length < ${than}`;
-    case "==":
-      return `${varname}.length === ${than}`;
+    case ">=":
+      return `${varname}.length >= ${than}`;
+    case "<=":
+      return `${varname}.length <= ${than}`;
   }
 };
 
@@ -419,7 +427,16 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
         );
       case "string":
         return new ValidateGenerator(
-          (varname) => $type(varname, "string"),
+          (varname) => {
+            const cond = $condition("&&").add($type(varname, "string"));
+            if (type.options.max != null) {
+              cond.add($length(varname, "<=", type.options.max));
+            }
+            if (type.options.min != null) {
+              cond.add($length(varname, ">=", type.options.min));
+            }
+            return cond;
+          },
         );
       case "stringinteger":
         this.includes.stringInteger = true;
