@@ -61,6 +61,14 @@ const KNOWN_GLOBAL_CLASSES = new Map<new(...args: any[]) => any, string>([
   [Promise, "Promise"],
 ]);
 
+enum Char {
+  Minus = 45,
+  Dot = 46,
+  Zero = 48,
+  One = 49,
+  Nine = 57,
+}
+
 const propertyAccessor = (propertyName: string) => {
   if (propertyName.match(/^[a-zA-Z_$][a-zA-Z_$0-9]*$/)) {
     return `.${propertyName}`;
@@ -244,13 +252,43 @@ const $every = (
   generator: DataTypeValidatorVisitor,
   varname: string,
   predicate: (elementName: string, index: string) => string,
+  startIndex?: number,
 ) => {
   generator.includes.every = true;
   const elemName = generator.getUniqueVarName();
   const indexName = generator.getUniqueVarName();
+  if (startIndex != null) {
+    return `_$every(${varname}, (${elemName}, ${indexName}) => ${
+      predicate(elemName, indexName)
+    }, ${startIndex})`;
+  }
   return `_$every(${varname}, (${elemName}, ${indexName}) => ${
     predicate(elemName, indexName)
   })`;
+};
+
+const $everySome = (
+  generator: DataTypeValidatorVisitor,
+  varname: string,
+  everyPredicate: (elementName: string, index: string) => string,
+  somePredicate: (elementName: string, index: string) => string,
+  startIdx?: number,
+) => {
+  generator.includes.everySome = true;
+  const elemName1 = generator.getUniqueVarName();
+  const indexName1 = generator.getUniqueVarName();
+  const elemName2 = generator.getUniqueVarName();
+  const indexName2 = generator.getUniqueVarName();
+  if (startIdx != null) {
+    return `_$everySome(${varname}, (${elemName1}, ${indexName1}) => ${
+      everyPredicate(elemName1, indexName1)
+    }, (${elemName2}, ${indexName2}) => ${
+      somePredicate(elemName2, indexName2)
+    }, ${startIdx})`;
+  }
+  return `_$everySome(${varname}, (${elemName1}, ${indexName1}) => ${
+    everyPredicate(elemName1, indexName1)
+  }, (${elemName2}, ${indexName2}) => ${somePredicate(elemName2, indexName2)})`;
 };
 
 const $everyObjectValue = (
@@ -283,12 +321,14 @@ const $charCode = (varname: string, is: number | [number, number]) => {
 };
 
 const $charCount = (
+  generator: DataTypeValidatorVisitor,
   varname: string,
   char: string,
   is: ">" | "==" | "<",
   expected: number,
 ) => {
-  return $length(`${varname}.split(${JSON.stringify(char)})`, is, expected + 1);
+  generator.includes.charCount = true;
+  return `_$countChar(${varname}, ${JSON.stringify(char)}) ${is} ${expected}`;
 };
 
 const $instanceof = (
@@ -328,6 +368,8 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   includes = {
     some: false,
     every: false,
+    everySome: false,
+    charCount: false,
     stringNumeral: false,
     stringInteger: false,
     recursive: false,
@@ -451,19 +493,18 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
                 .add($type(varname, "string"))
                 .add($length(varname, ">", 0))
                 .add(
-                  $every(
-                    this,
-                    varname,
-                    (char, index) =>
-                      $condition("||")
-                        .add($charCode(char, 48))
-                        .add(
-                          $condition("&&")
-                            .add($equal(index, 0))
-                            .add($charCode(char, 45)),
-                        )
-                        .build(),
-                  ),
+                  $ternary($charCode(varname, Char.Minus))
+                    .then($every(
+                      this,
+                      varname,
+                      (char) => $charCode(char, Char.Zero),
+                      1, // start from the second char
+                    ))
+                    .else($every(
+                      this,
+                      varname,
+                      (char) => $charCode(char, Char.Zero),
+                    )),
                 ),
           );
         }
@@ -475,17 +516,11 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
                 .add($type(varname, "string"))
                 .add($length(varname, ">", 0))
                 .add(
-                  $some(
+                  $everySome(
                     this,
                     varname,
-                    (char) => $charCode(char, [49, 57]),
-                  ),
-                )
-                .add(
-                  $every(
-                    this,
-                    varname,
-                    (char) => $charCode(char, [48, 57]),
+                    (char) => $charCode(char, [Char.Zero, Char.Nine]), // each char must be a digit
+                    (char) => $charCode(char, [Char.One, Char.Nine]), // at least one char must be a non-zero digit
                   ),
                 ),
           );
@@ -497,23 +532,14 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
               $condition("&&")
                 .add($type(varname, "string"))
                 .add($length(varname, ">", 0))
-                .add($charCode(varname, 45))
+                .add($charCode(varname, Char.Minus))
                 .add(
-                  $some(
+                  $everySome(
                     this,
                     varname,
-                    char => $charCode(char, [49, 57]),
-                  ),
-                )
-                .add(
-                  $every(
-                    this,
-                    varname,
-                    (char, index) =>
-                      $condition("||")
-                        .add($charCode(char, [48, 57]))
-                        .add($equal(index, 0))
-                        .build(),
+                    (char) => $charCode(char, [Char.Zero, Char.Nine]), // each char must be a digit
+                    (char) => $charCode(char, [Char.One, Char.Nine]), // at least one char must be a non-zero digit
+                    1, // start from the second char
                   ),
                 ),
           );
@@ -524,18 +550,18 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
               .add($type(varname, "string"))
               .add($length(varname, ">", 0))
               .add(
-                $every(
-                  this,
-                  varname,
-                  (char, index) =>
-                    $condition("||")
-                      .add($charCode(char, [48, 57]))
-                      .add(
-                        $condition("&&")
-                          .add($charCode(char, 45))
-                          .add($equal(index, 0)),
-                      ).build(),
-                ),
+                $ternary($charCode(varname, Char.Minus))
+                  .then($every(
+                    this,
+                    varname,
+                    (char) => $charCode(char, [Char.Zero, Char.Nine]),
+                    1, // start from the second char
+                  ))
+                  .else($every(
+                    this,
+                    varname,
+                    (char) => $charCode(char, [Char.Zero, Char.Nine]),
+                  )),
               ),
         );
       case "stringnumeral":
@@ -551,37 +577,52 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
                 .add($type(varname, "string"))
                 .add($length(varname, ">", 0))
                 .add(
-                  $every(this, varname, (char, index) =>
-                    $condition("||")
-                      .add($charCode(char, 48))
-                      .add($charCode(char, 46))
-                      .add(
-                        $condition("&&")
-                          .add($charCode(char, 45))
-                          .add($equal(index, 0)),
-                      )
-                      .build()),
+                  $ternary($charCode(varname, Char.Minus))
+                    .then(
+                      $every(
+                        this,
+                        varname,
+                        (char) =>
+                          $condition("||")
+                            .add($charCode(char, Char.Zero))
+                            .add($charCode(char, Char.Dot)).build(),
+                        1, // start from the second char
+                      ),
+                    )
+                    .else(
+                      $every(
+                        this,
+                        varname,
+                        (char) =>
+                          $condition("||")
+                            .add($charCode(char, Char.Zero))
+                            .add($charCode(char, Char.Dot)).build(),
+                      ),
+                    ),
                 )
-                .add($charCount(varname, ".", "<", 2)),
+                .add($charCount(this, varname, ".", "<", 2)),
           );
         }
         if (type.options.negative === false) {
           // String.Float.positive()
           return new ValidateGenerator(
             (varname) =>
-              $condition("&&").add($type(varname, "string"))
+              $condition("&&")
+                .add($type(varname, "string"))
                 .add($length(varname, ">", 0))
                 .add(
-                  $some(this, varname, char => $charCode(char, [49, 57])),
+                  $everySome(
+                    this,
+                    varname,
+                    char =>
+                      $condition("||")
+                        .add($charCode(char, [Char.Zero, Char.Nine]))
+                        .add($charCode(char, Char.Dot))
+                        .build(),
+                    char => $charCode(char, [Char.One, Char.Nine]),
+                  ),
                 )
-                .add(
-                  $every(this, varname, (char) =>
-                    $condition("||")
-                      .add($charCode(char, [48, 57]))
-                      .add($charCode(char, 46))
-                      .build()),
-                )
-                .add($charCount(varname, ".", "<", 2)),
+                .add($charCount(this, varname, ".", "<", 2)),
           );
         }
         if (type.options.positive === false) {
@@ -591,38 +632,51 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
               $condition("&&")
                 .add($type(varname, "string"))
                 .add($length(varname, ">", 0))
-                .add($charCode(varname, 45))
+                .add($charCode(varname, Char.Minus))
                 .add(
-                  $some(this, varname, char => $charCode(char, [49, 57])),
+                  $everySome(
+                    this,
+                    varname,
+                    char =>
+                      $condition("||")
+                        .add($charCode(char, [Char.Zero, Char.Nine]))
+                        .add($charCode(char, Char.Dot))
+                        .build(),
+                    char => $charCode(char, [Char.One, Char.Nine]),
+                    1,
+                  ),
                 )
-                .add(
-                  $every(this, varname, (char, index) =>
-                    $condition("||")
-                      .add($equal(index, 0))
-                      .add($charCode(char, [48, 57]))
-                      .add($charCode(char, 46))
-                      .build()),
-                )
-                .add($charCount(varname, ".", "<", 2)),
+                .add($charCount(this, varname, ".", "<", 2)),
           );
         }
         return new ValidateGenerator(
           (varname) =>
-            $condition("&&").add($type(varname, "string"))
+            $condition("&&")
+              .add($type(varname, "string"))
               .add($length(varname, ">", 0))
               .add(
-                $every(this, varname, (char, index) =>
-                  $condition("||")
-                    .add($charCode(char, [48, 57]))
-                    .add($charCode(char, 46))
-                    .add(
-                      $condition("&&")
-                        .add($charCode(char, 45))
-                        .add($equal(index, 0)),
-                    )
-                    .build()),
+                $ternary($charCode(varname, Char.Minus))
+                  .then($every(
+                    this,
+                    varname,
+                    (char) =>
+                      $condition("||")
+                        .add($charCode(char, [Char.Zero, Char.Nine]))
+                        .add($charCode(char, Char.Dot))
+                        .build(),
+                    1,
+                  ))
+                  .else($every(
+                    this,
+                    varname,
+                    (char) =>
+                      $condition("||")
+                        .add($charCode(char, [Char.Zero, Char.Nine]))
+                        .add($charCode(char, Char.Dot))
+                        .build(),
+                  )),
               )
-              .add($charCount(varname, ".", "<", 2)),
+              .add($charCount(this, varname, ".", "<", 2)),
         );
       case "function":
         return new ValidateGenerator(
@@ -968,12 +1022,26 @@ const some = /* js */ `
 `.trim();
 
 const every = /* js */ `
-  function _$every(_$arr, _$predicate) {
-    for (let _$i = 0; _$i < _$arr.length; _$i++) {
+  function _$every(_$arr, _$predicate, _$start = 0) {
+    for (let _$i = _$start; _$i < _$arr.length; _$i++) {
       if (!_$predicate(_$arr[_$i], _$i))
         return false;
     }
     return true;
+  };
+`.trim();
+
+const everySome = /* js */ `
+  function _$everySome(_$arr, _$everyPredicate, _$somePredicate, _$start = 0) {
+    let _$someSatisfied = false;
+    for (let _$i = _$start; _$i < _$arr.length; _$i++) {
+      if (!_$everyPredicate(_$arr[_$i], _$i))
+        return false;
+      if (!_$someSatisfied) {
+        _$someSatisfied = _$somePredicate(_$arr[_$i], _$i);
+      }
+    }
+    return _$someSatisfied;
   };
 `.trim();
 
@@ -1014,6 +1082,17 @@ const recursiveTracker = /* js */ `
     };
 `.trim();
 
+const countChar = /* js */ `
+  function _$countChar(_$str, _$char) {
+    let _$count = 0;
+    for (let _$i = 0; _$i < _$str.length; _$i++) {
+      if (_$str[_$i] === _$char)
+        _$count++;
+    }
+    return _$count;
+  };
+`.trim();
+
 export interface FastValidator<DT extends AnyType> {
   (data: unknown): data is ReWrap<ParseDataType<DT>>;
   asString(name?: string): string;
@@ -1048,11 +1127,17 @@ export const compileFastValidator = <DT extends AnyType>(
   if (visitor.includes.some) {
     outerDeclarations.push(some);
   }
+  if (visitor.includes.everySome) {
+    outerDeclarations.push(everySome);
+  }
   if (visitor.includes.set) {
     outerDeclarations.push(everyInSet);
   }
   if (visitor.includes.dict) {
     outerDeclarations.push(everyObjectValue);
+  }
+  if (visitor.includes.charCount) {
+    outerDeclarations.push(countChar);
   }
   if (visitor.outerDeclarations) {
     outerDeclarations.push(...visitor.outerDeclarations);
