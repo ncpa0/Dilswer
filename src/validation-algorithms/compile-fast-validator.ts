@@ -235,19 +235,6 @@ const $length = (
   }
 };
 
-const $some = (
-  generator: DataTypeValidatorVisitor,
-  varname: string,
-  predicate: (elementName: string, index: string) => string,
-) => {
-  generator.includes.some = true;
-  const elemName = generator.getUniqueVarName();
-  const indexName = generator.getUniqueVarName();
-  return `_$some(${varname}, (${elemName}, ${indexName}) => ${
-    predicate(elemName, indexName)
-  })`;
-};
-
 const $every = (
   generator: DataTypeValidatorVisitor,
   varname: string,
@@ -366,7 +353,6 @@ type R = ValidateGenerator;
 
 class DataTypeValidatorVisitor implements TypeVisitor<R> {
   includes = {
-    some: false,
     every: false,
     everySome: false,
     charCount: false,
@@ -1011,16 +997,6 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
 const e = eval;
 
-const some = /* js */ `
-  function _$some(_$arr, _$predicate) {
-    for (let _$i = 0; _$i < _$arr.length; _$i++) {
-      if (_$predicate(_$arr[_$i], _$i))
-        return true;
-    }
-    return false;
-  };
-`.trim();
-
 const every = /* js */ `
   function _$every(_$arr, _$predicate, _$start = 0) {
     for (let _$i = _$start; _$i < _$arr.length; _$i++) {
@@ -1123,9 +1099,6 @@ export const compileFastValidator = <DT extends AnyType>(
 
   if (visitor.includes.every) {
     outerDeclarations.push(every);
-  }
-  if (visitor.includes.some) {
-    outerDeclarations.push(some);
   }
   if (visitor.includes.everySome) {
     outerDeclarations.push(everySome);
