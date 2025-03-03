@@ -485,6 +485,8 @@ describe("createFastValidator", () => {
 
       const validate = compileFastValidator(typeDef);
 
+      console.log(validate.asString("lol"));
+
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
       expect(validate("1")).toEqual(true);
