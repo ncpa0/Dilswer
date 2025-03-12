@@ -18,7 +18,7 @@
     "name": "Szymon Bretner (ncpa0cpl)",
     "url": "https://github.com/ncpa0cpl"
   },
-  "description": "Data validation library with TypeScript integration.",
+  "description": "Blazignly fast data validation library with TypeScript integration.",
   "keywords": [
     "data",
     "type",
