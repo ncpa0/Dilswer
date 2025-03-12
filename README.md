@@ -6,7 +6,7 @@
 ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/Dilswer?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ncpa0cpl/Dilswer?style=for-the-badge)
 
-Blazignly fast data validation library with TypeScript integration.
+Blazingly fast data validation library with TypeScript integration.
 
 ## Table Of Contents
 
