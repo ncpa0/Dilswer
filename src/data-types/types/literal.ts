@@ -25,7 +25,12 @@ export class LiteralType<
 
   ["~validate"](path: Path, value: any): void {
     if (this.literal === value) return;
-    throw new ValidationError(path, this, value);
+    throw new ValidationError(
+      path,
+      this,
+      value,
+      `not equal to the expected literal value`,
+    );
   }
 
   ["~matches"](value: any): boolean {

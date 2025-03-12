@@ -30,8 +30,16 @@ export class TupleType<DT extends AnyType[] = any[]> extends BaseType {
   }
 
   ["~validate"](path: Path, value: any): void {
-    if (!Array.isArray(value) || value.length !== this.tuple.length) {
-      throw new ValidationError(path, this, value);
+    if (!Array.isArray(value)) {
+      throw new ValidationError(path, this, value, "not an array");
+    }
+    if (value.length !== this.tuple.length) {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "too many or too few elements in array",
+      );
     }
 
     for (let index = 0; index < this.tuple.length; index++) {

@@ -28,7 +28,7 @@ export class ValidationError extends TypeError {
   ) {
     super(
       customMessage
-        ?? "Value does not conform the data type structure definition.",
+        ?? "value does not conform the data type structure definition",
     );
     this.expectedValueType = expected;
     this.path = path;

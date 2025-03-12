@@ -78,7 +78,7 @@ export class EnumType<
       }
     }
 
-    throw new ValidationError(path, this, value);
+    throw new ValidationError(path, this, value, "not a valid enum value");
   }
 
   ["~matches"](value: any): boolean {

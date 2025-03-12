@@ -39,9 +39,11 @@ export class SetType<DT extends AnyType[] = any[]> extends BaseType {
     if (
       typeof value !== "object"
       || value === null
-      || value[Symbol.toStringTag] !== "Set"
     ) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not an object");
+    }
+    if (value[Symbol.toStringTag] !== "Set") {
+      throw new ValidationError(path, this, value, "not a Set instance");
     }
 
     for (const elem of value as Set<unknown>) {

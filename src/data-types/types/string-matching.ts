@@ -62,8 +62,16 @@ export class StringMatchingType<T extends string = string> extends BaseType {
   }
 
   ["~validate"](path: Path, value: any): void {
-    if (typeof value !== "string" || !this.pattern.test(value)) {
-      throw new ValidationError(path, this, value);
+    if (typeof value !== "string") {
+      throw new ValidationError(path, this, value, "not a string");
+    }
+    if (!this.pattern.test(value)) {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "does not match the pattern",
+      );
     }
   }
 

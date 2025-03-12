@@ -25,7 +25,7 @@ export class FunctionType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "function") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a function");
     }
   }
 

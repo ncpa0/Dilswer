@@ -76,7 +76,7 @@ export class RecordType<
 
   ["~validate"](path: Path, value: unknown): void {
     if (typeof value !== "object" || value === null) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not an object");
     }
 
     for (let i = 0; i < this.fieldDescriptors.length; i++) {
@@ -86,7 +86,12 @@ export class RecordType<
         if (descriptor.required !== true) {
           continue;
         } else {
-          throw new ValidationError(path.concat(key), this, undefined);
+          throw new ValidationError(
+            path.concat(key),
+            this,
+            undefined,
+            "missing required field",
+          );
         }
       }
 

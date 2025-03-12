@@ -50,11 +50,11 @@ export class IntegerType extends BaseType {
   }
 
   ["~validate"](path: Path, value: any): void {
-    if (
-      typeof value !== "number" || Number.isNaN(value)
-      || !Number.isInteger(value)
-    ) {
-      throw new ValidationError(path, this, value);
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      throw new ValidationError(path, this, value, "not a number");
+    }
+    if (!Number.isInteger(value)) {
+      throw new ValidationError(path, this, value, "not an integer");
     }
   }
 
@@ -82,19 +82,19 @@ export class ComplexIntegerType extends IntegerType {
   }
 
   ["~validate"](path: Path, value: any): void {
-    if (
-      typeof value !== "number" || Number.isNaN(value)
-      || !Number.isInteger(value)
-    ) {
-      throw new ValidationError(path, this, value);
+    if (typeof value !== "number" || Number.isNaN(value)) {
+      throw new ValidationError(path, this, value, "not a number");
+    }
+    if (!Number.isInteger(value)) {
+      throw new ValidationError(path, this, value, "not an integer");
     }
 
     if (this._options.min !== null && value < this._options.min) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "integer less than min");
     }
 
     if (this._options.max !== null && value > this._options.max) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "integer greater than max");
     }
   }
 

@@ -27,7 +27,12 @@ export class InstanceOfType<
 
   ["~validate"](path: Path, value: any): void {
     if (!(value instanceof this.instanceOf)) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "not an instance of " + this.instanceOf.name,
+      );
     }
   }
 

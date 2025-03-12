@@ -54,11 +54,11 @@ export class StringIntegerType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     if (value.length === 0) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "empty string");
     }
 
     let i = 0;
@@ -70,7 +70,12 @@ export class StringIntegerType extends BaseType {
       if (charCode >= 48 && charCode <= 57) {
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid integer",
+      );
     }
   }
 
@@ -130,11 +135,11 @@ export class ZeroStringIntegerType extends StringIntegerType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     if (value.length === 0) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "empty string");
     }
 
     let i = 0;
@@ -146,7 +151,12 @@ export class ZeroStringIntegerType extends StringIntegerType {
       if (charCode === 48) {
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not equalt to zero",
+      );
     }
   }
 
@@ -199,11 +209,11 @@ export class PositiveStringIntegerType extends StringIntegerType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     if (value.length === 0) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "empty string");
     }
 
     let hasNonZeroDigit = false;
@@ -217,11 +227,21 @@ export class PositiveStringIntegerType extends StringIntegerType {
         continue;
       }
 
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid integer",
+      );
     }
 
     if (!hasNonZeroDigit) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not positive",
+      );
     }
   }
 
@@ -275,15 +295,20 @@ export class NegativeStringIntegerType extends StringIntegerType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     if (value.length === 0) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "empty string");
     }
 
     if (value[0] !== "-") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not negative",
+      );
     }
 
     let hasNonZeroDigit = false;
@@ -296,11 +321,21 @@ export class NegativeStringIntegerType extends StringIntegerType {
       if (charCode === 48) {
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid integer",
+      );
     }
 
     if (!hasNonZeroDigit) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not negative",
+      );
     }
   }
 
