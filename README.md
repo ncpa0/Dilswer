@@ -6,10 +6,7 @@
 ![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/Dilswer?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ncpa0cpl/Dilswer?style=for-the-badge)
 
-Small and lightweight data validation library with TypeScript integration.
-
-Keep your type definitions in one place, and have but one source of truth for
-both the runtime validation types and the TypeScript type definitions.
+Blazignly fast data validation library with TypeScript integration.
 
 ## Table Of Contents
 
