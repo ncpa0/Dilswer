@@ -98,8 +98,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a boolean",
               path: [{ key: "$" }],
             },
           ],
@@ -110,8 +109,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a string",
               path: [{ key: "$" }],
             },
           ],
@@ -122,8 +120,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a number",
               path: [{ key: "$" }],
             },
           ],
@@ -134,8 +131,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a null",
               path: [{ key: "$" }],
             },
           ],
@@ -146,8 +142,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a symbol",
               path: [{ key: "$" }],
             },
           ],
@@ -158,8 +153,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a undefined",
               path: [{ key: "$" }],
             },
           ],
@@ -170,8 +164,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a number",
               path: [{ key: "$" }],
             },
           ],
@@ -210,8 +203,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a number",
               path: [{ key: "$" }, { key: "b" }],
             },
           ],
@@ -244,15 +236,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a string",
               path: [
                 { key: "$" },
                 { key: "foo" },
                 { key: "bar" },
-                {
-                  key: "baz",
-                },
+                { key: "baz" },
               ],
             },
           ],
@@ -278,8 +267,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "does not match any of the types in the union",
               path: [{ key: "$" }, { key: "1" }],
             },
           ],
@@ -306,8 +294,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "does not match any of the types in the union",
               path: [{ key: "$" }, { key: "SET_ELEMENT" }],
             },
           ],
@@ -341,8 +328,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "does not match any of the types in the union",
               path: [{ key: "$" }, { key: "key2" }],
             },
           ],
@@ -374,8 +360,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not an object",
               path: [{ key: "$" }, { key: "1" }],
             },
           ],
@@ -415,8 +400,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "does not match any of the types in the union",
               path: [{ key: "$" }],
             },
           ],
@@ -455,8 +439,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not equal to the expected literal value",
               path: [{ key: "$" }, { key: "bar" }],
             },
           ],
@@ -481,8 +464,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not equal to the expected literal value",
               path: [{ key: "$" }],
             },
           ],
@@ -511,8 +493,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a valid enum value",
               path: [{ key: "$" }],
             },
           ],
@@ -541,8 +522,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not a valid enum member",
               path: [{ key: "$" }],
             },
           ],
@@ -569,8 +549,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not an instance of TestClass",
               path: [{ key: "$" }],
             },
           ],
@@ -600,7 +579,7 @@ describe("validating via the Standard Schema", () => {
           issues: [
             {
               message:
-                "Value does not conform the data type structure definition.",
+                "value does not conform the data type structure definition",
               path: [{ key: "$" }],
             },
           ],
@@ -627,8 +606,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "does not match the pattern",
               path: [{ key: "$" }],
             },
           ],
@@ -682,8 +660,7 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "Value does not conform the data type structure definition.",
+              message: "not an object",
               path: [{ key: "$" }],
             },
           ],

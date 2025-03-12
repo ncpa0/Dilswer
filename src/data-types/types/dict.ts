@@ -42,7 +42,7 @@ export class DictType<DT extends AnyType[] = any[]> extends BaseType {
       || value === null
       || Array.isArray(value)
     ) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not an object");
     }
 
     const keys = Object.keys(value);

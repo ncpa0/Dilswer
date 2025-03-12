@@ -54,7 +54,7 @@ export class StringFloatType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     let i = 0;
@@ -71,11 +71,21 @@ export class StringFloatType extends BaseType {
         dotCount++;
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid float",
+      );
     }
 
     if (dotCount > 1 || value.length === 0) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid float",
+      );
     }
   }
 
@@ -141,7 +151,7 @@ export class ZeroStringFloatType extends StringFloatType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
     let i = 0;
     if (value[0] === "-") {
@@ -157,11 +167,21 @@ export class ZeroStringFloatType extends StringFloatType {
         dotCount++;
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a zero",
+      );
     }
 
     if (dotCount > 1 || value.length === 0) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid float",
+      );
     }
   }
 
@@ -220,7 +240,7 @@ export class PositiveStringFloatType extends StringFloatType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     let hasNonZeroDigit = false;
@@ -238,11 +258,30 @@ export class PositiveStringFloatType extends StringFloatType {
         dotCount++;
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid float",
+      );
     }
 
-    if (dotCount > 1 || !hasNonZeroDigit) {
-      throw new ValidationError(path, this, value);
+    if (dotCount > 1) {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid float",
+      );
+    }
+
+    if (!hasNonZeroDigit) {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not positive",
+      );
     }
   }
 
@@ -302,11 +341,16 @@ export class NegativeStringFloatType extends StringFloatType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     if (value[0] !== "-") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not negative",
+      );
     }
 
     let hasNonZeroDigit = false;
@@ -324,11 +368,24 @@ export class NegativeStringFloatType extends StringFloatType {
         dotCount++;
         continue;
       }
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not a valid float",
+      );
     }
 
-    if (dotCount > 1 || !hasNonZeroDigit) {
-      throw new ValidationError(path, this, value);
+    if (dotCount > 1) {
+      throw new ValidationError(path, this, value, "not a valid float");
+    }
+    if (!hasNonZeroDigit) {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not negative",
+      );
     }
   }
 

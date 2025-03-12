@@ -25,7 +25,7 @@ export class SymbolType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "symbol") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a symbol");
     }
   }
 

@@ -62,7 +62,7 @@ export class StringType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
   }
 
@@ -81,19 +81,19 @@ export class ComplesStringType extends StringType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a string");
     }
 
     if (
       this._options.min !== null && value.length < this._options.min
     ) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "string shorter than min");
     }
 
     if (
       this._options.max !== null && value.length > this._options.max
     ) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "string longer than max");
     }
   }
 

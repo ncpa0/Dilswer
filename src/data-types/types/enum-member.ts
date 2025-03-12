@@ -80,7 +80,7 @@ export class EnumMemberType<DT = any> extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (this.enumMember !== value) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a valid enum member");
     }
   }
 

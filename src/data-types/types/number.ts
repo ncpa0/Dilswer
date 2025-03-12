@@ -51,7 +51,7 @@ export class NumberType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "number" || Number.isNaN(value)) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a number");
     }
   }
 
@@ -77,15 +77,15 @@ export class ComplexNumberType extends NumberType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "number" || Number.isNaN(value)) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a number");
     }
 
     if (this._options.min !== null && value < this._options.min) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "number less than min");
     }
 
     if (this._options.max !== null && value > this._options.max) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "number greater than max");
     }
   }
 

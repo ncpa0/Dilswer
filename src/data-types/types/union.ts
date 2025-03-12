@@ -45,7 +45,12 @@ export class UnionType<DT extends AnyType[] = any[]> extends BaseType {
       }
     }
 
-    throw new ValidationError(path, this, value);
+    throw new ValidationError(
+      path,
+      this,
+      value,
+      "does not match any of the types in the union",
+    );
   }
 
   ["~matches"](value: any): boolean {

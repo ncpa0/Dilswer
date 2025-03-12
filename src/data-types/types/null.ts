@@ -25,7 +25,7 @@ export class NullType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (value !== null) {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a null");
     }
   }
 

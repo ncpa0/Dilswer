@@ -25,7 +25,7 @@ export class UndefinedType extends BaseType {
 
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "undefined") {
-      throw new ValidationError(path, this, value);
+      throw new ValidationError(path, this, value, "not a undefined");
     }
   }
 

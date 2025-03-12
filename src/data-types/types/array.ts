@@ -37,7 +37,9 @@ export class ArrayType<DT extends AnyType[] = any[]> extends BaseType {
   }
 
   ["~validate"](path: Path, value: any): void {
-    if (!Array.isArray(value)) throw new ValidationError(path, this, value);
+    if (!Array.isArray(value)) {
+      throw new ValidationError(path, this, value, "not an array");
+    }
 
     for (let index = 0; index < value.length; index++) {
       this.union["~validate"](path.concat(index), value[index]);
