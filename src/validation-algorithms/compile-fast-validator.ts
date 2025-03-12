@@ -55,11 +55,14 @@ const KNOWN_GLOBAL_CLASSES = new Map<new(...args: any[]) => any, string>([
   [Float64Array, "Float64Array"],
   [BigInt64Array, "BigInt64Array"],
   [BigUint64Array, "BigUint64Array"],
-  [SharedArrayBuffer, "SharedArrayBuffer"],
   [ArrayBuffer, "ArrayBuffer"],
   [DataView, "DataView"],
   [Promise, "Promise"],
 ]);
+
+if (typeof SharedArrayBuffer !== "undefined") {
+  KNOWN_GLOBAL_CLASSES.set(SharedArrayBuffer, "SharedArrayBuffer");
+}
 
 enum Char {
   Minus = 45,
