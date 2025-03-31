@@ -1,4 +1,4 @@
-import { RecordVisitChild } from "@DataTypes/types";
+import { RecordVisitChild } from "@DataTypes/type-types";
 import {
   AnyType,
   parseWith,

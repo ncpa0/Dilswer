@@ -1,10 +1,10 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeVisitor } from "@DataTypes/types";
+import type { TypeVisitor } from "@DataTypes/type-types";
+import { UnionType } from "@DataTypes/types/union";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { type StandardSchemaV1 } from "standard-schema";
-import { UnionType } from "./union";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 type StringFloatOptions = {
   positive: boolean;

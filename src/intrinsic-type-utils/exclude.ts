@@ -1,4 +1,4 @@
-import type { AnyType, BasicType } from "@DataTypes/types";
+import type { AnyType, BasicType } from "@DataTypes/type-types";
 import { UnionType } from "@DataTypes/types/union";
 import type { ExcludeOneOf } from "@Intrinsic/types";
 

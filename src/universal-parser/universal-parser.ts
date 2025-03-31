@@ -1,4 +1,4 @@
-import type { AnyType, TypeVisitor } from "@DataTypes/types";
+import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
 
 export const parseWith = <R>(
   visitor: TypeVisitor<R>,

@@ -2,9 +2,9 @@ import { BaseType } from "@DataTypes/base-type";
 import type { CircularType } from "@DataTypes/circular-type-utils";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { ReWrap } from "@DataTypes/type-utils";
-import type { AnyType, TypeVisitor } from "@DataTypes/types";
+import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
 import { Path } from "@Validation/path";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 /**
  * Collection of values that have been ran through the validator

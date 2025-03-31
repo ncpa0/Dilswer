@@ -1,5 +1,5 @@
+import type { AnyType } from "@DataTypes/type-types";
 import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
-import type { AnyType } from "@DataTypes/types";
 import { validatedCircularValues } from "@DataTypes/types/recursive";
 import { Path } from "@Validation/path";
 

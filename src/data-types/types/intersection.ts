@@ -4,9 +4,9 @@ import type {
   ParseDataTypeIntersectionTuple,
   ReWrap,
 } from "@DataTypes/type-utils";
-import type { AnyType, TypeVisitor } from "@DataTypes/types";
+import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
 import { Path } from "@Validation/path";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class IntersectionType<DT extends AnyType[] = any[]> extends BaseType {
   readonly kind = "intersection";

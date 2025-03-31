@@ -1,8 +1,8 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeVisitor } from "@DataTypes/types";
+import type { TypeVisitor } from "@DataTypes/type-types";
 import { Path } from "@Validation/path";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class UnknownType extends BaseType {
   readonly kind = "simple";

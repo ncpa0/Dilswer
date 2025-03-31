@@ -1,10 +1,10 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
+import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
 import type { RepackTuple } from "@DataTypes/type-utils";
-import type { AnyType, TypeVisitor } from "@DataTypes/types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class TupleType<DT extends AnyType[] = any[]> extends BaseType {
   readonly kind = "tuple";

@@ -1,28 +1,31 @@
-import type { ArrayType } from "./types/array";
-import type { BooleanType } from "./types/boolean";
-import type { CustomType } from "./types/custom";
-import type { DictType } from "./types/dict";
-import type { EnumType } from "./types/enum";
-import type { EnumMemberType } from "./types/enum-member";
-import type { FunctionType } from "./types/function";
-import type { InstanceOfType } from "./types/instance";
-import type { IntegerType } from "./types/integer";
-import type { IntersectionType } from "./types/intersection";
-import type { LiteralType } from "./types/literal";
-import type { NullType } from "./types/null";
-import type { NumberType } from "./types/number";
-import type { RecordType } from "./types/record";
-import type { RecursiveType, RecursiveTypeReference } from "./types/recursive";
-import type { SetType } from "./types/set";
-import type { StringType } from "./types/string";
-import type { StringFloatType } from "./types/string-float";
-import type { StringIntegerType } from "./types/string-integer";
-import type { StringMatchingType } from "./types/string-matching";
-import type { SymbolType } from "./types/symbol";
-import type { TupleType } from "./types/tuple";
-import type { UndefinedType } from "./types/undefined";
-import type { UnionType } from "./types/union";
-import type { UnknownType } from "./types/unknown";
+import { ArrayType } from "@DataTypes/types/array";
+import { BooleanType } from "@DataTypes/types/boolean";
+import { CustomType } from "@DataTypes/types/custom";
+import { DictType } from "@DataTypes/types/dict";
+import { EnumType } from "@DataTypes/types/enum";
+import { EnumMemberType } from "@DataTypes/types/enum-member";
+import { FunctionType } from "@DataTypes/types/function";
+import { InstanceOfType } from "@DataTypes/types/instance";
+import { IntegerType } from "@DataTypes/types/integer";
+import { IntersectionType } from "@DataTypes/types/intersection";
+import { LiteralType } from "@DataTypes/types/literal";
+import { NullType } from "@DataTypes/types/null";
+import { NumberType } from "@DataTypes/types/number";
+import { RecordType } from "@DataTypes/types/record";
+import {
+  RecursiveType,
+  RecursiveTypeReference,
+} from "@DataTypes/types/recursive";
+import { SetType } from "@DataTypes/types/set";
+import { StringType } from "@DataTypes/types/string";
+import { StringFloatType } from "@DataTypes/types/string-float";
+import { StringIntegerType } from "@DataTypes/types/string-integer";
+import { StringMatchingType } from "@DataTypes/types/string-matching";
+import { SymbolType } from "@DataTypes/types/symbol";
+import { TupleType } from "@DataTypes/types/tuple";
+import { UndefinedType } from "@DataTypes/types/undefined";
+import { UnionType } from "@DataTypes/types/union";
+import { UnknownType } from "@DataTypes/types/unknown";
 
 export interface RecordVisitChild<R> {
   _isRecordOfVisitChild: true;

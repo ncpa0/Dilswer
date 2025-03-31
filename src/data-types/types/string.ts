@@ -1,12 +1,12 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeVisitor } from "@DataTypes/types";
+import type { TypeVisitor } from "@DataTypes/type-types";
+import { StringFloatType } from "@DataTypes/types/string-float";
+import { StringIntegerType } from "@DataTypes/types/string-integer";
+import { StringMatchingType } from "@DataTypes/types/string-matching";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { StandardSchemaV1 } from "standard-schema";
-import { StringFloatType } from "./string-float";
-import { StringIntegerType } from "./string-integer";
-import { StringMatchingType } from "./string-matching";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 type StringOptions = {
   /** Minimum length of the string */

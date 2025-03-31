@@ -1,8 +1,7 @@
-import type { DataTypeKind, Metadata, TypeVisitor } from "@DataTypes/types";
+import type { DataTypeKind, Metadata, TypeVisitor } from "@DataTypes/type-types";
 import { compileFastValidator } from "@Validation/compile-fast-validator";
 import { Path } from "@Validation/path";
-
-import type { StandardSchemaV1 } from "../standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export const DataTypeSymbol: unique symbol = Symbol();
 export const MetadataSymbol = Symbol("metadata");

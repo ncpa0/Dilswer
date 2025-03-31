@@ -18,6 +18,7 @@ async function main() {
         "@JSONSchemaParser/*": "./json-schema-parser/*",
         "@TsTypeGenerator/*": "./ts-type-generator/*",
         "@UniversalParser/*": "./universal-parser/*",
+        "~/*": "./*",
       },
     });
   } catch (e) {

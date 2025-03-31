@@ -1,16 +1,16 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { ParseRecordType, ReWrap } from "@DataTypes/type-utils";
 import type {
   FieldDescriptor,
   RecordTypeSchema,
   RecordVisitChild,
   TypeVisitor,
-} from "@DataTypes/types";
+} from "@DataTypes/type-types";
+import type { ParseRecordType, ReWrap } from "@DataTypes/type-utils";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class RecordType<
   TS extends RecordTypeSchema = RecordTypeSchema,

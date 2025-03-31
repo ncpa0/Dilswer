@@ -1,9 +1,9 @@
 import { BaseType, MetadataSymbol, TypeMetadata } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { Metadata, TypeVisitor } from "@DataTypes/types";
+import type { Metadata, TypeVisitor } from "@DataTypes/type-types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class EnumMetadata<T extends EnumType>
   extends TypeMetadata<T, Metadata & { enumName?: string }>

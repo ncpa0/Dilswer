@@ -1,10 +1,10 @@
-import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type {
   AnyType,
   BasicType,
   RecordVisitChild,
   TypeVisitor,
-} from "@DataTypes/types";
+} from "@DataTypes/type-types";
+import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { ArrayType } from "@DataTypes/types/array";
 import type { CustomType } from "@DataTypes/types/custom";
 import type { DictType } from "@DataTypes/types/dict";

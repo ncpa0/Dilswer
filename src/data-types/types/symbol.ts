@@ -1,9 +1,9 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { TypeVisitor } from "@DataTypes/types";
+import type { TypeVisitor } from "@DataTypes/type-types";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import type { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class SymbolType extends BaseType {
   readonly kind = "simple";

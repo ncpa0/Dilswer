@@ -1,26 +1,33 @@
-import type { AnyType, OptionalField, RecordTypeSchema } from "./types";
-import { ArrayType } from "./types/array";
-import { BooleanType } from "./types/boolean";
-import { CustomType } from "./types/custom";
-import { DictType } from "./types/dict";
-import { EnumType } from "./types/enum";
-import { EnumMemberType } from "./types/enum-member";
-import { FunctionType } from "./types/function";
-import { InstanceOfType } from "./types/instance";
-import { IntegerType } from "./types/integer";
-import { IntersectionType } from "./types/intersection";
-import { LiteralType } from "./types/literal";
-import { NullType } from "./types/null";
-import { NumberType } from "./types/number";
-import { RecordType } from "./types/record";
-import { RecursiveType, RecursiveTypeReference } from "./types/recursive";
-import { SetType } from "./types/set";
-import { StringType } from "./types/string";
-import { SymbolType } from "./types/symbol";
-import { TupleType } from "./types/tuple";
-import { UndefinedType } from "./types/undefined";
-import { UnionType } from "./types/union";
-import { UnknownType } from "./types/unknown";
+import {
+  AnyType,
+  OptionalField,
+  RecordTypeSchema,
+} from "@DataTypes/type-types";
+import { ArrayType } from "@DataTypes/types/array";
+import { BooleanType } from "@DataTypes/types/boolean";
+import { CustomType } from "@DataTypes/types/custom";
+import { DictType } from "@DataTypes/types/dict";
+import { EnumType } from "@DataTypes/types/enum";
+import { EnumMemberType } from "@DataTypes/types/enum-member";
+import { FunctionType } from "@DataTypes/types/function";
+import { InstanceOfType } from "@DataTypes/types/instance";
+import { IntegerType } from "@DataTypes/types/integer";
+import { IntersectionType } from "@DataTypes/types/intersection";
+import { LiteralType } from "@DataTypes/types/literal";
+import { NullType } from "@DataTypes/types/null";
+import { NumberType } from "@DataTypes/types/number";
+import { RecordType } from "@DataTypes/types/record";
+import {
+  RecursiveType,
+  RecursiveTypeReference,
+} from "@DataTypes/types/recursive";
+import { SetType } from "@DataTypes/types/set";
+import { StringType } from "@DataTypes/types/string";
+import { SymbolType } from "@DataTypes/types/symbol";
+import { TupleType } from "@DataTypes/types/tuple";
+import { UndefinedType } from "@DataTypes/types/undefined";
+import { UnionType } from "@DataTypes/types/union";
+import { UnknownType } from "@DataTypes/types/unknown";
 
 export const Type = {
   get Unknown() {

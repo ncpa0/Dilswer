@@ -1,7 +1,7 @@
-import type { AnyType } from "@DataTypes/types";
+import type { AnyType } from "@DataTypes/type-types";
 import { concatPath } from "@Utilities/concat-object-path";
 import type { Path } from "@Validation/path";
-import { StandardSchemaV1 } from "standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 const ValidationErrorSymbol = Symbol("ValidationError");
 

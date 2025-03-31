@@ -1,7 +1,7 @@
 {
   "languages": {
     "JavaScript": {
-      "language_servers": ["!eslint", "vtsls"],
+      "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
       "format_on_save": {
         "external": {
           "command": "yarn",
@@ -10,7 +10,7 @@
       }
     },
     "TypeScript": {
-      "language_servers": ["!eslint", "vtsls"],
+      "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
       "format_on_save": {
         "external": {
           "command": "yarn",
@@ -19,7 +19,7 @@
       }
     },
     "TSX": {
-      "language_servers": ["!eslint", "vtsls"],
+      "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
       "format_on_save": {
         "external": {
           "command": "yarn",
@@ -45,6 +45,13 @@
     }
   },
   "lsp": {
-    "eslint": {}
+    "typescript-language-server": {
+      "initialization_options": {
+        "preferences": {
+          "importModuleSpecifierPreference": "non-relative",
+          "renameMatchingJsxTags": true
+        }
+      }
+    }
   }
 }

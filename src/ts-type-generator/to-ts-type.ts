@@ -7,7 +7,7 @@ import type {
   BasicType,
   RecordVisitChild,
   TypeVisitor,
-} from "@DataTypes/types";
+} from "@DataTypes/type-types";
 import type { ArrayType } from "@DataTypes/types/array";
 import type { CustomType } from "@DataTypes/types/custom";
 import type { DictType } from "@DataTypes/types/dict";

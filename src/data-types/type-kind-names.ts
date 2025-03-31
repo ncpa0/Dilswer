@@ -1,4 +1,4 @@
-import type { DataTypeKind } from "@DataTypes/types";
+import type { DataTypeKind } from "@DataTypes/type-types";
 
 export const TypeKindNames = new Map<DataTypeKind, string>([
   ["array", "Array"],

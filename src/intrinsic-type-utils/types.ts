@@ -3,7 +3,7 @@ import type {
   BasicType,
   FieldDescriptor,
   RecordTypeSchema,
-} from "@DataTypes/types";
+} from "@DataTypes/type-types";
 import { RecordType } from "@DataTypes/types/record";
 import { UnionType } from "@DataTypes/types/union";
 

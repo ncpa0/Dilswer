@@ -1,6 +1,6 @@
 import { BaseType } from "@DataTypes/base-type";
 import { Type } from "@DataTypes/Type";
-import { AnyType } from "@DataTypes/types";
+import { AnyType } from "@DataTypes/type-types";
 import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
@@ -10,7 +10,6 @@ import { validator } from "@Validation/create-validator";
 import { assertType } from "@Validation/ensure-data-type";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
-export type { Infer } from "@DataTypes/type-utils";
 export type {
   AnyType,
   BasicType,
@@ -20,7 +19,8 @@ export type {
   Metadata as TypeMetadata,
   RecordTypeSchema,
   TypeVisitor,
-} from "@DataTypes/types";
+} from "@DataTypes/type-types";
+export type { Infer } from "@DataTypes/type-utils";
 export type { ArrayType } from "@DataTypes/types/array";
 export type { BooleanType } from "@DataTypes/types/boolean";
 export type { CustomType } from "@DataTypes/types/custom";

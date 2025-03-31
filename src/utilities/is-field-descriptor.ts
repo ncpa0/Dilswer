@@ -1,5 +1,5 @@
 import { DataTypeSymbol } from "@DataTypes/base-type";
-import type { AnyType, FieldDescriptor } from "@DataTypes/types";
+import type { AnyType, FieldDescriptor } from "@DataTypes/type-types";
 
 export const isFieldDescriptor = (
   v: FieldDescriptor | AnyType,

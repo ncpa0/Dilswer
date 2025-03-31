@@ -1,4 +1,4 @@
-import type { RecordTypeSchema } from "@DataTypes/types";
+import type { RecordTypeSchema } from "@DataTypes/type-types";
 import { RecordType } from "@DataTypes/types/record";
 import type { RequiredRecord } from "@Intrinsic/types";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
