@@ -1,5 +1,5 @@
 import type { GetTypeFromCircular } from "@DataTypes/circular-type-utils";
-import {
+import type {
   AnyType,
   BasicType,
   BasicTypeNames,
@@ -7,19 +7,19 @@ import {
   FieldDescriptor,
   RecordTypeSchema,
 } from "@DataTypes/type-types";
-import { ArrayType } from "@DataTypes/types/array";
-import { CustomType } from "@DataTypes/types/custom";
-import { DictType } from "@DataTypes/types/dict";
-import { EnumType } from "@DataTypes/types/enum";
-import { EnumMemberType } from "@DataTypes/types/enum-member";
-import { InstanceOfType } from "@DataTypes/types/instance";
-import { IntersectionType } from "@DataTypes/types/intersection";
-import { LiteralType } from "@DataTypes/types/literal";
-import { RecordType } from "@DataTypes/types/record";
-import { SetType } from "@DataTypes/types/set";
-import { StringMatchingType } from "@DataTypes/types/string-matching";
-import { TupleType } from "@DataTypes/types/tuple";
-import { UnionType } from "@DataTypes/types/union";
+import type { ArrayType } from "@DataTypes/types/array";
+import type { CustomType } from "@DataTypes/types/custom";
+import type { DictType } from "@DataTypes/types/dict";
+import type { EnumType } from "@DataTypes/types/enum";
+import type { EnumMemberType } from "@DataTypes/types/enum-member";
+import type { InstanceOfType } from "@DataTypes/types/instance";
+import type { IntersectionType } from "@DataTypes/types/intersection";
+import type { LiteralType } from "@DataTypes/types/literal";
+import type { RecordType } from "@DataTypes/types/record";
+import type { SetType } from "@DataTypes/types/set";
+import type { StringMatchingType } from "@DataTypes/types/string-matching";
+import type { TupleType } from "@DataTypes/types/tuple";
+import type { UnionType } from "@DataTypes/types/union";
 
 export type ParseDataTypeIntersectionTuple<
   T extends any[],

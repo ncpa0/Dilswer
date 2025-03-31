@@ -1,8 +1,8 @@
-import { AnyType } from "@DataTypes/type-types";
-import { Infer } from "@DataTypes/type-utils";
+import type { AnyType } from "@DataTypes/type-types";
+import type { Infer } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
-import { StandardSchemaV1 } from "~/standard-schema";
+import type { StandardSchemaV1 } from "~/standard-schema";
 
 export function getStandardSchemaProps<Self extends AnyType>(
   type: AnyType,

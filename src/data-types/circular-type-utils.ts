@@ -1,31 +1,31 @@
 import type {
+  AnyType,
+  BasicType,
+  ComplexType,
+  RecordTypeSchema,
+} from "@DataTypes/type-types";
+import type {
   ExcludeOptional,
   ExcludeRequired,
   GetDescriptorType,
   GetTypeFromCustom,
   ParseBasicDataType,
 } from "@DataTypes/type-utils";
-import {
-  AnyType,
-  BasicType,
-  ComplexType,
-  RecordTypeSchema,
-} from "@DataTypes/type-types";
-import { ArrayType } from "@DataTypes/types/array";
-import { DictType } from "@DataTypes/types/dict";
-import { EnumType } from "@DataTypes/types/enum";
-import { EnumMemberType } from "@DataTypes/types/enum-member";
-import { IntersectionType } from "@DataTypes/types/intersection";
-import { LiteralType } from "@DataTypes/types/literal";
-import { RecordType } from "@DataTypes/types/record";
-import {
+import type { ArrayType } from "@DataTypes/types/array";
+import type { DictType } from "@DataTypes/types/dict";
+import type { EnumType } from "@DataTypes/types/enum";
+import type { EnumMemberType } from "@DataTypes/types/enum-member";
+import type { IntersectionType } from "@DataTypes/types/intersection";
+import type { LiteralType } from "@DataTypes/types/literal";
+import type { RecordType } from "@DataTypes/types/record";
+import type {
   RecursiveType,
   RecursiveTypeReference,
 } from "@DataTypes/types/recursive";
-import { SetType } from "@DataTypes/types/set";
-import { StringMatchingType } from "@DataTypes/types/string-matching";
-import { TupleType } from "@DataTypes/types/tuple";
-import { UnionType } from "@DataTypes/types/union";
+import type { SetType } from "@DataTypes/types/set";
+import type { StringMatchingType } from "@DataTypes/types/string-matching";
+import type { TupleType } from "@DataTypes/types/tuple";
+import type { UnionType } from "@DataTypes/types/union";
 
 type IsDefaultReplacement<W extends ReplacementType<any>> = W extends
   DefaultReplacementType<any> ? true : false;

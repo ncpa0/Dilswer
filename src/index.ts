@@ -1,6 +1,6 @@
-import { BaseType } from "@DataTypes/base-type";
+import type { BaseType } from "@DataTypes/base-type";
 import { Type } from "@DataTypes/Type";
-import { AnyType } from "@DataTypes/type-types";
+import type { AnyType } from "@DataTypes/type-types";
 import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
