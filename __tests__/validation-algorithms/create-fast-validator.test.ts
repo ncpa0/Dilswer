@@ -1671,11 +1671,15 @@ describe("createFastValidator", () => {
         const typeDef = Type.Record({
           foo: { required: true, type: Type.String },
           bar: { required: false, type: Type.Number },
+          baz: { required: true, type: Type.Unknown },
+          quux: { required: false, type: Type.Unknown },
         });
 
         type ExpectedType = {
           foo: string;
           bar?: number;
+          baz: unknown;
+          quux?: unknown;
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
@@ -1683,12 +1687,16 @@ describe("createFastValidator", () => {
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
-        expect(validate({ foo: "foo" })).toEqual(true);
-        expect(validate({ foo: "foo", bar: 1 })).toEqual(true);
-        expect(validate({ foo: "", bar: undefined })).toEqual(true);
+        expect(validate({ foo: "foo", baz: undefined })).toEqual(true);
+        expect(validate({ foo: "foo", bar: 1, baz: NaN })).toEqual(true);
+        expect(validate({ foo: "", bar: undefined, baz: 1, quux: "a" }))
+          .toEqual(true);
 
-        expect(validate({ foo: "foo", bar: "1" })).toEqual(false);
-        expect(validate({ bar: 1 })).toEqual(false);
+        expect(validate({ foo: "foo", bar: "1", baz: undefined, quux: {} }))
+          .toEqual(
+            false,
+          );
+        expect(validate({ bar: 1, baz: undefined })).toEqual(false);
       });
 
       it("should validate for optional properties defined with Type.Option", () => {
