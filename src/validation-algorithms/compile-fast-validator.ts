@@ -22,6 +22,7 @@ import type { SetType } from "@DataTypes/types/set";
 import type { StringMatchingType } from "@DataTypes/types/string-matching";
 import type { TupleType } from "@DataTypes/types/tuple";
 import type { UnionType } from "@DataTypes/types/union";
+import { approximateComplexity } from "@Validation/approximate-complexity";
 
 const KNOWN_GLOBAL_CLASSES = new Map<new(...args: any[]) => any, string>([
   [Map, "Map"],
@@ -178,15 +179,14 @@ const $notEqual = (
   return `${varname} !== ${_serialize(value)}`;
 };
 
-const $laxNotEqual = (
-  varname: string,
-  value: string | number | boolean | null | undefined,
-) => {
-  return `${varname} != ${_serialize(value)}`;
-};
-
 const $isArray = (varname: string) => {
   return `Array.isArray(${varname})`;
+};
+
+const $isObject = (varname: string) => {
+  return $condition("&&")
+    .add($type(varname, "object"))
+    .add($notEqual(varname, null));
 };
 
 const $isSet = (varname: string) => {
@@ -198,7 +198,7 @@ const $isInteger = (varname: string) => {
 };
 
 const $notNaN = (varname: string) => {
-  return `!Number.isNaN(${varname})`;
+  return `${varname} === ${varname}`;
 };
 
 const $has = (varname: string, key: string) => {
@@ -244,17 +244,12 @@ const $every = (
   predicate: (elementName: string, index: string) => string,
   startIndex?: number,
 ) => {
-  generator.includes.every = true;
-  const elemName = generator.getUniqueVarName();
-  const indexName = generator.getUniqueVarName();
-  if (startIndex != null) {
-    return `_$every(${varname}, (${elemName}, ${indexName}) => ${
-      predicate(elemName, indexName)
-    }, ${startIndex})`;
-  }
-  return `_$every(${varname}, (${elemName}, ${indexName}) => ${
-    predicate(elemName, indexName)
-  })`;
+  const iVar = generator.getUniqueVarName();
+  return `(() => { for (let ${iVar} = ${
+    startIndex ?? 0
+  }; ${iVar} < ${varname}.length; ${iVar}++) { if (!(${
+    predicate(`${varname}[${iVar}]`, iVar)
+  })) { return false; } }return true; })()`;
 };
 
 const $everySome = (
@@ -264,21 +259,15 @@ const $everySome = (
   somePredicate: (elementName: string, index: string) => string,
   startIdx?: number,
 ) => {
-  generator.includes.everySome = true;
-  const elemName1 = generator.getUniqueVarName();
-  const indexName1 = generator.getUniqueVarName();
-  const elemName2 = generator.getUniqueVarName();
-  const indexName2 = generator.getUniqueVarName();
-  if (startIdx != null) {
-    return `_$everySome(${varname}, (${elemName1}, ${indexName1}) => ${
-      everyPredicate(elemName1, indexName1)
-    }, (${elemName2}, ${indexName2}) => ${
-      somePredicate(elemName2, indexName2)
-    }, ${startIdx})`;
-  }
-  return `_$everySome(${varname}, (${elemName1}, ${indexName1}) => ${
-    everyPredicate(elemName1, indexName1)
-  }, (${elemName2}, ${indexName2}) => ${somePredicate(elemName2, indexName2)})`;
+  const satisfied = generator.getUniqueVarName("someSatisfied");
+  const iVar = generator.getUniqueVarName();
+  return `(() => { let ${satisfied} = false; for (let ${iVar} = ${
+    startIdx ?? 0
+  }; ${iVar} < ${varname}.length; ${iVar}++) { if (!(${
+    everyPredicate(`${varname}[${iVar}]`, iVar)
+  })) { return false; } if(!${satisfied}) { ${satisfied} = ${
+    somePredicate(`${varname}[${iVar}]`, iVar)
+  }; } } return ${satisfied}; })()`;
 };
 
 const $everyObjectValue = (
@@ -286,10 +275,10 @@ const $everyObjectValue = (
   varname: string,
   predicate: (elementName: string) => string,
 ) => {
-  const elemName = generator.getUniqueVarName();
-  return `_$everyObjectValue(${varname}, (${elemName}) => ${
-    predicate(elemName)
-  })`;
+  const iVar = generator.getUniqueVarName();
+  return `(() => { for (let ${iVar} in ${varname}) { if (!(${
+    predicate(`${varname}[${iVar}]`)
+  })) { return false; } }return true; })()`;
 };
 
 const $everyInSet = (
@@ -297,8 +286,10 @@ const $everyInSet = (
   varname: string,
   predicate: (elementName: string) => string,
 ) => {
-  const elemName = generator.getUniqueVarName();
-  return `_$everyInSet(${varname}, (${elemName}) => ${predicate(elemName)})`;
+  const item = generator.getUniqueVarName();
+  return `(() => { for (let ${item} of ${varname}) { if (!(${
+    predicate(item)
+  })) { return false; } }return true; })()`;
 };
 
 const $charCode = (varname: string, is: number | [number, number]) => {
@@ -317,8 +308,11 @@ const $charCount = (
   is: ">" | "==" | "<",
   expected: number,
 ) => {
-  generator.includes.charCount = true;
-  return `_$countChar(${varname}, ${JSON.stringify(char)}) ${is} ${expected}`;
+  const counter = generator.getUniqueVarName("count");
+  const iVar = generator.getUniqueVarName();
+  return `(() => { let ${counter} = 0; for (let ${iVar} = 0; ${iVar} < ${varname}.length; ${iVar}++) { if (${varname}[${iVar}] === ${
+    JSON.stringify(char)
+  }) { ${counter}++; } }return ${counter}; })() ${is} ${expected}`;
 };
 
 const $instanceof = (
@@ -336,14 +330,33 @@ const $instanceof = (
 };
 
 class ValidateGenerator {
+  private _memo_complexity: number | null = null;
+
   constructor(
+    private t: AnyType,
     private get$validate: (
       varname: string,
       self: ValidateGenerator,
     ) => ConditionBuilder | string,
   ) {}
 
-  $validate(varname: string) {
+  approxComplexity() {
+    if (this._memo_complexity != null) {
+      return this._memo_complexity;
+    }
+
+    return (this._memo_complexity = approximateComplexity(this.t));
+  }
+
+  originalSchema(): AnyType {
+    return this.t;
+  }
+
+  isAlwaysTrue() {
+    return false;
+  }
+
+  $buildValidate(varname: string) {
     const validate = this.get$validate(varname, this);
     if (typeof validate === "string") {
       return validate;
@@ -352,19 +365,36 @@ class ValidateGenerator {
   }
 }
 
-type R = ValidateGenerator;
+class TruthyGenerator {
+  constructor(private t: AnyType) {}
+
+  approxComplexity() {
+    return 0;
+  }
+
+  originalSchema(): AnyType {
+    return this.t;
+  }
+
+  isAlwaysTrue() {
+    return true;
+  }
+
+  $buildValidate(varname: string) {
+    return "true";
+  }
+}
+
+type R = {
+  originalSchema(): AnyType;
+  isAlwaysTrue(): boolean;
+  approxComplexity(): number;
+  $buildValidate(varname: string): string;
+};
 
 class DataTypeValidatorVisitor implements TypeVisitor<R> {
   includes = {
-    every: false,
-    everySome: false,
-    charCount: false,
-    stringNumeral: false,
-    stringInteger: false,
     recursive: false,
-    set: false,
-    dict: false,
-    array: false,
     custom: false,
     instanceof: false,
   };
@@ -382,6 +412,68 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   public dependencies: Array<[string, any]> = [];
 
   constructor() {}
+
+  private canSkipPropertyCheck(t: AnyType) {
+    if (t.kind === "simple") {
+      switch (t.simpleType) {
+        case "null":
+        case "unknown":
+        case "undefined":
+          return false;
+      }
+      return true;
+    }
+    return t.kind === "dictionary" || t.kind === "record";
+  }
+
+  private sortChildren<C extends RecordVisitChild<R> | R>(children: C[]): C[] {
+    return children.slice().sort(
+      (a: RecordVisitChild<R> | R, b: RecordVisitChild<R> | R) => {
+        const ac = "_isRecordOfVisitChild" in a ? a.child : a;
+        const bc = "_isRecordOfVisitChild" in b ? b.child : b;
+
+        const aSchema = ac.originalSchema();
+        const bSchema = bc.originalSchema();
+        const aKind = aSchema.kind;
+        const bKind = bSchema.kind;
+
+        // put custom types always at the end
+        const aCustom = aKind === "custom";
+        const bCustom = bKind === "custom";
+        if (aCustom !== bCustom && (aCustom || bCustom)) {
+          return aCustom ? 1 : -1;
+        }
+
+        const aMaybeDiscriminator = aKind === "literal"
+          || aKind === "enumMember"
+          || aKind === "stringMatching"
+          || (aKind === "union"
+            && aSchema.oneOf.every((t: AnyType) =>
+              t.kind === "literal" || t.kind === "enumMember"
+              || t.kind === "stringMatching"
+            ));
+        const bMaybeDiscriminator = bKind === "literal"
+          || bKind === "enumMember"
+          || bKind === "stringMatching"
+          || (bKind === "union"
+            && bSchema.oneOf.every((t: AnyType) =>
+              t.kind === "literal" || t.kind === "enumMember"
+              || t.kind === "stringMatching"
+            ));
+        if (
+          aMaybeDiscriminator !== bMaybeDiscriminator
+          && (aMaybeDiscriminator || bMaybeDiscriminator)
+        ) {
+          return aMaybeDiscriminator ? -1 : 1;
+        }
+
+        const aCplx = ac.approxComplexity();
+        const bCplx = bc.approxComplexity();
+
+        return aCplx - bCplx;
+      },
+    );
+  }
 
   public addDeclaration(type: "inner" | "outer", inlined: string) {
     if (type === "inner") {
@@ -408,7 +500,10 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     return name;
   }
 
-  public getUniqueVarName() {
+  public getUniqueVarName(name?: string) {
+    if (name) {
+      return `_$a${++this._counter1}_${name}`;
+    }
     return `_$a${++this._counter1}`;
   }
 
@@ -420,121 +515,55 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     switch (type.simpleType) {
       case "boolean":
         return new ValidateGenerator(
+          type,
           (varname) => $type(varname, "boolean"),
         );
       case "integer":
-        return new ValidateGenerator(
-          (varname) => {
-            const cond = $condition("&&")
-              .add($type(varname, "number"))
-              .add($isInteger(varname));
-            if (type.options.max != null) {
-              cond.add($lte(varname, type.options.max));
-            }
-            if (type.options.min != null) {
-              cond.add($gte(varname, type.options.min));
-            }
-            return cond;
-          },
-        );
+        return new ValidateGenerator(type, (varname) => {
+          const cond = $condition("&&")
+            .add($type(varname, "number"))
+            .add($isInteger(varname));
+          if (type.options.max != null) {
+            cond.add($lte(varname, type.options.max));
+          }
+          if (type.options.min != null) {
+            cond.add($gte(varname, type.options.min));
+          }
+          return cond;
+        });
       case "null":
-        return new ValidateGenerator(
-          (varname) => $equal(varname, null),
-        );
+        return new ValidateGenerator(type, (varname) => $equal(varname, null));
       case "number":
-        return new ValidateGenerator(
-          (varname) => {
-            let cond = $condition("&&")
-              .add($type(varname, "number"))
-              .add($notNaN(varname));
-            if (type.options.max != null) {
-              cond = cond.add($lte(varname, type.options.max!));
-            }
-            if (type.options.min != null) {
-              cond = cond.add($gte(varname, type.options.min!));
-            }
-            return cond;
-          },
-        );
+        return new ValidateGenerator(type, (varname) => {
+          let cond = $condition("&&")
+            .add($type(varname, "number"))
+            .add($notNaN(varname));
+          if (type.options.max != null) {
+            cond = cond.add($lte(varname, type.options.max!));
+          }
+          if (type.options.min != null) {
+            cond = cond.add($gte(varname, type.options.min!));
+          }
+          return cond;
+        });
       case "string":
-        return new ValidateGenerator(
-          (varname) => {
-            const cond = $condition("&&").add($type(varname, "string"));
-            if (type.options.max != null) {
-              cond.add($length(varname, "<=", type.options.max));
-            }
-            if (type.options.min != null) {
-              cond.add($length(varname, ">=", type.options.min));
-            }
-            return cond;
-          },
-        );
+        return new ValidateGenerator(type, (varname) => {
+          const cond = $condition("&&").add($type(varname, "string"));
+          if (type.options.max != null) {
+            cond.add($length(varname, "<=", type.options.max));
+          }
+          if (type.options.min != null) {
+            cond.add($length(varname, ">=", type.options.min));
+          }
+          return cond;
+        });
       case "stringinteger":
-        this.includes.stringInteger = true;
         if (
           type.options.negative === false
           && type.options.positive === false
         ) {
           // String.Int.zero()
-          return new ValidateGenerator(
-            (varname) =>
-              $condition("&&")
-                .add($type(varname, "string"))
-                .add($length(varname, ">", 0))
-                .add(
-                  $ternary($charCode(varname, Char.Minus))
-                    .then($every(
-                      this,
-                      varname,
-                      (char) => $charCode(char, Char.Zero),
-                      1, // start from the second char
-                    ))
-                    .else($every(
-                      this,
-                      varname,
-                      (char) => $charCode(char, Char.Zero),
-                    )),
-                ),
-          );
-        }
-        if (type.options.negative === false) {
-          // String.Int.positive()
-          return new ValidateGenerator(
-            (varname) =>
-              $condition("&&")
-                .add($type(varname, "string"))
-                .add($length(varname, ">", 0))
-                .add(
-                  $everySome(
-                    this,
-                    varname,
-                    (char) => $charCode(char, [Char.Zero, Char.Nine]), // each char must be a digit
-                    (char) => $charCode(char, [Char.One, Char.Nine]), // at least one char must be a non-zero digit
-                  ),
-                ),
-          );
-        }
-        if (type.options.positive === false) {
-          // String.Int.negative()
-          return new ValidateGenerator(
-            (varname) =>
-              $condition("&&")
-                .add($type(varname, "string"))
-                .add($length(varname, ">", 0))
-                .add($charCode(varname, Char.Minus))
-                .add(
-                  $everySome(
-                    this,
-                    varname,
-                    (char) => $charCode(char, [Char.Zero, Char.Nine]), // each char must be a digit
-                    (char) => $charCode(char, [Char.One, Char.Nine]), // at least one char must be a non-zero digit
-                    1, // start from the second char
-                  ),
-                ),
-          );
-        }
-        return new ValidateGenerator(
-          (varname) =>
+          return new ValidateGenerator(type, (varname) =>
             $condition("&&")
               .add($type(varname, "string"))
               .add($length(varname, ">", 0))
@@ -543,174 +572,214 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
                   .then($every(
                     this,
                     varname,
-                    (char) => $charCode(char, [Char.Zero, Char.Nine]),
+                    (char) => $charCode(char, Char.Zero),
                     1, // start from the second char
                   ))
                   .else($every(
                     this,
                     varname,
-                    (char) => $charCode(char, [Char.Zero, Char.Nine]),
+                    (char) => $charCode(char, Char.Zero),
                   )),
-              ),
-        );
+              ));
+        }
+        if (type.options.negative === false) {
+          // String.Int.positive()
+          return new ValidateGenerator(type, (varname) =>
+            $condition("&&")
+              .add($type(varname, "string"))
+              .add($length(varname, ">", 0))
+              .add(
+                $everySome(
+                  this,
+                  varname,
+                  (char) => $charCode(char, [Char.Zero, Char.Nine]), // each char must be a digit
+                  (char) => $charCode(char, [Char.One, Char.Nine]), // at least one char must be a non-zero digit
+                ),
+              ));
+        }
+        if (type.options.positive === false) {
+          // String.Int.negative()
+          return new ValidateGenerator(type, (varname) =>
+            $condition("&&")
+              .add($type(varname, "string"))
+              .add($length(varname, ">", 0))
+              .add($charCode(varname, Char.Minus))
+              .add(
+                $everySome(
+                  this,
+                  varname,
+                  (char) => $charCode(char, [Char.Zero, Char.Nine]), // each char must be a digit
+                  (char) => $charCode(char, [Char.One, Char.Nine]), // at least one char must be a non-zero digit
+                  1, // start from the second char
+                ),
+              ));
+        }
+        return new ValidateGenerator(type, (varname) =>
+          $condition("&&")
+            .add($type(varname, "string"))
+            .add($length(varname, ">", 0))
+            .add(
+              $ternary($charCode(varname, Char.Minus))
+                .then($every(
+                  this,
+                  varname,
+                  (char) => $charCode(char, [Char.Zero, Char.Nine]),
+                  1, // start from the second char
+                ))
+                .else($every(
+                  this,
+                  varname,
+                  (char) => $charCode(char, [Char.Zero, Char.Nine]),
+                )),
+            ));
       case "stringnumeral":
-        this.includes.stringNumeral = true;
         if (
           type.options.negative === false
           && type.options.positive === false
         ) {
           // String.Float.zero()
-          return new ValidateGenerator(
-            (varname) =>
-              $condition("&&")
-                .add($type(varname, "string"))
-                .add($length(varname, ">", 0))
-                .add(
-                  $ternary($charCode(varname, Char.Minus))
-                    .then(
-                      $every(
-                        this,
-                        varname,
-                        (char) =>
-                          $condition("||")
-                            .add($charCode(char, Char.Zero))
-                            .add($charCode(char, Char.Dot)).build(),
-                        1, // start from the second char
-                      ),
-                    )
-                    .else(
-                      $every(
-                        this,
-                        varname,
-                        (char) =>
-                          $condition("||")
-                            .add($charCode(char, Char.Zero))
-                            .add($charCode(char, Char.Dot)).build(),
-                      ),
-                    ),
-                )
-                .add($charCount(this, varname, ".", "<", 2)),
-          );
-        }
-        if (type.options.negative === false) {
-          // String.Float.positive()
-          return new ValidateGenerator(
-            (varname) =>
-              $condition("&&")
-                .add($type(varname, "string"))
-                .add($length(varname, ">", 0))
-                .add(
-                  $everySome(
-                    this,
-                    varname,
-                    char =>
-                      $condition("||")
-                        .add($charCode(char, [Char.Zero, Char.Nine]))
-                        .add($charCode(char, Char.Dot))
-                        .build(),
-                    char => $charCode(char, [Char.One, Char.Nine]),
-                  ),
-                )
-                .add($charCount(this, varname, ".", "<", 2)),
-          );
-        }
-        if (type.options.positive === false) {
-          // String.Float.negative()
-          return new ValidateGenerator(
-            (varname) =>
-              $condition("&&")
-                .add($type(varname, "string"))
-                .add($length(varname, ">", 0))
-                .add($charCode(varname, Char.Minus))
-                .add(
-                  $everySome(
-                    this,
-                    varname,
-                    char =>
-                      $condition("||")
-                        .add($charCode(char, [Char.Zero, Char.Nine]))
-                        .add($charCode(char, Char.Dot))
-                        .build(),
-                    char => $charCode(char, [Char.One, Char.Nine]),
-                    1,
-                  ),
-                )
-                .add($charCount(this, varname, ".", "<", 2)),
-          );
-        }
-        return new ValidateGenerator(
-          (varname) =>
+          return new ValidateGenerator(type, (varname) =>
             $condition("&&")
               .add($type(varname, "string"))
               .add($length(varname, ">", 0))
               .add(
                 $ternary($charCode(varname, Char.Minus))
-                  .then($every(
-                    this,
-                    varname,
-                    (char) =>
-                      $condition("||")
-                        .add($charCode(char, [Char.Zero, Char.Nine]))
-                        .add($charCode(char, Char.Dot))
-                        .build(),
-                    1,
-                  ))
-                  .else($every(
-                    this,
-                    varname,
-                    (char) =>
-                      $condition("||")
-                        .add($charCode(char, [Char.Zero, Char.Nine]))
-                        .add($charCode(char, Char.Dot))
-                        .build(),
-                  )),
+                  .then(
+                    $every(
+                      this,
+                      varname,
+                      (char) =>
+                        $condition("||")
+                          .add($charCode(char, Char.Zero))
+                          .add($charCode(char, Char.Dot)).build(),
+                      1, // start from the second char
+                    ),
+                  )
+                  .else(
+                    $every(
+                      this,
+                      varname,
+                      (char) =>
+                        $condition("||")
+                          .add($charCode(char, Char.Zero))
+                          .add($charCode(char, Char.Dot)).build(),
+                    ),
+                  ),
               )
-              .add($charCount(this, varname, ".", "<", 2)),
-        );
+              .add($charCount(this, varname, ".", "<", 2)));
+        }
+        if (type.options.negative === false) {
+          // String.Float.positive()
+          return new ValidateGenerator(type, (varname) =>
+            $condition("&&")
+              .add($type(varname, "string"))
+              .add($length(varname, ">", 0))
+              .add(
+                $everySome(
+                  this,
+                  varname,
+                  char =>
+                    $condition("||")
+                      .add($charCode(char, [Char.Zero, Char.Nine]))
+                      .add($charCode(char, Char.Dot))
+                      .build(),
+                  char => $charCode(char, [Char.One, Char.Nine]),
+                ),
+              )
+              .add($charCount(this, varname, ".", "<", 2)));
+        }
+        if (type.options.positive === false) {
+          // String.Float.negative()
+          return new ValidateGenerator(type, (varname) =>
+            $condition("&&")
+              .add($type(varname, "string"))
+              .add($length(varname, ">", 0))
+              .add($charCode(varname, Char.Minus))
+              .add(
+                $everySome(
+                  this,
+                  varname,
+                  char =>
+                    $condition("||")
+                      .add($charCode(char, [Char.Zero, Char.Nine]))
+                      .add($charCode(char, Char.Dot))
+                      .build(),
+                  char => $charCode(char, [Char.One, Char.Nine]),
+                  1,
+                ),
+              )
+              .add($charCount(this, varname, ".", "<", 2)));
+        }
+        return new ValidateGenerator(type, (varname) =>
+          $condition("&&")
+            .add($type(varname, "string"))
+            .add($length(varname, ">", 0))
+            .add(
+              $ternary($charCode(varname, Char.Minus))
+                .then($every(
+                  this,
+                  varname,
+                  (char) =>
+                    $condition("||")
+                      .add($charCode(char, [Char.Zero, Char.Nine]))
+                      .add($charCode(char, Char.Dot))
+                      .build(),
+                  1,
+                ))
+                .else($every(
+                  this,
+                  varname,
+                  (char) =>
+                    $condition("||")
+                      .add($charCode(char, [Char.Zero, Char.Nine]))
+                      .add($charCode(char, Char.Dot))
+                      .build(),
+                )),
+            )
+            .add($charCount(this, varname, ".", "<", 2)));
       case "function":
         return new ValidateGenerator(
+          type,
           (varname) => $type(varname, "function"),
         );
       case "symbol":
         return new ValidateGenerator(
+          type,
           (varname) => $type(varname, "symbol"),
         );
       case "undefined":
         return new ValidateGenerator(
+          type,
           (varname) => $type(varname, "undefined"),
         );
       case "unknown":
-        return new ValidateGenerator(() => "true");
+        return new TruthyGenerator(type);
     }
   }
 
   private visitArrayOf(type: ArrayType, children?: Array<R>): R {
-    this.includes.array = true;
-
     if (children && children.length > 0) {
       const oneof = this.visitOneOf(type["union"], children);
 
-      return new ValidateGenerator((varname) =>
-        $condition("&&")
+      return new ValidateGenerator(type, (varname) => {
+        return $condition("&&")
           .add($isArray(varname))
-          .add($every(this, varname, elem => oneof.$validate(elem)))
-      );
+          .add($every(this, varname, elem => oneof.$buildValidate(elem)));
+      });
     }
 
-    return new ValidateGenerator(
-      (varname) => $isArray(varname),
-    );
+    return new ValidateGenerator(type, (varname) => $isArray(varname));
   }
 
   private visitTuple(type: TupleType, children?: Array<R>): R {
-    return new ValidateGenerator((varname) => {
+    return new ValidateGenerator(type, (varname) => {
       const cond = $condition("&&")
         .add($isArray(varname))
         .add($length(varname, "==", type.tuple.length));
 
       if (children && children.length > 0) {
         for (const [index, c] of children.entries()) {
-          cond.add(c.$validate(`${varname}[${index}]`));
+          cond.add(c.$buildValidate(`${varname}[${index}]`));
         }
       }
 
@@ -722,29 +791,39 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     type: RecordType,
     children: RecordVisitChild<R>[] = [],
   ): R {
+    children = this.sortChildren(children);
+
     const getRecordConditions = (varName: string) => {
-      const cond = $condition("&&")
-        .add($type(varName, "object"))
-        .add($laxNotEqual(varName, null));
+      const cond = $isObject(varName);
 
       if (children && children.length > 0) {
         for (const c of children) {
           const accessor = propertyAccessor(c.propertyName);
           const nextName = `${varName}${accessor}`;
 
-          if (c.required !== true) {
-            cond.add(
-              $ternary(
-                $condition("&&")
-                  .add($has(varName, c.propertyName))
-                  .add($notEqual(nextName, undefined)),
-              )
-                .then(c.child.$validate(nextName))
-                .else("true"),
-            );
+          if (c.required === true) {
+            if (
+              this.canSkipPropertyCheck(c.child.originalSchema())
+            ) {
+              if (c.child.isAlwaysTrue()) {
+                cond.add($has(varName, c.propertyName));
+              } else {
+                cond.add(c.child.$buildValidate(nextName));
+              }
+            } else {
+              cond.add($has(varName, c.propertyName));
+              if (!c.child.isAlwaysTrue()) {
+                cond.add(c.child.$buildValidate(nextName));
+              }
+            }
           } else {
-            cond.add($has(varName, c.propertyName));
-            cond.add(c.child.$validate(nextName));
+            if (!c.child.isAlwaysTrue()) {
+              cond.add(
+                $ternary($notEqual(nextName, undefined))
+                  .then(c.child.$buildValidate(nextName))
+                  .else("true"),
+              );
+            }
           }
         }
       }
@@ -752,7 +831,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
       return cond;
     };
 
-    return new ValidateGenerator((varname) => {
+    return new ValidateGenerator(type, (varname) => {
       if (varname.split(/\[|\./).length > 2) {
         const fnName = this.getUniqueFnName();
         const argName = this.getUniqueVarName();
@@ -772,60 +851,59 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   }
 
   private visitDict(type: DictType, children?: Array<R>): R {
-    this.includes.dict = true;
-
-    const isDictConditions = (varName: string) => {
-      return $condition("&&")
-        .add($type(varName, "object"))
-        .add($laxNotEqual(varName, null));
-    };
-
     if (children && children.length > 0) {
       const oneof = this.visitOneOf(type["union"], children);
       return new ValidateGenerator(
+        type,
         (varname) =>
-          isDictConditions(varname).add(
-            $everyObjectValue(this, varname, elem => oneof.$validate(elem)),
+          $isObject(varname).add(
+            $everyObjectValue(
+              this,
+              varname,
+              elem => oneof.$buildValidate(elem),
+            ),
           ),
       );
     } else {
       return new ValidateGenerator(
-        (varname) => isDictConditions(varname),
+        type,
+        (varname) => $isObject(varname),
       );
     }
   }
 
   private visitSetOf(type: SetType, children: Array<R> = []): R {
-    this.includes.set = true;
+    children = this.sortChildren(children);
 
     const getBaseSetConditions = (varName: string) => {
-      return $condition("&&")
-        .add($type(varName, "object"))
-        .add($laxNotEqual(varName, null))
+      return $isObject(varName)
         .add($isSet(varName));
     };
 
     if (children && children.length > 0) {
       const oneof = this.visitOneOf(type["union"], children);
       return new ValidateGenerator(
+        type,
         (varname) =>
           getBaseSetConditions(varname).add(
-            $everyInSet(this, varname, elem => oneof.$validate(elem)),
+            $everyInSet(this, varname, elem => oneof.$buildValidate(elem)),
           ),
       );
     }
 
     return new ValidateGenerator(
+      type,
       (varname) => getBaseSetConditions(varname),
     );
   }
 
   private visitOneOf(type: UnionType, children: Array<R>): R {
-    return new ValidateGenerator((varname) => {
+    children = this.sortChildren(children);
+    return new ValidateGenerator(type, (varname) => {
       const cond = $condition("||");
 
       for (const c of children) {
-        cond.add(c.$validate(varname));
+        cond.add(c.$buildValidate(varname));
       }
 
       return cond;
@@ -833,11 +911,11 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   }
 
   private visitAllOf(type: IntersectionType, children: Array<R>): R {
-    return new ValidateGenerator((varname) => {
+    return new ValidateGenerator(type, (varname) => {
       const cond = $condition("&&");
 
       for (const c of children) {
-        cond.add(c.$validate(varname));
+        cond.add(c.$buildValidate(varname));
       }
 
       return cond;
@@ -846,6 +924,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
   private visitLiteral(type: LiteralType): R {
     return new ValidateGenerator(
+      type,
       (varname) => $equal(varname, type.literal),
     );
   }
@@ -855,7 +934,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
       Number.isNaN(Number(key))
     );
 
-    return new ValidateGenerator((varname) => {
+    return new ValidateGenerator(type, (varname) => {
       const cond = $condition("||");
 
       for (const key of enumKeys) {
@@ -869,6 +948,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
   private visitEnumMember(type: EnumMemberType): R {
     return new ValidateGenerator(
+      type,
       (varname) => $equal(varname, type.enumMember),
     );
   }
@@ -878,10 +958,9 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
       this.includes.instanceof = true;
     }
 
-    return new ValidateGenerator((varname) =>
+    return new ValidateGenerator(type, (varname) =>
       $condition("&&")
-        .add($instanceof(this, varname, type.instanceOf))
-    );
+        .add($instanceof(this, varname, type.instanceOf)));
   }
 
   private visitCustom(type: CustomType): R {
@@ -890,6 +969,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     const customDepName = this.getUniqueVarName();
     this.addDependency(customDepName, type.custom);
     return new ValidateGenerator(
+      type,
       (varname) => `${$dependency(customDepName)}(${varname})`,
     );
   }
@@ -898,12 +978,10 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     const regexp = $defineRegexp(this.getUniqueVarName(), type.pattern);
 
     this.addDeclaration("outer", regexp.declaration);
-    return new ValidateGenerator(
-      (varname) =>
-        $condition("&&")
-          .add($type(varname, "string"))
-          .add(regexp.$test(varname)),
-    );
+    return new ValidateGenerator(type, (varname) =>
+      $condition("&&")
+        .add($type(varname, "string"))
+        .add(regexp.$test(varname)));
   }
 
   private visitRecursive(circular: RecursiveType, children: R[]): R {
@@ -924,13 +1002,14 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
           }, ${argName})`,
         )
           .then("true")
-          .else(childSchema.$validate(argName)),
+          .else(childSchema.$buildValidate(argName)),
       );
 
       this.includes.recursive = true;
 
       this.addDeclaration("inner", validateFn.declaration);
       return new ValidateGenerator(
+        circular,
         (varname) => validateFn.$invokeWith(varname),
       );
     }
@@ -945,6 +1024,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
       const validatorFnName = this.circValidationFnNames.get(referencedType)!;
 
       return new ValidateGenerator(
+        type,
         (varname) => `${validatorFnName}(${varname})`,
       );
     }
@@ -954,6 +1034,7 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     this.circValidationFnNames.set(referencedType, validatorFnName);
 
     return new ValidateGenerator(
+      type,
       (varname) => `${validatorFnName}(${varname})`,
     );
   }
@@ -1000,50 +1081,6 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
 
 const e = eval;
 
-const every = /* js */ `
-  function _$every(_$arr, _$predicate, _$start = 0) {
-    for (let _$i = _$start; _$i < _$arr.length; _$i++) {
-      if (!_$predicate(_$arr[_$i], _$i))
-        return false;
-    }
-    return true;
-  };
-`.trim();
-
-const everySome = /* js */ `
-  function _$everySome(_$arr, _$everyPredicate, _$somePredicate, _$start = 0) {
-    let _$someSatisfied = false;
-    for (let _$i = _$start; _$i < _$arr.length; _$i++) {
-      if (!_$everyPredicate(_$arr[_$i], _$i))
-        return false;
-      if (!_$someSatisfied) {
-        _$someSatisfied = _$somePredicate(_$arr[_$i], _$i);
-      }
-    }
-    return _$someSatisfied;
-  };
-`.trim();
-
-const everyInSet = /* js */ `
-  function _$everyInSet(_$set, _$predicate) {
-    for (let _$item of _$set) {
-      if (!_$predicate(_$item))
-        return false;
-    }
-    return true;
-  };
-`.trim();
-
-const everyObjectValue = /* js */ `
-  function _$everyObjectValue(_$obj, _$predicate) {
-    for (let _$key in _$obj) {
-      if (!_$predicate(_$obj[_$key]))
-        return false;
-    }
-    return true;
-  };
-`.trim();
-
 const recursiveTracker = /* js */ `
     const _$validatedRecursiveValues = new Map();
     function _$wasRecursivelyValidated(_$tn, _$d) {
@@ -1059,17 +1096,6 @@ const recursiveTracker = /* js */ `
       _$set.add(_$d);
       return false;
     };
-`.trim();
-
-const countChar = /* js */ `
-  function _$countChar(_$str, _$char) {
-    let _$count = 0;
-    for (let _$i = 0; _$i < _$str.length; _$i++) {
-      if (_$str[_$i] === _$char)
-        _$count++;
-    }
-    return _$count;
-  };
 `.trim();
 
 export interface FastValidator<DT extends AnyType> {
@@ -1095,26 +1121,11 @@ export const compileFastValidator = <DT extends AnyType>(
 
   const generator = dataType._acceptVisitor(visitor);
 
-  const validation = generator.$validate("data");
+  const validation = generator.$buildValidate("data");
 
   const outerDeclarations: string[] = [];
   const innerDeclarations: string[] = [];
 
-  if (visitor.includes.every) {
-    outerDeclarations.push(every);
-  }
-  if (visitor.includes.everySome) {
-    outerDeclarations.push(everySome);
-  }
-  if (visitor.includes.set) {
-    outerDeclarations.push(everyInSet);
-  }
-  if (visitor.includes.dict) {
-    outerDeclarations.push(everyObjectValue);
-  }
-  if (visitor.includes.charCount) {
-    outerDeclarations.push(countChar);
-  }
   if (visitor.outerDeclarations) {
     outerDeclarations.push(...visitor.outerDeclarations);
   }
@@ -1127,7 +1138,7 @@ export const compileFastValidator = <DT extends AnyType>(
   }
 
   const validatorStr = `(_$getDependency) => {
-  ${outerDeclarations.join("\n  ")}
+  ${outerDeclarations.join("\n  ")}\n
   return function validate(data) {
     ${innerDeclarations.join("\n    ")}
     return ${validation};
@@ -1155,9 +1166,13 @@ export const compileFastValidator = <DT extends AnyType>(
         "Validators with InstanceOf type validation cannot be compiled to standalone code",
       );
     }
-    return `${outerDeclarations.join("\n")}\nfunction ${name}(data) {\n  ${
-      innerDeclarations.join("\n  ")
-    }\n  return ${validation}\n}`;
+
+    return [
+      ...outerDeclarations,
+      `function ${name}(data) {\n  ${
+        innerDeclarations.join("\n  ")
+      }\n  return ${validation}\n}`,
+    ].join("\n");
   };
 
   return validator;
