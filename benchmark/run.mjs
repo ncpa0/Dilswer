@@ -7,6 +7,7 @@ import * as valibot from "valibot";
 import zod from "zod";
 import _dilswer from "../dist/cjs/index.cjs";
 import { getExtremelyNestedData } from "./extreme-nested.mjs";
+Error.stackTraceLimit = Infinity;
 
 const ark = { ..._ark };
 ark.list = (t) => t.array();
@@ -153,16 +154,16 @@ const runSuiteForSample = (name, sub, getData, schemas) => {
       `\u001b[1m\u001b[37mValidators benchmark, sample: \u001b[33m${name} - ${sub}\u001b[0m`,
     );
     suite
-      .add("Dilswer validator", function() {
-        const dataList = asArray(getData());
-        for (let i = 0; i < dataList.length; i++) {
-          validate(dataList[i]);
-        }
-      })
       .add("Dilswer compileFastValidator", function() {
         const dataList = asArray(getData());
         for (let i = 0; i < dataList.length; i++) {
           fastValidate(dataList[i]);
+        }
+      })
+      .add("Dilswer validator", function() {
+        const dataList = asArray(getData());
+        for (let i = 0; i < dataList.length; i++) {
+          validate(dataList[i]);
         }
       })
       .add("Zod", () => {
@@ -1603,7 +1604,10 @@ const large_nested = async () => {
             }),
           ),
           thud: zod.function(),
-          paparapr: zod.record(zod.union([zod.string(), zod.number()])),
+          paparapr: zod.record(
+            zod.string(),
+            zod.union([zod.string(), zod.number()]),
+          ),
           regexp: zod.instanceof(RegExp),
           entries: zod.array(
             zod.tuple([
@@ -3599,7 +3603,7 @@ const discriminatorUnion = async () => {
           set: zod.set(zod.string()),
         }),
         bar: zod.array(zod.record(zod.string(), zod.string())),
-        baz: zod.union([zod.string(), zod.number().int(), zod.function()]),
+        baz: zod.union([zod.string(), zod.int(), zod.function()]),
         t: zod.literal("t1"),
       }),
       zod.object({
