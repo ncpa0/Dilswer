@@ -146,7 +146,6 @@ const runSuiteForSample = (name, sub, getData, schemas) => {
 
   const validate = validator(schemas.dilswer);
   const fastValidate = compileFastValidator(schemas.dilswer);
-  console.log(fastValidate.info());
 
   console.log(separator + "\n");
   return new Promise((r) => {
