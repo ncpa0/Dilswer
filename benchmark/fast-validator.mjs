@@ -1,10 +1,15 @@
-import * as ark from "arktype";
+import * as _ark from "arktype";
 import Bench from "benchmark";
 import fs from "fs";
+import { parseArgs } from "node:util";
 import path from "path";
 import * as valibot from "valibot";
 import zod from "zod";
 import _dilswer from "../dist/cjs/index.cjs";
+import { getExtremelyNestedData } from "./extreme-nested.mjs";
+
+const ark = { ..._ark };
+ark.list = (t) => t.array();
 
 /** @type {typeof import("../src/data-types/Type").Type} */
 const Type = _dilswer.Type;
@@ -15,18 +20,19 @@ const compileFastValidator = _dilswer.compileFastValidator;
 /** @type {typeof import("../src/validation-algorithms/create-validator").validator} */
 const validator = _dilswer.validator;
 
-const validOnly = process.argv.includes("--valid-only");
-let suite;
-
-const suiteArvIdx = process.argv.indexOf("--suite");
-if (suiteArvIdx >= 0) {
-  suite = process.argv[suiteArvIdx + 1];
-}
+const { values } = parseArgs({
+  options: {
+    validOnly: { type: "boolean" },
+    invalidOnly: { type: "boolean" },
+    suite: { type: "string", multiple: true },
+  },
+});
 
 async function main() {
   await large_flat();
   await large_shallow();
   await large_nested();
+  await extreme_nested();
   await medium();
   await small();
   await mini();
@@ -126,19 +132,21 @@ const asArray = (t) => {
  * @returns
  */
 const runSuiteForSample = (name, sub, getData, schemas) => {
-  if (validOnly && sub.includes("invalid")) {
+  if (values.validOnly && sub.includes("invalid")) {
+    return;
+  } else if (values.invalidOnly && !sub.includes("invalid")) {
     return;
   }
 
-  if (suite) {
-    if (suite !== name) {
+  if (values.suite != null) {
+    if (!values.suite.includes(name)) {
       return;
     }
   }
 
   const validate = validator(schemas.dilswer);
   const fastValidate = compileFastValidator(schemas.dilswer);
-  console.log(fastValidate.asString());
+  console.log(fastValidate.info());
 
   console.log(separator + "\n");
   return new Promise((r) => {
@@ -3412,6 +3420,150 @@ const large_nested = async () => {
     "large_nested",
     "invalid 2",
     invalidData2,
+    largeSchemas,
+  );
+};
+
+const extreme_nested = async () => {
+  const largeSchemas = {
+    dilswer: Type.Record({
+      foo: Type.String,
+      arr: Type.Array(
+        Type.Record({
+          bar: Type.String,
+          arr: Type.Array(
+            Type.Record({
+              baz: Type.String,
+              arr: Type.Array(
+                Type.Record({
+                  quux: Type.String,
+                  arr: Type.Array(
+                    Type.Record({
+                      corge: Type.String,
+                      arr: Type.Array(
+                        Type.Record({
+                          grault: Type.String,
+                          arr: Type.Array(
+                            Type.Record({
+                              fred: Type.String,
+                            }),
+                          ),
+                        }),
+                      ),
+                    }),
+                  ),
+                }),
+              ),
+            }),
+          ),
+        }),
+      ),
+    }),
+    zod: zod.object({
+      foo: zod.string(),
+      arr: zod.array(
+        zod.object({
+          bar: zod.string(),
+          arr: zod.array(
+            zod.object({
+              baz: zod.string(),
+              arr: zod.array(
+                zod.object({
+                  quux: zod.string(),
+                  arr: zod.array(
+                    zod.object({
+                      corge: zod.string(),
+                      arr: zod.array(
+                        zod.object({
+                          grault: zod.string(),
+                          arr: zod.array(
+                            zod.object({
+                              fred: zod.string(),
+                            }),
+                          ),
+                        }),
+                      ),
+                    }),
+                  ),
+                }),
+              ),
+            }),
+          ),
+        }),
+      ),
+    }),
+    valibot: valibot.object({
+      foo: valibot.string(),
+      arr: valibot.array(
+        valibot.object({
+          bar: valibot.string(),
+          arr: valibot.array(
+            valibot.object({
+              baz: valibot.string(),
+              arr: valibot.array(
+                valibot.object({
+                  quux: valibot.string(),
+                  arr: valibot.array(
+                    valibot.object({
+                      corge: valibot.string(),
+                      arr: valibot.array(
+                        valibot.object({
+                          grault: valibot.string(),
+                          arr: valibot.array(
+                            valibot.object({
+                              fred: valibot.string(),
+                            }),
+                          ),
+                        }),
+                      ),
+                    }),
+                  ),
+                }),
+              ),
+            }),
+          ),
+        }),
+      ),
+    }),
+    arkttype: ark.type({
+      foo: "string",
+      arr: ark.list(
+        ark.type({
+          bar: "string",
+          arr: ark.list(
+            ark.type({
+              baz: "string",
+              arr: ark.list(
+                ark.type({
+                  quux: "string",
+                  arr: ark.list(
+                    ark.type({
+                      corge: "string",
+                      arr: ark.list(
+                        ark.type({
+                          grault: "string",
+                          arr: ark.list(
+                            ark.type({
+                              fred: "string",
+                            }),
+                          ),
+                        }),
+                      ),
+                    }),
+                  ),
+                }),
+              ),
+            }),
+          ),
+        }),
+      ),
+    }),
+  };
+
+  await runSuiteForSample(
+    "extreme_nested",
+    "valid",
+    getExtremelyNestedData,
     largeSchemas,
   );
 };

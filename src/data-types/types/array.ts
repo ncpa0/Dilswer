@@ -19,14 +19,14 @@ export class ArrayType<DT extends AnyType[] = any[]> extends BaseType {
   }
 
   /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
     const children: R[] = [];
 
     for (let i = 0; i < this.arrayOf.length; i++) {
-      children.push(this.arrayOf[i]._acceptVisitor(visitor));
+      children.push(this.arrayOf[i]._acceptVisitor(visitor, depth + 1));
     }
 
-    return visitor.visit(this, children);
+    return visitor.visit(this, children, depth);
   }
 
   get ["~standard"](): StandardSchemaV1.Props<

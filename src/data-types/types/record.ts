@@ -51,20 +51,20 @@ export class RecordType<
   }
 
   /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
     const children: RecordVisitChild<R>[] = [];
 
     for (let i = 0; i < this.fieldDescriptors.length; i++) {
       const [key, descriptor] = this.fieldDescriptors[i];
       children.push({
         _isRecordOfVisitChild: true,
-        child: descriptor.type._acceptVisitor(visitor),
+        child: descriptor.type._acceptVisitor(visitor, depth + 1),
         propertyName: key,
         required: !!descriptor.required,
       });
     }
 
-    return visitor.visit(this, children);
+    return visitor.visit(this, children, depth);
   }
 
   get ["~standard"](): StandardSchemaV1.Props<
