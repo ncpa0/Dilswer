@@ -244,12 +244,28 @@ const $every = (
   predicate: (elementName: string, index: string) => string,
   startIndex?: number,
 ) => {
-  const iVar = generator.getUniqueVarName();
-  return `(() => { for (let ${iVar} = ${
-    startIndex ?? 0
-  }; ${iVar} < ${varname}.length; ${iVar}++) { if (!(${
-    predicate(`${varname}[${iVar}]`, iVar)
-  })) { return false; } }return true; })()`;
+  let inline = generator.shouldInline();
+
+  if (inline) {
+    const iVar = generator.getUniqueVarName();
+    return `(() => { for (let ${iVar} = ${
+      startIndex ?? 0
+    }; ${iVar} < ${varname}.length; ${iVar}++) { if (!(${
+      predicate(`${varname}[${iVar}]`, iVar)
+    })) { return false; } }return true; })()`;
+  }
+
+  generator.includes.every = true;
+  const elemName = generator.getUniqueVarName();
+  const indexName = generator.getUniqueVarName();
+  if (startIndex != null) {
+    return `_$every(${varname}, (${elemName}, ${indexName}) => ${
+      predicate(elemName, indexName)
+    }, ${startIndex})`;
+  }
+  return `_$every(${varname}, (${elemName}, ${indexName}) => ${
+    predicate(elemName, indexName)
+  })`;
 };
 
 const $everySome = (
@@ -259,15 +275,35 @@ const $everySome = (
   somePredicate: (elementName: string, index: string) => string,
   startIdx?: number,
 ) => {
-  const satisfied = generator.getUniqueVarName("someSatisfied");
-  const iVar = generator.getUniqueVarName();
-  return `(() => { let ${satisfied} = false; for (let ${iVar} = ${
-    startIdx ?? 0
-  }; ${iVar} < ${varname}.length; ${iVar}++) { if (!(${
-    everyPredicate(`${varname}[${iVar}]`, iVar)
-  })) { return false; } if(!${satisfied}) { ${satisfied} = ${
-    somePredicate(`${varname}[${iVar}]`, iVar)
-  }; } } return ${satisfied}; })()`;
+  let inline = generator.shouldInline();
+
+  if (inline) {
+    const satisfied = generator.getUniqueVarName("someSatisfied");
+    const iVar = generator.getUniqueVarName();
+    return `(() => { let ${satisfied} = false; for (let ${iVar} = ${
+      startIdx ?? 0
+    }; ${iVar} < ${varname}.length; ${iVar}++) { if (!(${
+      everyPredicate(`${varname}[${iVar}]`, iVar)
+    })) { return false; } if(!${satisfied}) { ${satisfied} = ${
+      somePredicate(`${varname}[${iVar}]`, iVar)
+    }; } } return ${satisfied}; })()`;
+  }
+
+  generator.includes.everySome = true;
+  const elemName1 = generator.getUniqueVarName();
+  const indexName1 = generator.getUniqueVarName();
+  const elemName2 = generator.getUniqueVarName();
+  const indexName2 = generator.getUniqueVarName();
+  if (startIdx != null) {
+    return `_$everySome(${varname}, (${elemName1}, ${indexName1}) => ${
+      everyPredicate(elemName1, indexName1)
+    }, (${elemName2}, ${indexName2}) => ${
+      somePredicate(elemName2, indexName2)
+    }, ${startIdx})`;
+  }
+  return `_$everySome(${varname}, (${elemName1}, ${indexName1}) => ${
+    everyPredicate(elemName1, indexName1)
+  }, (${elemName2}, ${indexName2}) => ${somePredicate(elemName2, indexName2)})`;
 };
 
 const $everyObjectValue = (
@@ -275,10 +311,20 @@ const $everyObjectValue = (
   varname: string,
   predicate: (elementName: string) => string,
 ) => {
-  const iVar = generator.getUniqueVarName();
-  return `(() => { for (let ${iVar} in ${varname}) { if (!(${
-    predicate(`${varname}[${iVar}]`)
-  })) { return false; } }return true; })()`;
+  let inline = generator.shouldInline();
+
+  if (inline) {
+    const iVar = generator.getUniqueVarName();
+    return `(() => { for (let ${iVar} in ${varname}) { if (!(${
+      predicate(`${varname}[${iVar}]`)
+    })) { return false; } }return true; })()`;
+  }
+
+  generator.includes.everyObjectValue = true;
+  const elemName = generator.getUniqueVarName();
+  return `_$everyObjectValue(${varname}, (${elemName}) => ${
+    predicate(elemName)
+  })`;
 };
 
 const $everyInSet = (
@@ -286,10 +332,18 @@ const $everyInSet = (
   varname: string,
   predicate: (elementName: string) => string,
 ) => {
-  const item = generator.getUniqueVarName();
-  return `(() => { for (let ${item} of ${varname}) { if (!(${
-    predicate(item)
-  })) { return false; } }return true; })()`;
+  let inline = generator.shouldInline();
+
+  if (inline) {
+    const item = generator.getUniqueVarName();
+    return `(() => { for (let ${item} of ${varname}) { if (!(${
+      predicate(item)
+    })) { return false; } }return true; })()`;
+  }
+
+  generator.includes.everyInSet = true;
+  const elemName = generator.getUniqueVarName();
+  return `_$everyInSet(${varname}, (${elemName}) => ${predicate(elemName)})`;
 };
 
 const $charCode = (varname: string, is: number | [number, number]) => {
@@ -308,11 +362,18 @@ const $charCount = (
   is: ">" | "==" | "<",
   expected: number,
 ) => {
-  const counter = generator.getUniqueVarName("count");
-  const iVar = generator.getUniqueVarName();
-  return `(() => { let ${counter} = 0; for (let ${iVar} = 0; ${iVar} < ${varname}.length; ${iVar}++) { if (${varname}[${iVar}] === ${
-    JSON.stringify(char)
-  }) { ${counter}++; } }return ${counter}; })() ${is} ${expected}`;
+  let inline = generator.shouldInline();
+
+  if (inline) {
+    const counter = generator.getUniqueVarName("count");
+    const iVar = generator.getUniqueVarName();
+    return `(() => { let ${counter} = 0; for (let ${iVar} = 0; ${iVar} < ${varname}.length; ${iVar}++) { if (${varname}[${iVar}] === ${
+      JSON.stringify(char)
+    }) { ${counter}++; } }return ${counter}; })() ${is} ${expected}`;
+  }
+
+  generator.includes.charCount = true;
+  return `_$countChar(${varname}, ${JSON.stringify(char)}) ${is} ${expected}`;
 };
 
 const $instanceof = (
@@ -393,7 +454,13 @@ type R = {
 };
 
 class DataTypeValidatorVisitor implements TypeVisitor<R> {
+  depth = 0;
   includes = {
+    every: false,
+    everySome: false,
+    everyObjectValue: false,
+    everyInSet: false,
+    charCount: false,
     recursive: false,
     custom: false,
     instanceof: false,
@@ -411,7 +478,15 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
   public innerDeclarations: string[] = [];
   public dependencies: Array<[string, any]> = [];
 
-  constructor() {}
+  constructor(private opts?: CompileOptions) {}
+
+  public shouldInline() {
+    if (this.opts && this.opts.inlineHelpers != null) {
+      return this.opts.inlineHelpers;
+    }
+
+    return this.depth > 5 && this.depth <= 12;
+  }
 
   private canSkipPropertyCheck(t: AnyType) {
     if (t.kind === "simple") {
@@ -1039,9 +1114,25 @@ class DataTypeValidatorVisitor implements TypeVisitor<R> {
     );
   }
 
-  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
-  visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
-  visit(type: AnyType, children?: (R | RecordVisitChild<R>)[]): R {
+  visit(
+    dataType: Exclude<AnyType, RecordType>,
+    children: undefined | R[],
+    depth: number,
+  ): R;
+  visit(
+    dataType: RecordType,
+    children: undefined | RecordVisitChild<R>[],
+    depth: number,
+  ): R;
+  visit(
+    type: AnyType,
+    children: undefined | (R | RecordVisitChild<R>)[],
+    depth: number,
+  ): R {
+    if (depth > this.depth) {
+      this.depth = depth;
+    }
+
     switch (type.kind) {
       case "simple":
         return this.visitPrimitive(type);
@@ -1103,6 +1194,16 @@ export interface FastValidator<DT extends AnyType> {
   asString(name?: string): string;
 }
 
+type CompileOptions = {
+  /**
+   * Overrides if the array/dict/sets helper functions should get inlined or not.
+   *
+   * By default these functions will get inlined only for some schemas, based on how deeply nested
+   * that schema is.
+   */
+  inlineHelpers?: boolean;
+};
+
 /**
  * Compile a validation function for the given data type.
  *
@@ -1116,8 +1217,9 @@ export interface FastValidator<DT extends AnyType> {
  */
 export const compileFastValidator = <DT extends AnyType>(
   dataType: DT,
+  options?: CompileOptions,
 ): FastValidator<DT> => {
-  const visitor = new DataTypeValidatorVisitor();
+  const visitor = new DataTypeValidatorVisitor(options);
 
   const generator = dataType._acceptVisitor(visitor);
 
@@ -1125,6 +1227,24 @@ export const compileFastValidator = <DT extends AnyType>(
 
   const outerDeclarations: string[] = [];
   const innerDeclarations: string[] = [];
+
+  if (visitor.includes.every) {
+    outerDeclarations.push("const _$every = " + _$every.toString());
+  }
+  if (visitor.includes.everySome) {
+    outerDeclarations.push("const _$everySome = " + _$everySome.toString());
+  }
+  if (visitor.includes.everyInSet) {
+    outerDeclarations.push("const _$everyInSet = " + _$everyInSet.toString());
+  }
+  if (visitor.includes.everyObjectValue) {
+    outerDeclarations.push(
+      "const _$everyObjectValue = " + _$everyObjectValue.toString(),
+    );
+  }
+  if (visitor.includes.charCount) {
+    outerDeclarations.push("const _$countChar = " + _$countChar.toString());
+  }
 
   if (visitor.outerDeclarations) {
     outerDeclarations.push(...visitor.outerDeclarations);
@@ -1177,3 +1297,65 @@ export const compileFastValidator = <DT extends AnyType>(
 
   return validator;
 };
+
+function _$every<T>(
+  _$arr: T[],
+  _$predicate: (v: T, idx: number) => boolean,
+  _$start = 0,
+) {
+  for (let _$i = _$start; _$i < _$arr.length; _$i++) {
+    if (!_$predicate(_$arr[_$i], _$i)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function _$everySome<T>(
+  _$arr: T[],
+  _$everyPredicate: (v: T, idx: number) => boolean,
+  _$somePredicate: (v: T, idx: number) => boolean,
+  _$start = 0,
+) {
+  let _$someSatisfied = false;
+  for (let _$i = _$start; _$i < _$arr.length; _$i++) {
+    if (!_$everyPredicate(_$arr[_$i], _$i)) {
+      return false;
+    }
+    if (!_$someSatisfied) {
+      _$someSatisfied = _$somePredicate(_$arr[_$i], _$i);
+    }
+  }
+  return _$someSatisfied;
+}
+
+function _$everyInSet<T>(_$set: Set<T>, _$predicate: (v: T) => boolean) {
+  for (let _$item of _$set) {
+    if (!_$predicate(_$item)) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function _$everyObjectValue<T>(
+  _$obj: Record<string | number | symbol, T>,
+  _$predicate: (v: T) => boolean,
+) {
+  for (let _$key in _$obj) {
+    if (!_$predicate(_$obj[_$key])) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function _$countChar(_$str: string, _$char: string) {
+  let _$count = 0;
+  for (let _$i = 0; _$i < _$str.length; _$i++) {
+    if (_$str[_$i] === _$char) {
+      _$count++;
+    }
+  }
+  return _$count;
+}

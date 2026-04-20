@@ -1,7 +1,7 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
+import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "~/standard-schema";
@@ -15,14 +15,14 @@ export class UnionType<DT extends AnyType[] = any[]> extends BaseType {
   }
 
   /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
     const children: R[] = [];
 
     for (let i = 0; i < this.oneOf.length; i++) {
-      children.push(this.oneOf[i]._acceptVisitor(visitor));
+      children.push(this.oneOf[i]._acceptVisitor(visitor, depth));
     }
 
-    return visitor.visit(this, children);
+    return visitor.visit(this, children, depth);
   }
 
   get ["~standard"](): StandardSchemaV1.Props<

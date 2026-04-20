@@ -35,8 +35,16 @@ export interface RecordVisitChild<R> {
 }
 
 export interface TypeVisitor<R = any> {
-  visit(dataType: Exclude<AnyType, RecordType>, children?: R[]): R;
-  visit(dataType: RecordType, children?: RecordVisitChild<R>[]): R;
+  visit(
+    dataType: Exclude<AnyType, RecordType>,
+    children: undefined | R[],
+    depth: number,
+  ): R;
+  visit(
+    dataType: RecordType,
+    children: undefined | RecordVisitChild<R>[],
+    depth: number,
+  ): R;
 }
 
 export type BasicTypeNames =

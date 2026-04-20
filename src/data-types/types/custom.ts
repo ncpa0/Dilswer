@@ -1,7 +1,7 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { GetFnAssertType } from "@DataTypes/type-utils";
 import type { TypeVisitor } from "@DataTypes/type-types";
+import type { GetFnAssertType } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "~/standard-schema";
@@ -17,8 +17,8 @@ export class CustomType<
   }
 
   /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
-    return visitor.visit(this);
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
+    return visitor.visit(this, undefined, depth);
   }
 
   get ["~standard"](): StandardSchemaV1.Props<any, GetFnAssertType<VF>> {

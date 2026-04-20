@@ -1,8 +1,8 @@
 import { BaseType } from "@DataTypes/base-type";
 import type { CircularType } from "@DataTypes/circular-type-utils";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
-import type { ReWrap } from "@DataTypes/type-utils";
 import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
+import type { ReWrap } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
 import type { StandardSchemaV1 } from "~/standard-schema";
 
@@ -54,8 +54,8 @@ export class RecursiveTypeReference extends BaseType {
     return this.parent.type;
   }
 
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
-    return visitor.visit(this);
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
+    return visitor.visit(this, undefined, depth);
   }
 
   ["~validate"](path: Path, value: any): void {
@@ -87,9 +87,9 @@ export class RecursiveType<DT extends AnyType = any> extends BaseType {
   }
 
   /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
-    const c = this.type._acceptVisitor(visitor);
-    return visitor.visit(this, [c]);
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
+    const c = this.type._acceptVisitor(visitor, depth);
+    return visitor.visit(this, [c], depth);
   }
 
   get ["~standard"](): StandardSchemaV1.Props<

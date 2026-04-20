@@ -70,8 +70,8 @@ export class EnumMemberType<DT = any> extends BaseType {
   }
 
   /** @internal */
-  _acceptVisitor<R>(visitor: TypeVisitor<R>): R {
-    return visitor.visit(this);
+  _acceptVisitor<R>(visitor: TypeVisitor<R>, depth = 1): R {
+    return visitor.visit(this, undefined, depth);
   }
 
   get ["~standard"](): StandardSchemaV1.Props<any, DT> {

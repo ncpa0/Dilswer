@@ -17,24 +17,5 @@ module.exports = {
     "^@UniversalParser": "<rootDir>/src/universal-parser/index",
   },
   roots: ["<rootDir>"],
-  collectCoverageFrom: ["src/**/*.ts"],
-  coverageReporters: ["html", "text"],
-  coverageThreshold: {
-    global: {
-      branches: 0,
-      functions: 0,
-      lines: 0,
-      statements: 0,
-    },
-  },
-  coveragePathIgnorePatterns: [
-    "/node_modules/",
-    "/coverage/",
-    "/__mocks__/",
-    "/__tests__/",
-    "/dist/",
-    "/scripts/",
-    "/.husky/",
-    "/.vscode/",
-  ],
+  coverageProvider: "v8",
 };
