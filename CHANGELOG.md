@@ -1,3 +1,16 @@
+## 3.1.0 (April 21, 2026)
+
+### Features
+
+- #### Perf improvements ([#260](https://github.com/ncpa0/Dilswer/pull/260))
+
+  Added a few performance improvements to the compiled validators.
+
+### Misc
+
+- renamed `compileFastValidator()` to `compile()`, compileFastValidator will remain as exported alias until 4.0.0
+- renamed some internal types
+
 ## 3.0.0 (March 12, 2025)
 
 ### Breaking Changes
