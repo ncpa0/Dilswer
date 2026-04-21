@@ -14,24 +14,24 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         name: Checkout to master
         with:
           ref: master
-      - uses: actions/setup-node@v3
+      - uses: actions/setup-node@v6
         name: Setup Node.js
         with:
-          node-version: 16
+          node-version: 20
           cache: yarn
-      - uses: borales/actions-yarn@v3.0.0
+      - uses: borales/actions-yarn@v5
         name: Install dependencies
         with:
           cmd: install
-      - uses: borales/actions-yarn@v3.0.0
+      - uses: borales/actions-yarn@v5
         name: Run TypeScript check
         with:
           cmd: test:tsc
-      - uses: borales/actions-yarn@v3.0.0
+      - uses: borales/actions-yarn@v5
         name: Run unit tests
         with:
           cmd: test:unit
