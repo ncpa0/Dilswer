@@ -1,5 +1,4 @@
 import { Type } from "@DataTypes/Type";
-import type { AnyType } from "@DataTypes/type-types";
 import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
@@ -60,6 +59,8 @@ export {
   And,
   assertType,
   compile,
+  /** alias for `compile()` */
+  compile as compileFastValidator,
   Exclude,
   Omit,
   parseWith,
@@ -78,6 +79,8 @@ export default {
   And,
   assertType,
   compile,
+  /** alias for `compile()` */
+  compileFastValidator: compile,
   Exclude,
   Omit,
   parseWith,
