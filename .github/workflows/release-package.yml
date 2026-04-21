@@ -29,6 +29,9 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: 20
+          registry-url: "https://registry.npmjs.org"
+      - name: Update npm
+        run: npm install -g npm@latest
       - name: Installing dependencies
         uses: borales/actions-yarn@v5
         with:
@@ -47,7 +50,6 @@ jobs:
           cmd: build
       - name: Publishing
         env:
-          NPM_TOKEN: ${{ secrets.NPM_AUTOMATION_TOKEN }}
           TAG_NAME: ${{ github.event.release.tag_name }}
           GH_BOT_API_URL: ${{ secrets.GH_BOT_API_URL }}
           GH_BOT_AUTH_TOKEN: ${{ secrets.GH_BOT_AUTH_TOKEN }}
