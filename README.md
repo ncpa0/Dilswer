@@ -166,7 +166,7 @@ const isPerson = validator(PersonDataType, { details: true });
 Assertion function can change the type of a variable by simply being called:
 
 ```ts
-import { Type, assertType } from "dilswer";
+import { assertType, Type } from "dilswer";
 
 function foo(value: any) {
   try {
@@ -183,8 +183,8 @@ function foo(value: any) {
 Dilswer can be used with any library that supports the Standard Schema validation, like tRPC, OpenAuth and others.
 
 ```ts
-import { Type } from "dilswer";
 import { initTRPC } from "@trpc/server";
+import { Type } from "dilswer";
 
 const t = initTRPC.create();
 
@@ -196,7 +196,7 @@ const router = t.router({
     .query(async ({ input }) => {
       return `Hello, ${input.name}!`;
     }),
-})
+});
 ```
 
 For the best performance, type schemas passed to the other libraries should get compiled via the `.compile()` method.
@@ -208,12 +208,12 @@ const router = t.router({
     .input(
       Type.Record({
         name: Type.String,
-      }).compile()
+      }).compile(),
     )
     .query(async ({ input }) => {
       return `Hello, ${input.name}!`;
     }),
-})
+});
 ```
 
 ## Other features
@@ -430,7 +430,6 @@ type ExternalTypeImport = {
 ```
 
 ### Availabla Type's
-
 
 #### Type.Number
 
@@ -729,7 +728,7 @@ Example
 
 ```ts
 const NonEmptyString = Type.Custom(
-  (v: any): v is string => typeof v === "string" && v.length > 0
+  (v: any): v is string => typeof v === "string" && v.length > 0,
 );
 
 type T = Infer<typeof NonEmptyString>; // type T = string
@@ -893,7 +892,7 @@ const User = Type.Record({
 ### Read Metadata
 
 ```ts
-import { Type, getMetadata } from "dilswer";
+import { getMetadata, Type } from "dilswer";
 
 const userNameMetadata = getMetadata(UserNameDT);
 
@@ -916,7 +915,7 @@ Metadata is also used when generating JSON Schema, if a DataType has a title,
 description or format, it will be included in the generated JSON Schema.
 
 ```ts
-import { Type, toJsonSchema } from "dilswer";
+import { toJsonSchema, Type } from "dilswer";
 
 const UserDT = Type.Record({
   name: Type.String.setTitle("User Name").setDescription(
@@ -975,7 +974,7 @@ You can see the implementation of these functions in the source code
 #### Example
 
 ```ts
-import { AnyType, Type, parseWith } from "dilswer";
+import { AnyType, parseWith, Type } from "dilswer";
 
 // Define how the new structure should look like
 type TypeNode = {

@@ -14,7 +14,7 @@ type StringIntegerOptions = {
 
 export class StringIntegerType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "stringinteger" = "stringinteger";
+  public readonly simpleType = "stringinteger" as const;
 
   protected _options: StringIntegerOptions = {
     positive: true,

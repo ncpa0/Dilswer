@@ -7,7 +7,7 @@ import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class UndefinedType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "undefined" = "undefined";
+  public readonly simpleType = "undefined" as const;
 
   constructor() {
     super();

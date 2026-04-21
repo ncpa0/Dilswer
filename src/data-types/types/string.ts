@@ -17,7 +17,7 @@ type StringOptions = {
 
 export class StringType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "string" = "string";
+  public readonly simpleType = "string" as const;
 
   protected _options: StringOptions = {
     min: null,

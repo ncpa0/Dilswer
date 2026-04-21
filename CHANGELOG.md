@@ -22,7 +22,6 @@
 
   Both validation functions should now be a little bit faster.
 
-
 ## 2.1.1 (May 29, 2023)
 
 ### Bug Fixes

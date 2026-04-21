@@ -14,7 +14,7 @@ type StringFloatOptions = {
 
 export class StringFloatType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "stringnumeral" = "stringnumeral";
+  public readonly simpleType = "stringnumeral" as const;
 
   protected _options: StringFloatOptions = {
     positive: true,

@@ -8,7 +8,7 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.simpleType = "number";
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -21,17 +21,17 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.recordOf.foo = Type.Boolean;
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.recordOf.foo.type = Type.Boolean;
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -42,12 +42,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.dict.push(Type.Boolean);
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -58,12 +58,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.arrayOf.push(Type.Boolean);
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -74,12 +74,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.setOf.push(Type.Boolean);
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -90,12 +90,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "record";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.oneOf.push(Type.Boolean);
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -106,12 +106,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.allOf.push(Type.Boolean);
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -122,12 +122,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.literal = "bar";
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -142,12 +142,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.enumMember = Enum.bar;
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -162,12 +162,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.enum = {};
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -179,12 +179,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.instanceOf = {};
-      }).toThrowError();
+      }).toThrow();
     });
   });
 
@@ -195,12 +195,12 @@ describe("DataType", () => {
       expect(() => {
         // @ts-expect-error
         type.kind = "oneOf";
-      }).toThrowError();
+      }).toThrow();
 
       expect(() => {
         // @ts-expect-error
         type.custom = () => true;
-      }).toThrowError();
+      }).toThrow();
     });
   });
 });

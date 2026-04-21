@@ -19,18 +19,17 @@ zod: 4.3.6
 1. `large_flat` - measures the validation time on a big JS object containing only primitive values, no nested object or arrays
 2. `large_shallow` - measures the validation time on a big JS object containing primitive values, nested object, arrays and arrays of object, no deeper than 2 levels deep
 3. `large_nested` - measures the validation time on a big JS object containing primitive values and deeply nested arrays and object
-4. `extreme_nested` -  measures the validation time on a gigantic JS object containing way too many nested layers of objects and arrays
+4. `extreme_nested` - measures the validation time on a gigantic JS object containing way too many nested layers of objects and arrays
 5. `medium` - measures the validation time on a moderately sized JS
-object, with primitive values and only a few nested objects and arrays
+   object, with primitive values and only a few nested objects and arrays
 6. `small` - measures the validation time on a small JS object, with primitive values and one array
 7. `mini` - measures the validation time on a tiny JS object containing only two primitive values
 8. `micro` - measures the validation time on primitive values
 9. `discriminatorUnion` - measures the validation time on a union of three different object schemas
 
-
 Each of the suites is ran with both valid object and invalid object to measure both success and fail paths.
 
-__It is worth noting that `compileFastValidator`, unlike all other validators, does not produce a detailed report about what caused the validation to fail. Which allows it to skip a lot of the work that is being done by all the other solutions.__
+**It is worth noting that `compileFastValidator`, unlike all other validators, does not produce a detailed report about what caused the validation to fail. Which allows it to skip a lot of the work that is being done by all the other solutions.**
 
 # Valid data samples
 
@@ -44,7 +43,7 @@ Running Suite: Validators benchmark, sample: large_flat - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: large_shallow - valid
 
@@ -56,7 +55,7 @@ Running Suite: Validators benchmark, sample: large_shallow - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: large_nested - valid
 
@@ -68,7 +67,7 @@ Running Suite: Validators benchmark, sample: large_nested - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: extreme_nested - valid
 
@@ -80,7 +79,7 @@ Running Suite: Validators benchmark, sample: extreme_nested - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: medium - valid
 
@@ -92,7 +91,7 @@ Running Suite: Validators benchmark, sample: medium - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: small - valid
 
@@ -104,7 +103,7 @@ Running Suite: Validators benchmark, sample: small - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: mini - valid
 
@@ -116,7 +115,7 @@ Running Suite: Validators benchmark, sample: mini - valid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: micro - valid 1
 
@@ -128,7 +127,7 @@ Running Suite: Validators benchmark, sample: micro - valid 1
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: micro - valid 2
 
@@ -140,7 +139,7 @@ Running Suite: Validators benchmark, sample: micro - valid 2
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: discriminatorUnion - valid
 
@@ -164,7 +163,7 @@ Running Suite: Validators benchmark, sample: large_flat - invalid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: large_shallow - invalid
 
@@ -176,7 +175,7 @@ Running Suite: Validators benchmark, sample: large_shallow - invalid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: large_nested - invalid 1
 
@@ -188,7 +187,7 @@ Running Suite: Validators benchmark, sample: large_nested - invalid 1
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: large_nested - invalid 2
 
@@ -200,7 +199,7 @@ Running Suite: Validators benchmark, sample: large_nested - invalid 2
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: medium - invalid 1
 
@@ -212,7 +211,7 @@ Running Suite: Validators benchmark, sample: medium - invalid 1
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: small - invalid 1
 
@@ -224,7 +223,7 @@ Running Suite: Validators benchmark, sample: small - invalid 1
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: small - invalid 2
 
@@ -236,7 +235,7 @@ Running Suite: Validators benchmark, sample: small - invalid 2
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: mini - invalid
 
@@ -248,7 +247,7 @@ Running Suite: Validators benchmark, sample: mini - invalid
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: micro - invalid 1
 
@@ -260,7 +259,7 @@ Running Suite: Validators benchmark, sample: micro - invalid 1
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: micro - invalid 2
 
@@ -272,7 +271,7 @@ Running Suite: Validators benchmark, sample: micro - invalid 2
 
 Fastest is Dilswer compileFastValidator
 
------------------------------------------------------------------
+---
 
 Running Suite: Validators benchmark, sample: discriminatorUnion - invalid 1
 

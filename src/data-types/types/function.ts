@@ -7,7 +7,7 @@ import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class FunctionType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "function" = "function";
+  public readonly simpleType = "function" as const;
 
   constructor() {
     super();

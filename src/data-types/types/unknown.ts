@@ -6,7 +6,7 @@ import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class UnknownType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "unknown" = "unknown";
+  public readonly simpleType = "unknown" as const;
 
   constructor() {
     super();
@@ -24,7 +24,7 @@ export class UnknownType extends BaseType {
 
   ["~validate"](_: Path, __: any): void {}
 
-  ["~matches"](value: any): boolean {
+  ["~matches"](): boolean {
     return true;
   }
 }

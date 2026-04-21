@@ -7,7 +7,7 @@ import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class SymbolType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "symbol" = "symbol";
+  public readonly simpleType = "symbol" as const;
 
   constructor() {
     super();

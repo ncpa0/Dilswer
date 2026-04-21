@@ -7,7 +7,7 @@ import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class BooleanType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "boolean" = "boolean";
+  public readonly simpleType = "boolean" as const;
 
   constructor() {
     super();

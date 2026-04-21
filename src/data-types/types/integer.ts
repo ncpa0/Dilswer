@@ -12,7 +12,7 @@ type IntOptions = {
 
 export class IntegerType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "integer" = "integer";
+  public readonly simpleType = "integer" as const;
 
   protected _options: IntOptions = {
     min: null,

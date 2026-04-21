@@ -2452,7 +2452,7 @@ describe("createFastValidator", () => {
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
-        expect(() => validate({ foo: "bar" })).toThrowError("foo");
+        expect(() => validate({ foo: "bar" })).toThrow("foo");
       });
     });
 
@@ -3622,7 +3622,7 @@ describe("createFastValidator", () => {
         const span = data.children[0]!;
         span.children.push(span);
 
-        expect(() => validate(data)).not.toThrowError();
+        expect(() => validate(data)).not.toThrow();
         expect(validate(data)).toEqual(true);
         expect(validate(data)).toEqual(true);
 
@@ -3649,7 +3649,7 @@ describe("createFastValidator", () => {
         data2.children[0]!.children[0]!.children.push(data2);
         data2.children[0]!.children.push(data2);
 
-        expect(() => validate(data2)).not.toThrowError();
+        expect(() => validate(data2)).not.toThrow();
         expect(validate(data2)).toEqual(true);
       });
 

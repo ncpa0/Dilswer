@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`toTsType should correctly add export statements when exporting all should add \`declare\` 1`] = `
 "export declare type ArrayType = Array<number>;

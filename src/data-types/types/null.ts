@@ -7,7 +7,7 @@ import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class NullType extends BaseType {
   readonly kind = "simple";
-  public readonly simpleType: "null" = "null";
+  public readonly simpleType = "null" as const;
 
   constructor() {
     super();

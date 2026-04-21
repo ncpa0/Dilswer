@@ -1,4 +1,4 @@
-/** @type {import("ts-jest/dist/types").InitialOptionsTsJest} */
+/** @type {import("jest").Config} */
 module.exports = {
   testRegex: ".*__tests__/.+(\\.test\\.(ts|js|tsx|jsx))$",
   transform: {
@@ -17,5 +17,5 @@ module.exports = {
     "^@UniversalParser": "<rootDir>/src/universal-parser/index",
   },
   roots: ["<rootDir>"],
-  coverageProvider: "v8",
+  maxWorkers: 4,
 };
