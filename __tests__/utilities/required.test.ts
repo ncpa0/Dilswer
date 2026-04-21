@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Required, Type } from "../../src";
 
 describe("Required utility", () => {
@@ -17,7 +18,7 @@ describe("Required utility", () => {
         baz: { type: Type.Boolean, required: true },
         qux: { type: Type.Symbol, required: true },
         coorg: { type: Type.Null, required: true },
-      }),
+      }) as any,
     );
   });
 });

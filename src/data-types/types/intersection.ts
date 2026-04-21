@@ -31,7 +31,7 @@ export class IntersectionType<DT extends AnyType[] = any[]> extends BaseType {
     any,
     ReWrap<ParseDataTypeIntersectionTuple<DT>>
   > {
-    return getStandardSchemaProps(this);
+    return getStandardSchemaProps<any>(this);
   }
 
   ["~validate"](path: Path, value: any): void {

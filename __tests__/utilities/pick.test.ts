@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Pick, Type } from "../../src";
 
 describe("Pick utility", () => {
@@ -14,7 +15,7 @@ describe("Pick utility", () => {
       Type.Record({
         bar: { type: Type.String },
         qux: { type: Type.Symbol },
-      }),
+      }) as any,
     );
   });
 });

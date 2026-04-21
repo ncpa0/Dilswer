@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Omit, Type } from "../../src";
 
 describe("Omit utility", () => {
@@ -15,7 +16,7 @@ describe("Omit utility", () => {
         foo: { type: Type.Number },
         baz: { type: Type.Boolean },
         coorg: { type: Type.Null },
-      }),
+      }) as any,
     );
   });
 });

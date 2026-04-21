@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
 import { toTsType, Type } from "../../src/index";
 

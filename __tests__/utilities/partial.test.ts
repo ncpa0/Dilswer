@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Partial, Type } from "../../src";
 
 describe("Partial utility", () => {
@@ -17,7 +18,7 @@ describe("Partial utility", () => {
         baz: { type: Type.Boolean, required: false },
         qux: { type: Type.Symbol, required: false },
         coorg: { type: Type.Null, required: false },
-      }),
+      }) as any,
     );
   });
 });

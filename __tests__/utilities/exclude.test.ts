@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Exclude, Type } from "../../src";
 
 describe("Exclude utility", () => {
@@ -9,7 +10,7 @@ describe("Exclude utility", () => {
     );
 
     expect(Exclude(a, Type.Number)).toMatchObject(
-      Type.OneOf(Type.Array(Type.String), Type.String),
+      Type.OneOf(Type.Array(Type.String), Type.String) as any,
     );
   });
 });

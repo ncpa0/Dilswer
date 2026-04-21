@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { And, Type } from "../../src";
 
 describe("And utility", () => {
@@ -17,7 +18,7 @@ describe("And utility", () => {
         foo: { type: Type.Number },
         bar: { type: Type.Boolean },
         baz: { type: Type.Symbol },
-      }),
+      }) as any,
     );
   });
 });

@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Type } from "../../src";
 
 describe("DataType", () => {

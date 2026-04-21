@@ -24,10 +24,6 @@ import type { TupleType } from "@DataTypes/types/tuple";
 import type { UnionType } from "@DataTypes/types/union";
 import { approximateComplexity } from "@Validation/approximate-complexity";
 
-declare global {
-  class AggregateError extends Error {}
-}
-
 const KNOWN_GLOBAL_CLASSES = new Map<new(...args: any[]) => any, string>([
   [Map, "Map"],
   [Set, "Set"],

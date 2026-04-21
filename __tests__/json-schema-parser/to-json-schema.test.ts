@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import Ajv from "ajv";
 import { toJsonSchema, Type } from "../../src";
 

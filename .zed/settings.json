@@ -2,56 +2,56 @@
   "languages": {
     "JavaScript": {
       "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
-      "format_on_save": {
+      "formatter": {
         "external": {
           "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"]
-        }
-      }
+          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+        },
+      },
     },
     "TypeScript": {
       "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
-      "format_on_save": {
+      "formatter": {
         "external": {
           "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"]
-        }
-      }
+          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+        },
+      },
     },
     "TSX": {
       "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
-      "format_on_save": {
+      "formatter": {
         "external": {
           "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"]
-        }
-      }
+          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+        },
+      },
     },
     "CSS": {
-      "format_on_save": {
+      "formatter": {
         "external": {
           "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"]
-        }
-      }
+          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+        },
+      },
     },
     "JSON": {
-      "format_on_save": {
+      "formatter": {
         "external": {
           "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"]
-        }
-      }
-    }
+          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+        },
+      },
+    },
   },
   "lsp": {
     "typescript-language-server": {
       "initialization_options": {
         "preferences": {
           "importModuleSpecifierPreference": "non-relative",
-          "renameMatchingJsxTags": true
-        }
-      }
-    }
-  }
+          "renameMatchingJsxTags": true,
+        },
+      },
+    },
+  },
 }

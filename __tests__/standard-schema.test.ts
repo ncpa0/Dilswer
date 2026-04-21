@@ -1,3 +1,4 @@
+import { describe, expect, it } from "@jest/globals";
 import { Type } from "../src/index";
 import { StandardSchemaV1 } from "../src/standard-schema";
 
