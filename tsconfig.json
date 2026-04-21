@@ -5,23 +5,21 @@
     "declaration": true,
     "outDir": "./dist",
     "rootDirs": ["./src", "./__tests__"],
-    "downlevelIteration": true,
     "strict": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "baseUrl": "./src",
     "paths": {
-      "@DataTypes/*": ["./data-types/*"],
-      "@Utilities/*": ["./utilities/*"],
-      "@Validation/*": ["./validation-algorithms/*"],
-      "@JSONSchemaParser/*": ["./json-schema-parser/*"],
-      "@Intrinsic/*": ["./intrinsic-type-utils/*"],
-      "@TsTypeGenerator/*": ["./ts-type-generator/*"],
-      "@UniversalParser/*": ["./universal-parser/*"],
-      "~/*": ["./*"]
-    }
+      "@DataTypes/*": ["./src/data-types/*"],
+      "@Utilities/*": ["./src/utilities/*"],
+      "@Validation/*": ["./src/validation-algorithms/*"],
+      "@JSONSchemaParser/*": ["./src/json-schema-parser/*"],
+      "@Intrinsic/*": ["./src/intrinsic-type-utils/*"],
+      "@TsTypeGenerator/*": ["./src/ts-type-generator/*"],
+      "@UniversalParser/*": ["./src/universal-parser/*"],
+      "~/*": ["./src/*"],
+    },
   },
-  "exclude": ["./dist"]
+  "exclude": ["./dist"],
 }
