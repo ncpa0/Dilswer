@@ -1,12 +1,11 @@
-import type { BaseType } from "@DataTypes/base-type";
 import { Type } from "@DataTypes/Type";
 import type { AnyType } from "@DataTypes/type-types";
 import { And, Exclude, Omit, Partial, Pick, Required } from "@Intrinsic/index";
 import { toJsonSchema } from "@JSONSchemaParser/to-json-schema";
 import { toTsType } from "@TsTypeGenerator/to-ts-type";
 import { parseWith } from "@UniversalParser/universal-parser";
-import { compileFastValidator } from "@Validation/compile-fast-validator";
-import { validator } from "@Validation/create-validator";
+import { compile } from "@Validation/compile-fast-validator";
+import { validateWith, validator } from "@Validation/create-validator";
 import { assertType } from "@Validation/ensure-data-type";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
@@ -60,7 +59,7 @@ export type { FastValidator } from "@Validation/compile-fast-validator";
 export {
   And,
   assertType,
-  compileFastValidator,
+  compile,
   Exclude,
   Omit,
   parseWith,
@@ -70,6 +69,7 @@ export {
   toJsonSchema,
   toTsType,
   Type,
+  validateWith,
   ValidationError,
   validator,
 };
@@ -77,16 +77,17 @@ export {
 export default {
   And,
   assertType,
-  validator,
-  compileFastValidator,
-  ValidationError,
-  Type,
+  compile,
   Exclude,
   Omit,
+  parseWith,
   Partial,
   Pick,
   Required,
   toJsonSchema,
   toTsType,
-  parseWith,
+  Type,
+  validateWith,
+  ValidationError,
+  validator,
 };

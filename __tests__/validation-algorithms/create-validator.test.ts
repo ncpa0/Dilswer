@@ -1,6 +1,6 @@
 import type {
   Infer,
-  ParseDataType,
+  InferDType,
   ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
@@ -21,7 +21,7 @@ type AssertEqual<T, U> = [T] extends [U]
 
 type AssertType<T, U extends AnyType> = AssertEqual<
   T,
-  ReWrap<ParseDataType<U>>
+  ReWrap<InferDType<U>>
 >;
 
 type AssertValidator<T, V extends (data: unknown) => data is any> = V extends (

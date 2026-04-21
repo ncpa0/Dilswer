@@ -1,5 +1,9 @@
-import type { DataTypeKind, Metadata, TypeVisitor } from "@DataTypes/type-types";
-import { compileFastValidator } from "@Validation/compile-fast-validator";
+import type {
+  DataTypeKind,
+  Metadata,
+  TypeVisitor,
+} from "@DataTypes/type-types";
+import { compile } from "@Validation/compile-fast-validator";
 import { Path } from "@Validation/path";
 import type { StandardSchemaV1 } from "~/standard-schema";
 
@@ -118,7 +122,7 @@ export abstract class BaseType {
    * case of validation failure.
    */
   compile() {
-    const fastValidator = compileFastValidator(this as any);
+    const fastValidator = compile(this as any);
     this.compiledValidatorRef.fn = (value: any) => {
       if (fastValidator(value)) {
         return { value };

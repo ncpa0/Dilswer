@@ -1,7 +1,7 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
-import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
+import type { InferDType, ReWrap } from "@DataTypes/type-utils";
 import { UnionType } from "@DataTypes/types/union";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
@@ -31,7 +31,7 @@ export class DictType<DT extends AnyType[] = any[]> extends BaseType {
 
   get ["~standard"](): StandardSchemaV1.Props<
     any,
-    Record<string | number, ReWrap<ParseDataType<DT[number]>>>
+    Record<string | number, ReWrap<InferDType<DT[number]>>>
   > {
     return getStandardSchemaProps(this);
   }

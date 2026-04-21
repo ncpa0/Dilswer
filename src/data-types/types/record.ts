@@ -6,7 +6,7 @@ import type {
   RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/type-types";
-import type { ParseRecordType, ReWrap } from "@DataTypes/type-utils";
+import type { InferRecordType, ReWrap } from "@DataTypes/type-utils";
 import { isFieldDescriptor } from "@Utilities/is-field-descriptor";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
@@ -69,7 +69,7 @@ export class RecordType<
 
   get ["~standard"](): StandardSchemaV1.Props<
     any,
-    ReWrap<ParseRecordType<TS>>
+    ReWrap<InferRecordType<TS>>
   > {
     return getStandardSchemaProps(this);
   }

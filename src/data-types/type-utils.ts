@@ -23,9 +23,9 @@ import type { UnionType } from "@DataTypes/types/union";
 
 export type ParseDataTypeIntersectionTuple<
   T extends any[],
-  U = ParseDataType<T[0]>,
+  U = InferDType<T[0]>,
 > = T extends [infer A, ...infer B]
-  ? ParseDataTypeIntersectionTuple<B, U & ParseDataType<A>>
+  ? ParseDataTypeIntersectionTuple<B, U & InferDType<A>>
   : U;
 
 export type GetDescriptorType<T extends AnyType | FieldDescriptor> = T extends
@@ -129,7 +129,7 @@ export type GetTypeFromEnumMember<D extends ComplexType> = D extends
 export type RepackTuple<T extends AnyType[]> = T extends [
   infer A extends AnyType,
   ...infer B extends AnyType[],
-] ? [ParseDataType<A>, ...RepackTuple<B>]
+] ? [InferDType<A>, ...RepackTuple<B>]
   : [];
 
 export type GetTypeFromTuple<D extends ComplexType> = D extends TupleType<
@@ -141,12 +141,12 @@ export type GetTypeFromStringMatching<D extends ComplexType> = D extends
   StringMatchingType<infer T> ? T : never;
 
 type TypeMap<D extends ComplexType> = {
-  array: Array<ParseDataType<GetTypeFromArrayOf<D>>>;
+  array: Array<InferDType<GetTypeFromArrayOf<D>>>;
   tuple: GetTypeFromTuple<D>;
-  record: ParseRecordType<GetTypeFromRecordOf<D>>;
-  dictionary: Record<string | number, ParseDataType<GetTypeFromDict<D>>>;
-  set: Set<ParseDataType<GetFieldDescriptorsFromSetOf<D>>>;
-  union: ParseDataType<GetTypeFromOneOf<D>>;
+  record: InferRecordType<GetTypeFromRecordOf<D>>;
+  dictionary: Record<string | number, InferDType<GetTypeFromDict<D>>>;
+  set: Set<InferDType<GetFieldDescriptorsFromSetOf<D>>>;
+  union: InferDType<GetTypeFromOneOf<D>>;
   intersection: GetTypeFromAllOf<D>;
   literal: GetTypeFromLiteral<D>;
   enumUnion: GetTypeFromEnum<D>;
@@ -174,21 +174,21 @@ export type ParseBasicDataType<D extends BasicTypeNames> = {
   stringinteger: `${number}`;
 }[D];
 
-export type ParseDataType<D> = D extends BasicType
+export type InferDType<D> = D extends BasicType
   ? ParseBasicDataType<D["simpleType"]>
   : D extends ComplexType ? ParseComplexType<D>
   : never;
 
-export type ParseRecordType<S extends RecordTypeSchema> =
+export type InferRecordType<S extends RecordTypeSchema> =
   & {
-    [K in ExcludeRequired<S>]?: ParseDataType<
+    [K in ExcludeRequired<S>]?: InferDType<
       GetDescriptorType<S[K]>
     >;
   }
   & {
-    [K in ExcludeOptional<S>]: ParseDataType<
+    [K in ExcludeOptional<S>]: InferDType<
       GetDescriptorType<S[K]>
     >;
   };
 
-export type Infer<D extends AnyType> = ReWrap<ParseDataType<D>>;
+export type Infer<D extends AnyType> = ReWrap<InferDType<D>>;

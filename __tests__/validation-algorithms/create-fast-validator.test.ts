@@ -1,10 +1,10 @@
 import type {
   Infer,
-  ParseDataType,
+  InferDType,
   ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
-import { AnyType, compileFastValidator, Type } from "../../src";
+import { AnyType, compile, Type } from "../../src";
 
 const TRUE_SYM = Symbol("true");
 type True = typeof TRUE_SYM;
@@ -21,7 +21,7 @@ type AssertEqual<T, U> = [T] extends [U]
 
 type AssertType<T, U extends AnyType> = AssertEqual<
   T,
-  ReWrap<ParseDataType<U>>
+  ReWrap<InferDType<U>>
 >;
 
 type AssertValidator<T, V extends (data: unknown) => data is any> = V extends (
@@ -43,7 +43,7 @@ describe("createFastValidator", () => {
       type ExpectedType = string;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -72,9 +72,9 @@ describe("createFastValidator", () => {
       assert<AssertType<ExpectedType, typeof typeDefMin>>();
       assert<AssertType<ExpectedType, typeof typeDefRange>>();
 
-      const validateMax = compileFastValidator(typeDefMax);
-      const validateMin = compileFastValidator(typeDefMin);
-      const validateRange = compileFastValidator(typeDefRange);
+      const validateMax = compile(typeDefMax);
+      const validateMin = compile(typeDefMin);
+      const validateRange = compile(typeDefRange);
 
       assert<AssertValidator<ExpectedType, typeof validateMax>>();
       assert<AssertValidator<ExpectedType, typeof validateMin>>();
@@ -147,7 +147,7 @@ describe("createFastValidator", () => {
       type ExpectedType = number;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -177,9 +177,9 @@ describe("createFastValidator", () => {
       assert<AssertType<ExpectedType, typeof defMax100>>();
       assert<AssertType<ExpectedType, typeof defRange5to20>>();
 
-      const validateMin5 = compileFastValidator(defMin5);
-      const validateMax100 = compileFastValidator(defMax100);
-      const validateRange = compileFastValidator(defRange5to20);
+      const validateMin5 = compile(defMin5);
+      const validateMax100 = compile(defMax100);
+      const validateRange = compile(defRange5to20);
 
       assert<AssertValidator<ExpectedType, typeof validateMin5>>();
       assert<AssertValidator<ExpectedType, typeof validateMax100>>();
@@ -257,7 +257,7 @@ describe("createFastValidator", () => {
       type ExpectedType = number;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -290,9 +290,9 @@ describe("createFastValidator", () => {
       assert<AssertType<ExpectedType, typeof defMax0>>();
       assert<AssertType<ExpectedType, typeof defRange>>();
 
-      const validateMin = compileFastValidator(defMin199);
-      const validateMax = compileFastValidator(defMax0);
-      const validateRange = compileFastValidator(defRange);
+      const validateMin = compile(defMin199);
+      const validateMax = compile(defMax0);
+      const validateRange = compile(defRange);
 
       assert<AssertValidator<ExpectedType, typeof validateMin>>();
       assert<AssertValidator<ExpectedType, typeof validateMax>>();
@@ -368,7 +368,7 @@ describe("createFastValidator", () => {
       type ExpectedType = boolean;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -392,7 +392,7 @@ describe("createFastValidator", () => {
       type ExpectedType = symbol;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -415,7 +415,7 @@ describe("createFastValidator", () => {
       type ExpectedType = null;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -438,7 +438,7 @@ describe("createFastValidator", () => {
       type ExpectedType = undefined;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -461,7 +461,7 @@ describe("createFastValidator", () => {
       type ExpectedType = unknown;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -483,7 +483,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -534,7 +534,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -590,7 +590,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -647,7 +647,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -708,7 +708,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -745,7 +745,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -787,7 +787,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -829,7 +829,7 @@ describe("createFastValidator", () => {
       type ExpectedType = `${number}`;
       assert<AssertType<ExpectedType, typeof typeDef>>();
 
-      const validate = compileFastValidator(typeDef);
+      const validate = compile(typeDef);
 
       assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -874,7 +874,7 @@ describe("createFastValidator", () => {
         type ExpectedType = "foo";
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -900,7 +900,7 @@ describe("createFastValidator", () => {
         type ExpectedType = 69;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -927,7 +927,7 @@ describe("createFastValidator", () => {
         type ExpectedType = false;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -951,7 +951,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -974,7 +974,7 @@ describe("createFastValidator", () => {
         type ExpectedType = number;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -997,7 +997,7 @@ describe("createFastValidator", () => {
         type ExpectedType = boolean;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1021,7 +1021,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string | number;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1044,7 +1044,7 @@ describe("createFastValidator", () => {
         type ExpectedType = boolean | null;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1066,7 +1066,7 @@ describe("createFastValidator", () => {
         type ExpectedType = boolean | symbol;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1094,7 +1094,7 @@ describe("createFastValidator", () => {
         type ExpectedType = T | symbol;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1123,7 +1123,7 @@ describe("createFastValidator", () => {
         type ExpectedType = UnknownFunction | string | number;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1154,7 +1154,7 @@ describe("createFastValidator", () => {
         type ExpectedType = UnknownFunction | string | { foo: string }[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1184,7 +1184,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string[] | number[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1221,7 +1221,7 @@ describe("createFastValidator", () => {
           | { id: "3"; value: boolean; otherValue: null };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1260,7 +1260,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string & "foo";
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1285,7 +1285,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string & `${number}`;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1322,7 +1322,7 @@ describe("createFastValidator", () => {
         type ExpectedType = { foo: string } & { bar: number };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1363,7 +1363,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1418,7 +1418,7 @@ describe("createFastValidator", () => {
         type ExpectedType = unknown[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1445,7 +1445,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1473,7 +1473,7 @@ describe("createFastValidator", () => {
         type ExpectedType = T[];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1500,7 +1500,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Array<UnknownFunction | boolean>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1526,7 +1526,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Array<null | undefined>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1560,7 +1560,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Array<Array<number> | Array<Array<string>>>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1586,7 +1586,7 @@ describe("createFastValidator", () => {
         type ExpectedType = [string, number];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1621,7 +1621,7 @@ describe("createFastValidator", () => {
         type ExpectedType = [string, [number, string]];
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1657,7 +1657,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Record<string, never>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1683,7 +1683,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1711,7 +1711,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1736,7 +1736,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1791,7 +1791,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1839,7 +1839,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1874,7 +1874,7 @@ describe("createFastValidator", () => {
         };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1907,7 +1907,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Record<string | number, unknown>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1923,7 +1923,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Record<string | number, string | number>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -1970,7 +1970,7 @@ describe("createFastValidator", () => {
         >;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2043,7 +2043,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Set<number>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2069,7 +2069,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Set<UnknownFunction>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2094,7 +2094,7 @@ describe("createFastValidator", () => {
 
         type ExpectedType = Set<symbol | string>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2127,7 +2127,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Set<undefined | { foo: string }>;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2165,7 +2165,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Foo;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2203,7 +2203,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Foo;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2242,7 +2242,7 @@ describe("createFastValidator", () => {
         type ExpectedType = { myEnum: Foo };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2272,7 +2272,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Foo.A;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2310,7 +2310,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Foo.A;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2347,7 +2347,7 @@ describe("createFastValidator", () => {
         type ExpectedType = Foo;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2377,7 +2377,7 @@ describe("createFastValidator", () => {
         type ExpectedType = RegExp;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2410,7 +2410,7 @@ describe("createFastValidator", () => {
         type ExpectedType = { foo: string };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2448,7 +2448,7 @@ describe("createFastValidator", () => {
         type ExpectedType = { foo: string };
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2463,7 +2463,7 @@ describe("createFastValidator", () => {
         type ExpectedType = string;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2490,7 +2490,7 @@ describe("createFastValidator", () => {
         type ExpectedType = `bar.${string}`;
         assert<AssertType<ExpectedType, typeof typeDef>>();
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2538,7 +2538,7 @@ describe("createFastValidator", () => {
           };
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2690,7 +2690,7 @@ describe("createFastValidator", () => {
           };
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2764,7 +2764,7 @@ describe("createFastValidator", () => {
           };
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2855,7 +2855,7 @@ describe("createFastValidator", () => {
 
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -2912,7 +2912,7 @@ describe("createFastValidator", () => {
           >;
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3013,7 +3013,7 @@ describe("createFastValidator", () => {
           >;
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3145,7 +3145,7 @@ describe("createFastValidator", () => {
 
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3225,7 +3225,7 @@ describe("createFastValidator", () => {
           ];
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3317,7 +3317,7 @@ describe("createFastValidator", () => {
 
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3393,7 +3393,7 @@ describe("createFastValidator", () => {
             >;
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3468,7 +3468,7 @@ describe("createFastValidator", () => {
           };
           assert<AssertType<ExpectedType, typeof typeDef>>();
 
-          const validate = compileFastValidator(typeDef);
+          const validate = compile(typeDef);
 
           assert<AssertValidator<ExpectedType, typeof validate>>();
 
@@ -3604,7 +3604,7 @@ describe("createFastValidator", () => {
           })
         );
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         const data: Infer<typeof typeDef> = {
           tag: "div",
@@ -3668,7 +3668,7 @@ describe("createFastValidator", () => {
           ),
         });
 
-        const validate = compileFastValidator(typeDef);
+        const validate = compile(typeDef);
 
         const a = {
           tag: "div",
@@ -3692,7 +3692,7 @@ describe("createFastValidator", () => {
           ),
         });
 
-        const validate2 = compileFastValidator(typeDef2);
+        const validate2 = compile(typeDef2);
 
         const data2 = {
           a: {

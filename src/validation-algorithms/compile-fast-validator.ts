@@ -4,7 +4,7 @@ import type {
   RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/type-types";
-import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
+import type { InferDType, ReWrap } from "@DataTypes/type-utils";
 import type { ArrayType } from "@DataTypes/types/array";
 import type { CustomType } from "@DataTypes/types/custom";
 import type { DictType } from "@DataTypes/types/dict";
@@ -1190,7 +1190,7 @@ const recursiveTracker = /* js */ `
 `.trim();
 
 export interface FastValidator<DT extends AnyType> {
-  (data: unknown): data is ReWrap<ParseDataType<DT>>;
+  (data: unknown): data is ReWrap<InferDType<DT>>;
   asString(name?: string): string;
 }
 
@@ -1210,12 +1210,10 @@ type CompileOptions = {
  * The compile function is extremely fast, but it is not possible
  * to get detailed error messages from it.
  *
- * The compilation process takes a similar amount of time to
- * validating using the `createValidator` function, so for the
- * best performance, you should compile the validator
- * ahead-of-time and reuse it.
+ * The compilation process takes a significant amount of time, so for the
+ * best performance, you should compile the validator ahead-of-time and reuse it.
  */
-export const compileFastValidator = <DT extends AnyType>(
+export const compile = <DT extends AnyType>(
   dataType: DT,
   options?: CompileOptions,
 ): FastValidator<DT> => {

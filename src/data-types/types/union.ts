@@ -1,7 +1,7 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
-import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
+import type { InferDType, ReWrap } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "~/standard-schema";
@@ -27,7 +27,7 @@ export class UnionType<DT extends AnyType[] = any[]> extends BaseType {
 
   get ["~standard"](): StandardSchemaV1.Props<
     any,
-    ReWrap<ParseDataType<DT[number]>>
+    ReWrap<InferDType<DT[number]>>
   > {
     return getStandardSchemaProps(this);
   }

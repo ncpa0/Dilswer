@@ -1,5 +1,5 @@
 import type { AnyType } from "@DataTypes/type-types";
-import type { ParseDataType, ReWrap } from "@DataTypes/type-utils";
+import type { InferDType, ReWrap } from "@DataTypes/type-utils";
 import { validatedCircularValues } from "@DataTypes/types/recursive";
 import { Path } from "@Validation/path";
 
@@ -13,7 +13,7 @@ const DEFAULT_ROOT = Path.init("$");
 export const assertType: <DT extends AnyType>(
   type: DT,
   data: unknown,
-) => asserts data is ReWrap<ParseDataType<DT>> = (
+) => asserts data is ReWrap<InferDType<DT>> = (
   dataType: AnyType,
   data: unknown,
 ) => {
