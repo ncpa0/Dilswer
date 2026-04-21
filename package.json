@@ -32,7 +32,7 @@
   "scripts": {
     "build": "node ./scripts/build.cjs",
     "test:tsc": "tsc --noEmit",
-    "test:unit": "jest",
+    "test:unit": "jest --maxWorkers=4 --no-cache",
     "test:fmt": "dprint check",
     "test:lint": "oxlint .",
     "lint": "oxlint --fix .",
