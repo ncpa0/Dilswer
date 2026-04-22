@@ -46,7 +46,7 @@ export class StringType extends BaseType {
   }
 
   len(constraints: Partial<StringOptions>) {
-    const t = new ComplesStringType();
+    const t = new ComplexStringType();
     Object.assign(t._options, constraints);
     return t;
   }
@@ -71,9 +71,9 @@ export class StringType extends BaseType {
   }
 }
 
-export class ComplesStringType extends StringType {
+export class ComplexStringType extends StringType {
   len(constraints: Partial<StringOptions>) {
-    const t = new ComplesStringType();
+    const t = new ComplexStringType();
     Object.assign(t._options, this._options);
     Object.assign(t._options, constraints);
     return t;
