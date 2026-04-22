@@ -29,256 +29,300 @@ zod: 4.3.6
 
 Each of the suites is ran with both valid object and invalid object to measure both success and fail paths.
 
-**It is worth noting that `compileFastValidator`, unlike all other validators, does not produce a detailed report about what caused the validation to fail. Which allows it to skip a lot of the work that is being done by all the other solutions.**
+**It is worth noting that `compile`, unlike all other validators, does not produce a detailed report about what caused the validation to fail. Which allows it to skip a lot of the work that is being done by all the other solutions.**
 
 # Valid data samples
 
-Running Suite: Validators benchmark, sample: large_flat - valid
+## large_flat - valid
 
-    Dilswer compileFastValidator x 19,931,697 ops/sec ±1.80% (91 runs sampled) 100.00%
-    Dilswer validator x 467,363 ops/sec ±0.67% (93 runs sampled) 2.34%
-    Zod x 767,963 ops/sec ±1.88% (92 runs sampled) 3.85%
-    Valibot x 254,286 ops/sec ±1.68% (93 runs sampled) 1.28%
-    ArkType x 997,307 ops/sec ±0.62% (94 runs sampled) 5.00%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 19,931,697 | ±1.80% | 91 | 100.00% |
+| Dilswer validator | 467,363 | ±0.67% | 93 | 2.34% |
+| Zod | 767,963 | ±1.88% | 92 | 3.85% |
+| Valibot | 254,286 | ±1.68% | 93 | 1.28% |
+| ArkType | 997,307 | ±0.62% | 94 | 5.00% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: large_shallow - valid
-
-    Dilswer compileFastValidator x 5,990,197 ops/sec ±2.37% (85 runs sampled) 100.00%
-    Dilswer validator x 321,450 ops/sec ±0.88% (93 runs sampled) 5.37%
-    Zod x 423,715 ops/sec ±1.73% (93 runs sampled) 7.07%
-    Valibot x 174,074 ops/sec ±1.83% (90 runs sampled) 2.91%
-    ArkType x 462,504 ops/sec ±0.65% (96 runs sampled) 7.72%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: large_nested - valid
+## large_shallow - valid
 
-    Dilswer compileFastValidator x 410,214 ops/sec ±2.54% (93 runs sampled) 100.00%
-    Dilswer validator x 132,261 ops/sec ±2.06% (96 runs sampled) 32.24%
-    Zod x 45,687 ops/sec ±2.44% (91 runs sampled) 11.14%
-    Valibot x 40,662 ops/sec ±1.71% (93 runs sampled) 9.91%
-    ArkType x 140,203 ops/sec ±2.13% (91 runs sampled) 34.18%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 5,990,197 | ±2.37% | 85 | 100.00% |
+| Dilswer validator | 321,450 | ±0.88% | 93 | 5.37% |
+| Zod | 423,715 | ±1.73% | 93 | 7.07% |
+| Valibot | 174,074 | ±1.83% | 90 | 2.91% |
+| ArkType | 462,504 | ±0.65% | 96 | 7.72% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: extreme_nested - valid
-
-    Dilswer compileFastValidator x 18,846 ops/sec ±0.40% (92 runs sampled) 100.00%
-    Dilswer validator x 4,631 ops/sec ±1.64% (91 runs sampled) 24.57%
-    Zod x 4,292 ops/sec ±0.67% (95 runs sampled) 22.77%
-    Valibot x 2,373 ops/sec ±0.52% (94 runs sampled) 12.59%
-    ArkType x 17,726 ops/sec ±0.59% (91 runs sampled) 94.05%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: medium - valid
+## large_nested - valid
 
-    Dilswer compileFastValidator x 9,313,037 ops/sec ±0.75% (94 runs sampled) 100.00%
-    Dilswer validator x 979,286 ops/sec ±1.75% (90 runs sampled) 10.52%
-    Zod x 930,244 ops/sec ±0.51% (93 runs sampled) 9.99%
-    Valibot x 538,176 ops/sec ±0.68% (93 runs sampled) 5.78%
-    ArkType x 7,061,200 ops/sec ±0.55% (96 runs sampled) 75.82%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 410,214 | ±2.54% | 93 | 100.00% |
+| Dilswer validator | 132,261 | ±2.06% | 96 | 32.24% |
+| Zod | 45,687 | ±2.44% | 91 | 11.14% |
+| Valibot | 40,662 | ±1.71% | 93 | 9.91% |
+| ArkType | 140,203 | ±2.13% | 91 | 34.18% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: small - valid
-
-    Dilswer compileFastValidator x 71,758,060 ops/sec ±2.37% (85 runs sampled) 100.00%
-    Dilswer validator x 4,085,574 ops/sec ±2.35% (88 runs sampled) 5.69%
-    Zod x 4,461,079 ops/sec ±0.60% (89 runs sampled) 6.22%
-    Valibot x 2,253,933 ops/sec ±0.62% (91 runs sampled) 3.14%
-    ArkType x 34,553,556 ops/sec ±1.17% (87 runs sampled) 48.15%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: mini - valid
+## extreme_nested - valid
 
-    Dilswer compileFastValidator x 142,637,902 ops/sec ±4.76% (79 runs sampled) 100.00%
-    Dilswer validator x 12,257,202 ops/sec ±2.18% (89 runs sampled) 8.59%
-    Zod x 16,899,355 ops/sec ±0.73% (93 runs sampled) 11.85%
-    Valibot x 7,247,077 ops/sec ±0.81% (93 runs sampled) 5.08%
-    ArkType x 47,909,258 ops/sec ±2.11% (88 runs sampled) 33.59%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 18,846 | ±0.40% | 92 | 100.00% |
+| Dilswer validator | 4,631 | ±1.64% | 91 | 24.57% |
+| Zod | 4,292 | ±0.67% | 95 | 22.77% |
+| Valibot | 2,373 | ±0.52% | 94 | 12.59% |
+| ArkType | 17,726 | ±0.59% | 91 | 94.05% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: micro - valid 1
-
-    Dilswer compileFastValidator x 163,921,860 ops/sec ±5.85% (72 runs sampled) 100.00%
-    Dilswer validator x 26,473,410 ops/sec ±4.45% (82 runs sampled) 16.15%
-    Zod x 32,552,914 ops/sec ±0.94% (91 runs sampled) 19.86%
-    Valibot x 44,640,053 ops/sec ±1.34% (85 runs sampled) 27.23%
-    ArkType x 60,418,563 ops/sec ±2.47% (84 runs sampled) 36.86%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: micro - valid 2
+## medium - valid
 
-    Dilswer compileFastValidator x 169,279,438 ops/sec ±5.83% (75 runs sampled) 100.00%
-    Dilswer validator x 27,340,799 ops/sec ±2.22% (88 runs sampled) 16.15%
-    Zod x 32,562,972 ops/sec ±1.17% (93 runs sampled) 19.24%
-    Valibot x 42,921,550 ops/sec ±2.65% (83 runs sampled) 25.36%
-    ArkType x 60,450,864 ops/sec ±2.20% (88 runs sampled) 35.71%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 9,313,037 | ±0.75% | 94 | 100.00% |
+| Dilswer validator | 979,286 | ±1.75% | 90 | 10.52% |
+| Zod | 930,244 | ±0.51% | 93 | 9.99% |
+| Valibot | 538,176 | ±0.68% | 93 | 5.78% |
+| ArkType | 7,061,200 | ±0.55% | 96 | 75.82% |
 
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: discriminatorUnion - valid
+## small - valid
 
-    Dilswer compileFastValidator x 6,972,342 ops/sec ±0.95% (91 runs sampled) 100.00%
-    Dilswer validator x 949,456 ops/sec ±2.90% (90 runs sampled) 13.62%
-    Zod x 128,639 ops/sec ±0.58% (96 runs sampled) 1.84%
-    Valibot x 150,269 ops/sec ±0.42% (92 runs sampled) 2.16%
-    ArkType x 3,539,078 ops/sec ±0.65% (92 runs sampled) 50.76%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 71,758,060 | ±2.37% | 85 | 100.00% |
+| Dilswer validator | 4,085,574 | ±2.35% | 88 | 5.69% |
+| Zod | 4,461,079 | ±0.60% | 89 | 6.22% |
+| Valibot | 2,253,933 | ±0.62% | 91 | 3.14% |
+| ArkType | 34,553,556 | ±1.17% | 87 | 48.15% |
 
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
+
+---
+
+## mini - valid
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 142,637,902 | ±4.76% | 79 | 100.00% |
+| Dilswer validator | 12,257,202 | ±2.18% | 89 | 8.59% |
+| Zod | 16,899,355 | ±0.73% | 93 | 11.85% |
+| Valibot | 7,247,077 | ±0.81% | 93 | 5.08% |
+| ArkType | 47,909,258 | ±2.11% | 88 | 33.59% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## micro - valid 1
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 163,921,860 | ±5.85% | 72 | 100.00% |
+| Dilswer validator | 26,473,410 | ±4.45% | 82 | 16.15% |
+| Zod | 32,552,914 | ±0.94% | 91 | 19.86% |
+| Valibot | 44,640,053 | ±1.34% | 85 | 27.23% |
+| ArkType | 60,418,563 | ±2.47% | 84 | 36.86% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## micro - valid 2
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 169,279,438 | ±5.83% | 75 | 100.00% |
+| Dilswer validator | 27,340,799 | ±2.22% | 88 | 16.15% |
+| Zod | 32,562,972 | ±1.17% | 93 | 19.24% |
+| Valibot | 42,921,550 | ±2.65% | 83 | 25.36% |
+| ArkType | 60,450,864 | ±2.20% | 88 | 35.71% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## discriminatorUnion - valid
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 6,972,342 | ±0.95% | 91 | 100.00% |
+| Dilswer validator | 949,456 | ±2.90% | 90 | 13.62% |
+| Zod | 128,639 | ±0.58% | 96 | 1.84% |
+| Valibot | 150,269 | ±0.42% | 92 | 2.16% |
+| ArkType | 3,539,078 | ±0.65% | 92 | 50.76% |
+
+**Fastest is `Dilswer compile`**
+
+---
 
 # Invalid data samples
 
-Running Suite: Validators benchmark, sample: large_flat - invalid
+## large_flat - invalid
 
-    Dilswer compileFastValidator x 26,828,212 ops/sec ±1.83% (83 runs sampled) 100.00%
-    Dilswer validator x 11,361,449 ops/sec ±0.74% (95 runs sampled) 42.35%
-    Zod x 16,813 ops/sec ±2.51% (85 runs sampled) 0.06%
-    Valibot x 140,134 ops/sec ±2.15% (95 runs sampled) 0.52%
-    ArkType x 9,369 ops/sec ±0.31% (96 runs sampled) 0.03%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 26,828,212 | ±1.83% | 83 | 100.00% |
+| Dilswer validator | 11,361,449 | ±0.74% | 95 | 42.35% |
+| Zod | 16,813 | ±2.51% | 85 | 0.06% |
+| Valibot | 140,134 | ±2.15% | 95 | 0.52% |
+| ArkType | 9,369 | ±0.31% | 96 | 0.03% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: large_shallow - invalid
-
-    Dilswer compileFastValidator x 11,437,498 ops/sec ±1.17% (92 runs sampled) 100.00%
-    Dilswer validator x 7,982,685 ops/sec ±3.09% (89 runs sampled) 69.79%
-    Zod x 6,215 ops/sec ±2.48% (85 runs sampled) 0.05%
-    Valibot x 54,418 ops/sec ±0.41% (98 runs sampled) 0.48%
-    ArkType x 3,400 ops/sec ±0.40% (98 runs sampled) 0.03%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: large_nested - invalid 1
+## large_shallow - invalid
 
-    Dilswer compileFastValidator x 634,161 ops/sec ±0.59% (96 runs sampled) 100.00%
-    Dilswer validator x 569,493 ops/sec ±2.87% (94 runs sampled) 89.80%
-    Zod x 27,149 ops/sec ±2.03% (91 runs sampled) 4.28%
-    Valibot x 45,469 ops/sec ±0.47% (96 runs sampled) 7.17%
-    ArkType x 14,261 ops/sec ±0.38% (91 runs sampled) 2.25%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 11,437,498 | ±1.17% | 92 | 100.00% |
+| Dilswer validator | 7,982,685 | ±3.09% | 89 | 69.79% |
+| Zod | 6,215 | ±2.48% | 85 | 0.05% |
+| Valibot | 54,418 | ±0.41% | 98 | 0.48% |
+| ArkType | 3,400 | ±0.40% | 98 | 0.03% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: large_nested - invalid 2
-
-    Dilswer compileFastValidator x 644,492 ops/sec ±0.54% (90 runs sampled) 100.00%
-    Dilswer validator x 557,088 ops/sec ±3.04% (93 runs sampled) 86.44%
-    Zod x 26,550 ops/sec ±2.24% (95 runs sampled) 4.12%
-    Valibot x 44,302 ops/sec ±0.84% (92 runs sampled) 6.87%
-    ArkType x 13,984 ops/sec ±0.49% (92 runs sampled) 2.17%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: medium - invalid 1
+## large_nested - invalid 1
 
-    Dilswer compileFastValidator x 12,111,140 ops/sec ±0.71% (92 runs sampled) 100.00%
-    Dilswer validator x 1,263,602 ops/sec ±1.60% (97 runs sampled) 10.43%
-    Zod x 77,728 ops/sec ±2.07% (96 runs sampled) 0.64%
-    Valibot x 490,725 ops/sec ±0.38% (95 runs sampled) 4.05%
-    ArkType x 79,318 ops/sec ±0.55% (94 runs sampled) 0.65%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 634,161 | ±0.59% | 96 | 100.00% |
+| Dilswer validator | 569,493 | ±2.87% | 94 | 89.80% |
+| Zod | 27,149 | ±2.03% | 91 | 4.28% |
+| Valibot | 45,469 | ±0.47% | 96 | 7.17% |
+| ArkType | 14,261 | ±0.38% | 91 | 2.25% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: small - invalid 1
-
-    Dilswer compileFastValidator x 69,910,860 ops/sec ±2.31% (84 runs sampled) 100.00%
-    Dilswer validator x 6,189,869 ops/sec ±1.48% (88 runs sampled) 8.85%
-    Zod x 76,290 ops/sec ±2.06% (88 runs sampled) 0.11%
-    Valibot x 1,588,508 ops/sec ±0.62% (93 runs sampled) 2.27%
-    ArkType x 176,550 ops/sec ±0.37% (96 runs sampled) 0.25%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: small - invalid 2
+## large_nested - invalid 2
 
-    Dilswer compileFastValidator x 93,051,728 ops/sec ±2.90% (81 runs sampled) 100.00%
-    Dilswer validator x 9,430,093 ops/sec ±1.51% (92 runs sampled) 10.13%
-    Zod x 78,693 ops/sec ±2.23% (88 runs sampled) 0.08%
-    Valibot x 1,756,363 ops/sec ±0.50% (93 runs sampled) 1.89%
-    ArkType x 142,105 ops/sec ±0.43% (96 runs sampled) 0.15%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 644,492 | ±0.54% | 90 | 100.00% |
+| Dilswer validator | 557,088 | ±3.04% | 93 | 86.44% |
+| Zod | 26,550 | ±2.24% | 95 | 4.12% |
+| Valibot | 44,302 | ±0.84% | 92 | 6.87% |
+| ArkType | 13,984 | ±0.49% | 92 | 2.17% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: mini - invalid
-
-    Dilswer compileFastValidator x 120,119,103 ops/sec ±4.80% (82 runs sampled) 100.00%
-    Dilswer validator x 12,283,068 ops/sec ±1.92% (90 runs sampled) 10.23%
-    Zod x 83,696 ops/sec ±2.08% (90 runs sampled) 0.07%
-    Valibot x 4,024,811 ops/sec ±0.50% (94 runs sampled) 3.35%
-    ArkType x 327,654 ops/sec ±0.49% (97 runs sampled) 0.27%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: micro - invalid 1
+## medium - invalid 1
 
-    Dilswer compileFastValidator x 157,176,772 ops/sec ±3.76% (79 runs sampled) 100.00%
-    Dilswer validator x 26,391,739 ops/sec ±4.27% (88 runs sampled) 16.79%
-    Zod x 86,441 ops/sec ±2.00% (89 runs sampled) 0.05%
-    Valibot x 12,467,572 ops/sec ±0.80% (95 runs sampled) 7.93%
-    ArkType x 432,567 ops/sec ±0.40% (98 runs sampled) 0.28%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 12,111,140 | ±0.71% | 92 | 100.00% |
+| Dilswer validator | 1,263,602 | ±1.60% | 97 | 10.43% |
+| Zod | 77,728 | ±2.07% | 96 | 0.64% |
+| Valibot | 490,725 | ±0.38% | 95 | 4.05% |
+| ArkType | 79,318 | ±0.55% | 94 | 0.65% |
 
-Fastest is Dilswer compileFastValidator
-
----
-
-Running Suite: Validators benchmark, sample: micro - invalid 2
-
-    Dilswer compileFastValidator x 144,201,794 ops/sec ±3.31% (86 runs sampled) 100.00%
-    Dilswer validator x 27,083,438 ops/sec ±1.81% (88 runs sampled) 18.78%
-    Zod x 86,280 ops/sec ±2.09% (92 runs sampled) 0.06%
-    Valibot x 10,862,839 ops/sec ±0.67% (91 runs sampled) 7.53%
-    ArkType x 434,803 ops/sec ±0.32% (95 runs sampled) 0.30%
-
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
 
 ---
 
-Running Suite: Validators benchmark, sample: discriminatorUnion - invalid 1
+## small - invalid 1
 
-    Dilswer compileFastValidator x 64,963,434 ops/sec ±1.79% (87 runs sampled) 100.00%
-    Dilswer validator x 4,572,246 ops/sec ±1.22% (93 runs sampled) 7.04%
-    Zod x 27,312 ops/sec ±2.87% (81 runs sampled) 0.04%
-    Valibot x 251,469 ops/sec ±0.32% (99 runs sampled) 0.39%
-    ArkType x 360,092 ops/sec ±0.39% (95 runs sampled) 0.55%
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 69,910,860 | ±2.31% | 84 | 100.00% |
+| Dilswer validator | 6,189,869 | ±1.48% | 88 | 8.85% |
+| Zod | 76,290 | ±2.06% | 88 | 0.11% |
+| Valibot | 1,588,508 | ±0.62% | 93 | 2.27% |
+| ArkType | 176,550 | ±0.37% | 96 | 0.25% |
 
-Fastest is Dilswer compileFastValidator
+**Fastest is `Dilswer compile`**
+
+---
+
+## small - invalid 2
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 93,051,728 | ±2.90% | 81 | 100.00% |
+| Dilswer validator | 9,430,093 | ±1.51% | 92 | 10.13% |
+| Zod | 78,693 | ±2.23% | 88 | 0.08% |
+| Valibot | 1,756,363 | ±0.50% | 93 | 1.89% |
+| ArkType | 142,105 | ±0.43% | 96 | 0.15% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## mini - invalid
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 120,119,103 | ±4.80% | 82 | 100.00% |
+| Dilswer validator | 12,283,068 | ±1.92% | 90 | 10.23% |
+| Zod | 83,696 | ±2.08% | 90 | 0.07% |
+| Valibot | 4,024,811 | ±0.50% | 94 | 3.35% |
+| ArkType | 327,654 | ±0.49% | 97 | 0.27% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## micro - invalid 1
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 157,176,772 | ±3.76% | 79 | 100.00% |
+| Dilswer validator | 26,391,739 | ±4.27% | 88 | 16.79% |
+| Zod | 86,441 | ±2.00% | 89 | 0.05% |
+| Valibot | 12,467,572 | ±0.80% | 95 | 7.93% |
+| ArkType | 432,567 | ±0.40% | 98 | 0.28% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## micro - invalid 2
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 144,201,794 | ±3.31% | 86 | 100.00% |
+| Dilswer validator | 27,083,438 | ±1.81% | 88 | 18.78% |
+| Zod | 86,280 | ±2.09% | 92 | 0.06% |
+| Valibot | 10,862,839 | ±0.67% | 91 | 7.53% |
+| ArkType | 434,803 | ±0.32% | 95 | 0.30% |
+
+**Fastest is `Dilswer compile`**
+
+---
+
+## discriminatorUnion - invalid 1
+
+| Validator | Ops/sec | Tolerance | Samples | % of Fastest |
+|-----------|--------:|-----------|--------:|--------------:|
+| Dilswer compile | 64,963,434 | ±1.79% | 87 | 100.00% |
+| Dilswer validator | 4,572,246 | ±1.22% | 93 | 7.04% |
+| Zod | 27,312 | ±2.87% | 81 | 0.04% |
+| Valibot | 251,469 | ±0.32% | 99 | 0.39% |
+| ArkType | 360,092 | ±0.39% | 95 | 0.55% |
+
+**Fastest is `Dilswer compile`**
