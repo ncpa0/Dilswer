@@ -3,206 +3,197 @@
 ![GitHub](https://img.shields.io/github/license/ncpa0cpl/Dilswer?style=for-the-badge)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/ncpa0cpl/dilswer/test.yml?branch=master&style=for-the-badge)
 [![npm](https://img.shields.io/npm/v/dilswer?style=for-the-badge)](https://www.npmjs.com/package/dilswer)
-![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/Dilswer?style=for-the-badge)
+![Libraries.io dependency status for latest release](https://img.shields.io/librariesio/release/npm/dilswer?style=for-the-badge)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ncpa0cpl/Dilswer?style=for-the-badge)
 
 Blazingly fast data validation library with TypeScript integration.
 
-## Table Of Contents
+## Table of Contents
 
 1. [Quick Start](#quick-start)
-   1. [Create type definitions](#create-type-definitions)
-   2. [Create a TypeScript type from a Dilswer definition](#create-a-typescript-type-from-a-dilswer-definition)
-   3. [Create a validation function](#create-a-validation-function)
-   4. [Assertion function](#assertion-function)
-   5. [Standard Schema support](#standard-schema-support)
-2. [Other features](#other-features)
-   1. [Json Schema generation](#json-schema-generation)
-   2. [TypeScript type definition generation](#typescript-type-definition-generation)
-3. [Availabla Type's](#availabla-types)
-   1. [Number](#typenumber)
-   2. [Int](#typeint)
-   3. [String](#typestring)
-   4. [StringNumeral](#typestringnumeral)
-   5. [StringInt](#typestringint)
-   6. [StringMatching](#typestringmatchingregex)
-   7. [Boolean](#typeboolean)
-   8. [Symbol](#typesymbol)
-   9. [Null](#typenull)
-   10. [Undefined](#typeundefined)
-   11. [Function](#typefunction)
-   12. [Unknown](#typeunknown)
-   13. [OneOf](#typeoneoftypes)
-   14. [AllOf](#typealloftypes)
-   15. [Array](#typearraytypes)
-   16. [Record](#typerecordrecordstring-fielddescriptor)
-   17. [Dict](#typedicttypes)
-   18. [Set](#typesettypes)
-   19. [Literal](#typeliteralstring--number--boolean)
-   20. [InstanceOf](#typeinstanceofclass)
-   21. [Enum](#typeenumenum)
-   22. [EnumMember](#typeenummemberenum-member)
-   23. [Recursive](#typerecursivefunction)
-   24. [Custom](#typecustomfunction)
-4. [Utility Functions](#utility-functions)
-   1. [And](#and)
-   2. [Omit](#omit)
-   3. [Pick](#pick)
-   4. [Partial](#partial)
-   5. [Required](#required)
-   6. [Exclude](#exclude)
-5. [Metadata](#metadata)
-   1. [Assign Metadata](#assign-metadata)
-   2. [Read Metadata](#read-metadata)
-   3. [Metadata and JSON Schema's](#metadata-and-json-schemas)
-6. [Parsing](#parsing)
+   1. [Compile a Validator](#compile-a-validator)
+   2. [Create Type Definitions](#create-type-definitions)
+   3. [Infer TypeScript Types](#infer-typescript-types-from-dilswer-definitions)
+   4. [Get Validation Details](#get-validation-details)
+   5. [Assertion Function](#assertion-function)
+   6. [Standard Schema Support](#standard-schema-support)
+2. [Available Types](#available-types)
+   1. [Primitives](#primitives)
+   2. [Compound Types](#compound-types)
+   3. [Special Types](#special-types)
+3. [Utility Functions](#utility-functions)
+4. [Metadata](#metadata)
+5. [JSON Schema Generation](#json-schema-generation)
+6. [TypeScript Type Generation](#typescript-type-generation)
+7. [Parsing](#parsing)
 
 ## Quick Start
 
-#### Create type definitions
+### Compile a Validator
+
+The fastest way to validate data is using the `compile()` function:
 
 ```ts
-// person-type.ts
+import { compile, Type } from "dilswer";
+
+// Compile a validation function from a type definition
+const isString = compile(Type.String);
+
+isString("hello"); // true
+isString(123);    // false
+```
+
+For complex types:
+
+```ts
+import { compile, Type } from "dilswer";
+
+const PersonValidator = compile(
+  Type.Record({
+    id: Type.String,
+    name: Type.String,
+    age: Type.Number,
+    email: Type.Option(Type.String),
+    friends: Type.Option(Type.Array(Type.String)),
+  })
+);
+
+// Valid data
+PersonValidator({
+  id: "abc123",
+  name: "Alice",
+  age: 30,
+}); // true
+
+// Invalid data
+PersonValidator({
+  name: "Bob",
+  age: "not a number", // age should be a number
+}); // false
+```
+
+**Performance note:** Compiled validators are extremely fast but provide minimal error messages. For detailed error information, use the `validator()` function instead.
+
+### Create Type Definitions
+
+```ts
 import { Type } from "dilswer";
 
-// Record property types can be defined in a few different ways:
+// Define a record type with various field types
 const PersonDataType = Type.Record({
   id: Type.String,
   name: Type.String,
   age: { type: Type.Number },
   email: Type.Option(Type.String),
-  friends: { type: Type.Array(Type.String), required: false },
+  friends: Type.Option(Type.Array(Type.String)),
 });
 
-// A TypeScript equivalent type of the above would be:
+// The equivalent TypeScript type would be:
+// {
+//   id: string;
+//   name: string;
+//   age: number;
+//   email?: string;
+//   friends?: string[];
+// }
+```
+
+**Note:** The `required` attribute in Record fields defaults to `true`.
+
+### Infer TypeScript Types from Dilswer Definitions
+
+```ts
+import { Infer, compile, Type } from "dilswer";
+
+const PersonDataType = Type.Record({
+  id: Type.String,
+  name: Type.String,
+  age: Type.Number,
+});
+
+type Person = Infer<typeof PersonDataType>;
+
 // type Person = {
 //   id: string;
 //   name: string;
 //   age: number;
-//   email?: string;
-//   friends?: string[];
-// };
-```
+// }
 
-**NOTE:** the `required` attribute in a RecordOf fields is set to `true` by
-default.
-
-#### Create a TypeScript type from a Dilswer definition
-
-It is possible to infer a TypeScript type from a Dilswer definition:
-
-```ts
-import { Infer } from "dilswer";
-import { PersonDataType } from "./person-type.ts";
-
-type Person = Infer<typeof PersonDataType>;
-
-// Result:
-// type Person: {
+// Works with compiled validators too
+const PersonValidator = compile(PersonDataType);
+// PersonValidator(v: any): v is {
 //   id: string;
 //   name: string;
 //   age: number;
-//   email?: string;
-//   friends?: string[];
 // }
 ```
 
-#### Create a validation function
+### Get Validation Details
+
+If you need detailed information about validation failures, use `validator()` with the `details` option:
 
 ```ts
-import { validator } from "dilswer";
-import { PersonDataType } from "./person-type.ts";
-
-const isPerson = validator(PersonDataType);
-
-// Result:
-// const isPerson: (data: unknown) => data is {
-//     friends?: string[];
-//     id: string;
-//     name: string;
-//     age: number;
-// }
-
-const person = await axios
-  .get("https://my-api.io/get-person/1")
-  .then((r) => r.data);
-
-if (isPerson(person)) {
-  console.log("Name: ", person.name);
-  // do something with person
-} else {
-  console.error("`person` variable is not of expected type.");
-  // handle the validation failure
-}
-```
-
-##### validation details
-
-if you want to obtain more details about validation failures, validator can be passed a second argument that will change the bahavior of the validate function:
-
-```ts
-import { validator } from "dilswer";
-import { PersonDataType } from "./person-type.ts";
+import { validator, Type } from "dilswer";
 
 const isPerson = validator(PersonDataType, { details: true });
 
-// Result:
-// const isPerson: (data: unknown) => {
-//   success: false;
-//   error: ValidationError;
-// } | {
-//   success: true;
-//   value: {
-//     friends?: string[];
-//     id: string;
-//     name: string;
-//     age: number;
-//   };
-// }
+const result = isPerson({ name: "Alice" });
+
+if (result.success) {
+  console.log(result.value.name);
+} else {
+  console.error("Validation failed:", result.error.message);
+  // Access the path where validation failed:
+  console.error("Failed at:", result.error.fieldPath());
+  console.error("Expected:", result.error.expectedValueType);
+  console.error("Got:", result.error.receivedValue);
+}
 ```
 
-#### Assertion function
+### ValidateWith
 
-Assertion function can change the type of a variable by simply being called:
+A shorthand for validate with details.
+
+```ts
+import { validateWith, Type } from "dilswer";
+
+const result = validateWith(Type.String, value);
+
+if (result.success) {
+  console.log(result.value);
+} else {
+  console.error("Validation failed:", result.error.message);
+}
+```
+
+### Assertion Function
+
+The assertion function throws an error if validation fails, which is useful for early returns:
 
 ```ts
 import { assertType, Type } from "dilswer";
 
-function foo(value: any) {
+function greet(value: unknown) {
   try {
     assertType(Type.String, value);
-    value.toUpperCase(); // value is now treated as string by TypeScript
+    value.toUpperCase(); // value is now typed as string
   } catch (error) {
     console.error("Value is not a string");
   }
 }
 ```
 
-### Standard Schema support
+### Standard Schema Support
 
-Dilswer can be used with any library that supports the Standard Schema validation, like tRPC, OpenAuth and others.
+Dilswer schemas are compatible with libraries that support the Standard Schema specification, such as tRPC and OpenAPI.
 
 ```ts
 import { initTRPC } from "@trpc/server";
-import { Type } from "dilswer";
+import { compile, Type } from "dilswer";
 
 const t = initTRPC.create();
 
-const router = t.router({
-  greeting: t.procedure
-    .input(Type.Record({
-      name: Type.String,
-    }))
-    .query(async ({ input }) => {
-      return `Hello, ${input.name}!`;
-    }),
-});
-```
-
-For the best performance, type schemas passed to the other libraries should get compiled via the `.compile()` method.
-The compiled schemas do not provide as detailed error messages but are order of magnitude faster.
-
-```ts
+// For maximum performance, compile schemas before passing them to procedures
 const router = t.router({
   greeting: t.procedure
     .input(
@@ -216,417 +207,269 @@ const router = t.router({
 });
 ```
 
-## Other features
-
-### Json Schema generation
-
-Translates given Type into a JSON Schema.
+Uncompiled schemas also work but may have slightly lower performance:
 
 ```ts
-const toJsonSchema: (
-  type: AnyType,
-  options: ParseToJsonSchemaOptions = {},
-  include$schemaProperty = true
-) => JSONSchema6 | undefined;
+const router = t.router({
+  greeting: t.procedure
+    .input(
+      Type.Record({
+        name: Type.String,
+      })
+    )
+    .query(async ({ input }) => {
+      return `Hello, ${input.name}!`;
+    }),
+});
 ```
 
-#### ParseToJsonSchemaOptions
+## Available Types
 
-```ts
-type ParseToJsonSchemaOptions = {
-  /**
-   * Defines how to handle DataTypes that do not have an
-   * equivalent type in JSON Schema. (Set's, undefined, Symbols,
-   * etc.)
-   *
-   * - `throw` (default): Throw an error if an incompatible type is
-   *   encountered.
-   * - `omit`: Omits incompatible properties from the JSON Schema.
-   * - `set-as-any`: Adds the type to the schema without a "type"
-   *   property but with a name equivalent to the given
-   *   DataType.
-   */
-  incompatibleTypes?: "throw" | "omit" | "set-as-any";
-  /**
-   * Determines if the schemas generated for Record's should have
-   * additional properties set to `true` or `false`.
-   */
-  additionalProperties?: boolean;
-  /**
-   * Custom Parser's are methods used to parse incompatible
-   * DataTypes to JSON Schema's.
-   *
-   * By default a strategy defined in `incompatibleTypes` is
-   * used, if a method is defined, that method will be used
-   * instead.
-   */
-  customParser?: {
-    Set?: (
-      setItemsSchemas: JSONSchema6[],
-      original: SetType<AnyType[]>,
-      options: ParseToJsonSchemaOptions,
-    ) => JSONSchema6 | undefined;
-    Custom?: (
-      validateFunction: Custom["custom"],
-      original: Custom,
-      options: ParseToJsonSchemaOptions,
-    ) => JSONSchema6 | undefined;
-    Undefined?: (
-      dataType: BasicType,
-      options: ParseToJsonSchemaOptions,
-    ) => JSONSchema6 | undefined;
-    Symbol?: (
-      dataType: BasicType,
-      options: ParseToJsonSchemaOptions,
-    ) => JSONSchema6 | undefined;
-    Function?: (
-      dataType: BasicType,
-      options: ParseToJsonSchemaOptions,
-    ) => JSONSchema6 | undefined;
-  };
-};
-```
-
-#### TypeScript type definition generation
-
-Translates given Type into a TypeScript type definition. This is not very
-useful at runtime, and is mostly intended for generating type definitions with
-JSDoc comments that can be bundled with libraries.
-
-```ts
-const toTsType: (
-  dataType: AnyType,
-  options?: Partial<TsParsingOptions>,
-) => string;
-```
-
-#### TsParsingOptions
-
-```ts
-type TsParsingOptions = {
-  /**
-   * Defines how to parse the type.
-   *
-   * - `compact` - the type will be parsed into a single type
-   *   definition
-   * - `fully-expanded` - the type will be split into multiple type
-   *   definitions, and the main DataType type definition will
-   *   reference them.
-   * - `named-expanded` - similar to `fully-expanded`, but only the
-   *   types that have titles assigned will be split into
-   *   separate type definitions.
-   *
-   * @default `compact`
-   */
-  mode: TsParsingMode;
-  /**
-   * Defines how to export the generated types.
-   *
-   * - `main` - only the main DataType type will be exported
-   * - `all` - all types generated will be exported
-   * - `named` - only the types with titles will be exported
-   * - `none` - nothing will be exported
-   *
-   * @default `main`
-   */
-  exports: "main" | "named" | "all" | "none";
-  /**
-   * Defines whether to generate the type as a declaration or
-   * not.
-   *
-   * The difference is that declaration will generate each type
-   * definition with a `declare` keyword preceding it.
-   *
-   * @default `false`
-   */
-  declaration: boolean;
-  /**
-   * Defines how to handle duplicate names.
-   *
-   * - `error` - will throw an error if a duplicate name is
-   *   encountered
-   * - `rename` - will rename the duplicate type
-   *
-   * @default `error`
-   */
-  onDuplicateName: "error" | "rename";
-  /**
-   * Some DataType can reference enums or classes, in which case
-   * it's sometimes impossible to generate a valid TypeScript
-   * type for them. By default just the name of that class/enum
-   * will be used, and if that name is not available in the
-   * global scope, TS will resolve it to `any`. This option
-   * allows to define a custom import path for such types.
-   *
-   * @example
-   *   // foo.ts
-   *   export class Foo {}
-   *
-   *   // data-type.ts
-   *   import { Foo } from "./foo";
-   *
-   *   export const dt = Type.RecordOf({
-   *     foo: Type.InstanceOf(Foo),
-   *   });
-   *
-   *   // ts-type-generator.ts
-   *   import { dt } from "./data-type";
-   *   import { Foo } from "./foo";
-   *
-   *   const tsType = toTsType(dt, {
-   *     getExternalTypeImport: (t) => {
-   *       if (t.instanceOf === Foo) {
-   *         return {
-   *           typeName: "Foo",
-   *           path: "./foo",
-   *         };
-   *       }
-   *     },
-   *   });
-   *   // tsType:
-   *   //"
-   *   // import { Foo } from "./foo";
-   *   //
-   *   // export type Record1 = {
-   *   //   foo: InstanceType<typeof Foo>;
-   *   // }
-   *   //"
-   */
-  getExternalTypeImport?: (
-    type: EnumType | EnumMemberType | InstanceType | CustomType | FunctionType,
-  ) => ExternalTypeImport | undefined;
-};
-
-type TsParsingMode = "compact" | "fully-expanded" | "named-expanded";
-
-type ExternalTypeImport = {
-  /**
-   * Path to the file containing the external type. If the path
-   * is not specified, the import statement will be omitted, so
-   * for the generated declarations to be valid, you will have to
-   * include that yourself or make the specified type available
-   * in the global scope.
-   */
-  path?: string;
-  /**
-   * Name of the type as it is to be used within the generated
-   * declarations.
-   *
-   * If original name is not provided this is also the name of
-   * the imported type.
-   */
-  typeName: string;
-  /**
-   * Name of the type that will be used in the generated import
-   * statement.
-   */
-  originalName?: string;
-  /**
-   * Whether the imported name is a "value" or a "type". If it is
-   * a "value" it will be referenced with a `typeof` keyword.
-   */
-  valueImport?: boolean;
-};
-```
-
-### Availabla Type's
-
-#### Type.Number
-
-will match any number values and translate to the standard `number` type in
-TypeScript.
-
-#### Type.Int
-
-will match any integer values and translate to the standard `number` type in
-TypeScript. TypeScript does not have any way of distinguishing float and
-integers therefore both are assigned the same TypeScript type.
+### Primitives
 
 #### Type.String
 
-will match any string values and translate to the standard `string` type in
-TypeScript.
+Matches any string value.
 
-#### Type.StringNumeral
+```ts
+const validator = compile(Type.String);
+validator("hello"); // true
+validator(123);     // false
+```
 
-will match any string containing only numeric values and translate to a
-`` `${number}` `` type in TypeScript. A value successfully validated with
-`StringNumeral` is safe to convert into a number and will never produce a `NaN`
-value.
+#### Type.Number
 
-#### Type.StringInt
+Matches any numeric value (including floats and integers).
 
-will match any string containing only numbers and translate to a
-`` `${number}` `` type in TypeScript. Strings with floating point numbers are
-not matched by this type. A value successfully validated with `StringInt` is
-safe to convert into a number and will never produce a `NaN` value.
+```ts
+const validator = compile(Type.Number);
+validator(1.5);    // true
+validator(42);    // true
+validator("123"); // false
+```
 
-#### Type.StringMatching(regex)
+#### Type.Int
 
-will match any string matching the provided regular expression and translate to
-a the standard `string` type in TypeScript.
+Matches only integer values.
+
+```ts
+const validator = compile(Type.Int);
+validator(42);    // true
+validator(1.5);   // false
+```
 
 #### Type.Boolean
 
-will match any `true` and `false` values and translate to the standard `boolean`
-type in TypeScript.
+Matches `true` and `false` values.
+
+```ts
+const validator = compile(Type.Boolean);
+validator(true);  // true
+validator(false); // true
+validator(1);     // false
+```
 
 #### Type.Symbol
 
-will match any symbolic values and translate to the `symbol` type in TypeScript.
+Matches symbol values.
+
+```ts
+const validator = compile(Type.Symbol);
+validator(Symbol("test")); // true
+validator("sym");          // false
+```
 
 #### Type.Null
 
-will match only `null` value and translate to the standard `null` type in
-TypeScript.
+Matches only the `null` value.
+
+```ts
+const validator = compile(Type.Null);
+validator(null);     // true
+validator(undefined); // false
+```
 
 #### Type.Undefined
 
-will match only `undefined` value and translate to the standard `undefined` type
-in TypeScript.
+Matches only the `undefined` value.
+
+```ts
+const validator = compile(Type.Undefined);
+validator(undefined); // true
+validator(null);      // false
+```
 
 #### Type.Function
 
-will match any function and translate to the `Function` type in TypeScript.
+Matches any function.
+
+```ts
+const validator = compile(Type.Function);
+validator(() => {});     // true
+validator(async () => {}); // true
+validator("not a fn");   // false
+```
 
 #### Type.Unknown
 
-will match any value and translate to the `unknown` type in TypeScript.
-
-#### Type.OneOf(...Type's)
-
-will match any value matching one of the DataType's provided in the arguments
-and translate to an TypeScript union type.
-
-Example
+Matches any value.
 
 ```ts
-const foo = Type.OneOf(Type.String, Type.Number);
-
-type T = Infer<typeof foo>; // type T = (string | number)
+const validator = compile(Type.Unknown);
+validator("anything");  // true
+validator(123);         // true
+validator(null);       // true
 ```
 
-#### Type.AllOf(...Type's)
-
-will match values matching every DataType provided and translate to a TypeScript
-intersection of all those DataType's.
-
-Mostly useful to intersect multiple RecordOf's.
-
-Example
+#### String Variations
 
 ```ts
-const foo = Type.Record({ foo: string });
-const bar = Type.Record({ bar: string });
+// Matches strings containing only numeric characters
+// Safe to convert to number without producing NaN
+const numeralValidator = compile(Type.String.Float);
+numeralValidator("123");    // true
+numeralValidator("12.5");   // true (float strings match)
+numeralValidator("abc");    // false
 
-const combined = Type.AllOf(foo, bar);
+// Matches strings containing only integer characters
+const intValidator = compile(Type.String.Int);
+intValidator("123");    // true
+intValidator("12.5");   // false
 
-type T = Infer<typeof combined>; // type T = { foo: string; bar: string; }
+// Matches strings containing only positive integer characters
+const positiveIntValidator = compile(Type.String.Int.positive());
+positiveIntValidator("123");    // true
+positiveIntValidator("-1");     // false
+
+// Matches strings that conform to a regular expression
+const hexValidator = compile(Type.String.matching(/^[0-9a-f]+$/i));
+hexValidator("abc123"); // true
+hexValidator("xyz");    // false
+
+// Matches strings with length contraints
+const lenValidator = compile(Type.String.len({ min: 2, max: 5 }));
+lenValidator("abc");      // true
+lenValidator("x");        // false
+lenValidator("12345678"); // false
 ```
 
-#### Type.Array(...Type's)
+### Compound Types
 
-will match any array which contains only values matching any of the DataType's
-provided in the arguments and translate to the `Array<...>` type in TypeScript.
+#### Type.Record
 
-Example
+Matches objects with specified properties.
 
 ```ts
-const foo = Type.Array(Type.String, Type.Number);
+const PersonValidator = compile(
+  Type.Record({
+    name: Type.String,
+    age: Type.Number,
+    active: Type.Option(Type.Boolean),
+  })
+);
 
-type T = Infer<typeof foo>; // type T = (string | number)[]
+PersonValidator({ name: "Alice", age: 30 });          // true
+PersonValidator({ name: "Bob", age: 25, active: true }); // true
+PersonValidator({ name: "Carol" });                     // false (age is required)
 ```
 
-#### Type.Record(Record<string, FieldDescriptor>)
+#### Type.Array
 
-will match any object which structure matches the key-value pairs of object
-properties and FieldDescriptor's passed to the argument.
-
-Example
+Matches arrays containing elements of specified types.
 
 ```ts
-const foo = Type.Record({
-  foo: Type.Boolean,
-  bar: Type.String,
-  baz: { type: Type.Number, required: false },
-  qux: Type.Option(Type.String),
-});
+const ArrayValidator = compile(Type.Array(Type.String, Type.Number));
 
-type T = Infer<typeof foo>;
-// type T = { foo: boolean, bar: string, baz?: number | undefined; qux?: string | undefined; }
+ArrayValidator(["a", "b", 1, 2]); // true
+ArrayValidator(["a", "b", "c"]);  // true
+ArrayValidator([1, 2, 3]);         // true
+ArrayValidator("not an array");    // false
 ```
 
-#### Type.Dict(...Type's)
+#### Type.Tuple
 
-will match any object which properties match against the provided DataTypes's,
-and translates to a Record type in TypeScript.
-
-Example
+Matches arrays with a fixed number of elements of specific types.
 
 ```ts
-const dictOfFunctions = Type.Dict(Type.Function);
+const TupleValidator = compile(
+  Type.Tuple(Type.String, Type.Number, Type.Boolean)
+);
 
-type T = Infer<typeof dictOfFunctions>; // type T = Record<string | number, Function>
+TupleValidator(["hello", 42, true]);  // true
+TupleValidator(["hello", 42]);         // false (wrong length)
+TupleValidator(["hello", "world"]);    // false (second element is not a number)
 ```
 
-#### Type.Set(...Type's)
+#### Type.Set
 
-will match any Set object which contains only values matching any of the
-DataType's provided in the arguments and translate to the `Set<...>` type in
-TypeScript.
-
-Example
+Matches Set objects containing elements of specified types.
 
 ```ts
-const foo = Type.Set(Type.String, Type.Number);
+const SetValidator = compile(Type.Set(Type.String));
 
-type T = Infer<typeof foo>; // type T = Set<string | number>
+SetValidator(new Set(["a", "b", "c"])); // true
+SetValidator(new Set([1, 2, 3]));        // false
+SetValidator(["a", "b"]);                // false (not a Set)
 ```
 
-#### Type.Literal(string | number | boolean)
+#### Type.Dict
 
-will match any value that exactly matches the passed argument and translate to
-the literal type of that value in TypeScript.
-
-Example's
+Matches objects where all values match the specified types.
 
 ```ts
-const foo = Type.Literal("some-string-literal");
+const DictValidator = compile(Type.Dict(Type.String));
 
-type T0 = GetDataType<typeof foo>; // type T0 = "some-string-literal"
+DictValidator({ a: "x", b: "y" });    // true
+DictValidator({ a: 1, b: 2 });          // false
+DictValidator("not an object");         // false
 ```
+
+#### Type.OneOf
+
+Matches values that match any one of the provided types (union).
 
 ```ts
-const bar = Type.Literal(123);
+const UnionValidator = compile(Type.OneOf(Type.String, Type.Number));
 
-type T1 = GetDataType<typeof bar>; // type T1 = 123
+UnionValidator("hello"); // true
+UnionValidator(123);     // true
+UnionValidator(true);   // false
 ```
+
+#### Type.AllOf
+
+Matches values that match all of the provided types (intersection).
 
 ```ts
-const baz = Type.Literal(true);
+const A = Type.Record({ foo: Type.String });
+const B = Type.Record({ bar: Type.Number });
 
-type T2 = GetDataType<typeof baz>; // type T2 = true
+const IntersectedValidator = compile(Type.AllOf(A, B));
+
+IntersectedValidator({ foo: "hello", bar: 42 }); // true
+IntersectedValidator({ foo: "hello" });           // false (missing bar)
 ```
 
-#### Type.InstanceOf(class)
+#### Type.Literal
 
-will match any value that is an instance of the passed class and translate to
-the `InstanceType` type of that class in TypeScript.
+Matches exact values.
 
 ```ts
-class FooBar {
-  // ...
-}
+const TrueValidator = compile(Type.Literal(true));
+const StrValidator = compile(Type.Literal("hello"));
+const NumValidator = compile(Type.Literal(42));
 
-const foo = Type.InstanceOf(FooBar);
-
-type T = Infer<typeof foo>; // type T = InstanceType<typeof FooBar>
+TrueValidator(true);            // true
+TrueValidator(false);           // false
+StrValidator("hello");          // true
+StrValidator("world");          // false
+NumValidator(42);               // true
+NumValidator(100);              // false
 ```
 
-#### Type.Enum(enum)
+#### Type.Enum
 
-will match any value that belongs to an TypeScript enum and translate to that
-enum type.
+Matches TypeScript enum values.
 
 ```ts
 enum MyEnum {
@@ -634,20 +477,16 @@ enum MyEnum {
   B = "B",
 }
 
-const foo = Type.Enum(MyEnum);
+const EnumValidator = compile(Type.Enum(MyEnum));
 
-type T = Infer<typeof foo>; // type T = MyEnum
-
-const validate = validator(foo);
-
-validate(MyEnum.A); // => true
-validate(MyEnum.B); // => true
+EnumValidator(MyEnum.A); // true
+EnumValidator(MyEnum.B); // true
+EnumValidator("C");      // false
 ```
 
-#### Type.EnumMember(enum member)
+#### Type.EnumMember
 
-will match any value that equals to the specified TypeScript enum member and
-translate to that enum member type.
+Matches a specific enum member.
 
 ```ts
 enum MyEnum {
@@ -655,238 +494,189 @@ enum MyEnum {
   B = "VALUE_B",
 }
 
-const foo = Type.EnumMember(MyEnum.A);
+const MemberValidator = compile(Type.EnumMember(MyEnum.A));
 
-type T = Infer<typeof foo>; // type T = MyEnum.A
-
-const validate = validator(foo);
-
-validate("VALUE_A"); // => true
-validate(MyEnum.A); // => true
-validate(MyEnum.B); // => false
+MemberValidator(MyEnum.A);    // true
+MemberValidator("VALUE_A");   // true (string value matches)
+MemberValidator(MyEnum.B);     // false
 ```
 
-#### Type.Recursive(Function)
+#### Type.InstanceOf
 
-Allows to define types that reference themselves. The function it accepts should
-always return a valid DataType, which the reference provided to that function
-will point to.
-
-Example
+Matches instances of a class.
 
 ```ts
-const Node = Type.Recursive((self) =>
-  Type.Record({
-    tag: Type.String,
-    children: Type.ArrayOf(self),
-  })
-);
+class User {
+  constructor(public name: string) {}
+}
 
-// this is equivalent to the following type:
-type Node = {
-  tag: string;
-  children: Node[];
-};
+const UserValidator = compile(Type.InstanceOf(User));
+
+UserValidator(new User("Alice")); // true
+UserValidator({ name: "Bob" });    // false
 ```
 
-Type definitions given for circular DataTypes via `GetDataType` and validation
-methods will not however include infinite recursion as they should. (this does
-not affect the runtime validation) Due to the TypeScript limitations, it's
-impossible for a inferred type to include a reference to itself, so to get a
-usable type we use some TypeScript magic to create a similar type that is
-4-levels deep. For the above example the actual type you will get will look like
-this:
+#### Type.Custom
 
-```ts
-type Node = {
-  tag: string;
-  children: Array<{
-    tag: string;
-    children: Array<{
-      tag: string;
-      children: Array<{
-        tag: string;
-        children: Array<any>;
-      }>;
-    }>;
-  }>;
-};
-```
-
-If you absolutely need to get a type that has infinite recursion, you can use
-[toTsType](#totstype) utility to generate TypeScript code which will meet that
-need.
-
-#### Type.Custom(Function)
-
-will test the data with the provided function, provided function should return a
-boolean indicating if the tested value passed the validation, passed function
-should also have a type definition that looks like this: `(v: any) => v is T`,
-where T is any valid TS type.
-
-Example
+Matches values using a custom validation function. The function must be a type guard (`(v: any) => v is T`).
 
 ```ts
 const NonEmptyString = Type.Custom(
-  (v: any): v is string => typeof v === "string" && v.length > 0,
+  (v: any): v is string => typeof v === "string" && v.length > 0
 );
 
-type T = Infer<typeof NonEmptyString>; // type T = string
+const NonEmptyValidator = compile(NonEmptyString);
 
-const validate = validator(NonEmptyString);
-
-validate("foo"); // => true
-validate(""); // => false
+NonEmptyValidator("hello"); // true
+NonEmptyValidator("");      // false
+NonEmptyValidator(123);     // false
 ```
 
-### Utility Functions
+### Special Types
 
-#### And()
+#### Type.Recursive
 
-`And()` utility function can combine two Record Type Definitions into one. If
-any of the properties between the two combined Type Defs have the same key-name,
-the definition of the second one takes priority.
+Defines types that reference themselves.
 
 ```ts
-const typeDefOne = Type.Record({
-  foo: Type.Number,
+const Node = Type.Recursive(self =>
+  Type.Record({
+    tag: Type.String,
+    children: Type.Array(self),
+  })
+);
+
+const NodeValidator = compile(Node);
+
+NodeValidator({
+  tag: "div",
+  children: [
+    { tag: "span", children: [] },
+    { tag: "p", children: [] },
+  ],
+}); // true
+```
+
+#### Type.Option
+
+Makes a field optional (can be `undefined`).
+
+```ts
+const Validator = compile(
+  Type.Record({
+    name: Type.String,
+    email: Type.Option(Type.String),
+  })
+);
+
+Validator({ name: "Alice" });              // true
+Validator({ name: "Bob", email: "bob@example.com" }); // true
+Validator({ name: "Carol", email: undefined });        // true
+Validator({ email: "dan@example.com" });              // false (name is required)
+```
+
+## Utility Functions
+
+### And()
+
+Combines two Record types. Properties from the second type override conflicting properties from the first.
+
+```ts
+const TypeA = Type.Record({
+  foo: Type.String,
   bar: Type.Number,
 });
 
-const typeDefTwo = Type.Record({
-  bar: Type.Array(Type.String),
+const TypeB = Type.Record({
+  bar: Type.Boolean,
+  baz: Type.String,
+});
+
+const Combined = compile(And(TypeA, TypeB));
+// Validates: { foo: string, bar: boolean, baz: string }
+```
+
+### Omit()
+
+Removes specified keys from a Record type.
+
+```ts
+const Original = Type.Record({
+  foo: Type.String,
+  bar: Type.Number,
   baz: Type.Boolean,
 });
 
-const typeDefSum = And(typeDefOne, typeDefTwo);
-// typeDefSum = {
-//    foo: number;
-//    bar: string[];
-//    baz: boolean;
-// }
+const Simplified = compile(Omit(Original, "bar", "baz"));
+// Validates: { foo: string }
 ```
 
-#### Omit()
+### Pick()
 
-`Omit()` utility function removes specified keys from a Record Type Definition.
+Keeps only the specified keys from a Record type.
 
 ```ts
-const typeDefOne = Type.Record({
-  foo: Type.Number,
+const Original = Type.Record({
+  foo: Type.String,
   bar: Type.Number,
-  baz: Type.Number,
-  qux: Type.Number,
+  baz: Type.Boolean,
 });
 
-const typeDefOmitted = Omit(typeDefOne, "bar", "qux");
-// typeDefOmitted = {
-//    foo: number;
-//    baz: number;
-// }
+const Selected = compile(Pick(Original, "foo", "bar"));
+// Validates: { foo: string, bar: number }
 ```
 
-#### Pick()
+### Partial()
 
-`Pick()` utility function removes all not specified keys from a Record Type
-Definition.
+Makes all properties of a Record type optional.
 
 ```ts
-const typeDefOne = Type.Record({
-  foo: Type.Number,
-  bar: Type.Number,
-  baz: Type.Number,
-  qux: Type.Number,
+const Original = Type.Record({
+  name: Type.String,
+  age: Type.Number,
 });
 
-const typeDefPick = Pick(typeDefOne, "bar", "qux");
-// typeDefPick = {
-//    bar: number;
-//    qux: number;
-// }
+const OptionalProps = compile(Partial(Original));
+// Validates: { name?: string, age?: number }
 ```
 
-#### Partial()
+### Required()
 
-`Partial()` utility type makes all the Record's Type Definition keys optional.
+Makes all properties of a Record type required (removes optionality).
 
 ```ts
-const typeDefOne = Type.Record({
-  foo: Type.Number,
-  bar: Type.String,
-  baz: Type.Array(Type.Number),
+const Original = Type.Record({
+  name: Type.Option(Type.String),
+  age: Type.Option(Type.Number),
 });
 
-const typeDefPartial = Partial(typeDefOne);
-// typeDefPartial = {
-//    foo?: number | undefined;
-//    bar?: string | undefined;
-//    baz?: number[] | undefined;
-// }
+const RequiredProps = compile(Required(Original));
+// Validates: { name: string, age: number }
 ```
 
-#### Required()
+### Exclude()
 
-`Required()` utility type makes all the Record's Type Definition keys to be
-required (vs optional).
-
-```ts
-const typeDefOne = Type.Record({
-  foo: { type: Type.Number, required: false },
-  bar: { type: Type.String, required: false },
-  baz: { type: Type.Array(Type.Number), required: false },
-});
-
-const typeDefRequired = Required(typeDefOne);
-// typeDefRequired = {
-//    foo: number;
-//    bar: string;
-//    baz: number[];
-// }
-```
-
-#### Exclude()
-
-`Exclude()` utility function removes Type Definitions from an Type Def union.
+Removes types from a union.
 
 ```ts
-const typeDefOne = Type.OneOf(
-  Type.String,
-  Type.Number,
-  Type.Boolean,
-);
+const Union = Type.OneOf(Type.String, Type.Number, Type.Boolean);
 
-const typeDefExcluded = Exclude(typeDefOne, DataType.Number);
-// typeDefExcluded = string | boolean;
+const StringOrBool = compile(Exclude(Union, Type.Number));
+// Validates: string | boolean
 ```
 
 ## Metadata
 
-Each Type can have metadata attached to it, this metadata can be used to
-provide additional information about the data type, for example, you can attach
-a description to a Type, or a title, or format.
-
-**Metadata is completely ignored by the validation process**
+Each type can have metadata attached to it, such as titles, descriptions, and formats. Metadata is ignored during validation but is used by code generators.
 
 ### Assign Metadata
 
 ```ts
-import { Type } from "dilswer";
-
-const UserNameDT = Type.String.setTitle("User Name").setDescription(
-  "The user's name.",
-);
-
-const User = Type.Record({
-  name: UserNameDT,
-  id: Type.String.setTitle("User ID").setFormat("uuid"),
-  friends: Type.Array(Type.String).setDescription(
-    "A list of the user's friends names.",
-  ),
-})
-  .setTitle("User")
-  .setDescription(
-    "A user object. Contains the user's name, id and friends list.",
-  );
+const UserDT = Type.Record({
+  name: Type.String.meta.title("User Name").meta.description("The user's full name"),
+  email: Type.String.meta.title("Email").meta.format("email"),
+}).meta.title("User")
+  .meta.description("A user account with contact information");
 ```
 
 ### Read Metadata
@@ -894,129 +684,128 @@ const User = Type.Record({
 ```ts
 import { getMetadata, Type } from "dilswer";
 
-const userNameMetadata = getMetadata(UserNameDT);
+const EmailDT = Type.String.meta.title("Email Address").meta.format("email");
 
-// userNameMetadata = {
-//   title: "User Name",
-//   description: "The user's name.",
-// }
-
-const userMetadata = getMetadata(User);
-
-// userMetadata = {
-//  title: "User",
-//  description: "A user object. Contains the user's name, id and friends list.",
+const metadata = getMetadata(EmailDT);
+// metadata = {
+//   title: "Email Address",
+//   format: "email",
 // }
 ```
 
-### Metadata and JSON Schema's
+## JSON Schema Generation
 
-Metadata is also used when generating JSON Schema, if a DataType has a title,
-description or format, it will be included in the generated JSON Schema.
+Generate JSON Schema from Dilswer types:
 
 ```ts
 import { toJsonSchema, Type } from "dilswer";
 
-const UserDT = Type.Record({
-  name: Type.String.setTitle("User Name").setDescription(
-    "The user's name.",
-  ),
-  id: Type.String.setTitle("User ID").setFormat("uuid"),
-  friends: Type.Array(Type.String).setDescription(
-    "A list of the user's friends names.",
-  ),
-})
-  .setTitle("User")
-  .setDescription(
-    "A user object. Contains the user's name, id and friends list.",
-  );
+const UserSchema = Type.Record({
+  name: Type.String.meta.title("Name"),
+  age: Type.Number,
+});
 
-const jsonSchema = toJsonSchema(UserDT);
-
-//  jsonSchema = {
-//    title: "User",
-//    description: "A user object. Contains the user's name, id and friends list.",
-//    properties: {
-//      name: {
-//        type: "string",
-//        title: "User Name",
-//        description: "The user's name.",
-//      },
-//      id: {
-//        type: "string",
-//        title: "User ID",
-//        format: "uuid",
-//      },
-//      friends: {
-//        type: "array",
-//        items: {
-//          type: "string",
-//        },
-//      },
-//    },
-//    required: ["name", "id", "friends"],
+const schema = toJsonSchema(UserSchema);
+// schema = {
+//   type: "object",
+//   properties: {
+//     name: { type: "string", title: "Name" },
+//     age: { type: "number" },
+//   },
+//   required: ["name", "age"],
 // }
 ```
 
-### Parsing
-
-Dilswer data types can be easily parsed into any arbitrary data structure via
-`parseWith` function.
-
-This function takes a `visitor` object, which should contain a `visit` method,
-this method should generate a node of the new, desired data structure.
-
-This method is also used internally by `toJsonSchema` and `toTsType` functions.
-You can see the implementation of these functions in the source code
-[here](./src/json-schema-parser/to-json-schema.ts) and
-[here](./src/ts-type-generator/to-ts-type.ts).
-
-#### Example
+### ParseToJsonSchemaOptions
 
 ```ts
-import { AnyType, parseWith, Type } from "dilswer";
+type ParseToJsonSchemaOptions = {
+  /** How to handle types without JSON Schema equivalents (Sets, Symbols, etc.) */
+  incompatibleTypes?: "throw" | "omit" | "set-as-any";
+  /** Whether to allow additional properties in records */
+  additionalProperties?: boolean;
+  /** Custom parsers for specific types */
+  customParser?: {
+    Set?: (schemas: JSONSchema6[], type: SetType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
+    Custom?: (fn: Function, type: CustomType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
+    Undefined?: (type: BasicType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
+    Symbol?: (type: BasicType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
+    Function?: (type: BasicType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
+  };
+};
+```
 
-// Define how the new structure should look like
+## TypeScript Type Generation
+
+Generate TypeScript type definitions from Dilswer types:
+
+```ts
+import { toTsType, Type } from "dilswer";
+
+const UserDT = Type.Record({
+  name: Type.String,
+  age: Type.Number,
+}).meta.title("User");
+
+const tsDefinition = toTsType(UserDT);
+// Output:
+// export type User = {
+//   name: string;
+//   age: number;
+// };
+```
+
+### TsParsingOptions
+
+```ts
+type TsParsingOptions = {
+  /** How to structure the output type */
+  mode?: "compact" | "fully-expanded" | "named-expanded";
+  /** Which types to export */
+  exports?: "main" | "named" | "all" | "none";
+  /** Generate type declarations */
+  declaration?: boolean;
+  /** How to handle duplicate names */
+  onDuplicateName?: "error" | "rename";
+  /** Custom import paths for external types */
+  getExternalTypeImport?: (type: EnumType | EnumMemberType | InstanceOfType | CustomType | FunctionType) => ExternalTypeImport | undefined;
+};
+```
+
+## Parsing
+
+Dilswer types can be parsed into custom data structures using `parseWith()`:
+
+```ts
+import { parseWith, Type } from "dilswer";
+
 type TypeNode = {
   typeName: string;
   children?: TypeNode[] | Record<string, TypeNode>;
 };
 
-// Create a visitor which will be used to translate Dilswer's data types into `Node`s
 const visitor = {
-  visit(
-    type: AnyType,
-    children?: TypeNode[] | RecordOfVisitChild<TypeNode>[],
-  ): TypeNode {
+  visit(type: AnyType, children?: any): TypeNode {
     switch (type.kind) {
       case "simple":
         return { typeName: type.simpleType };
       case "record":
         return {
           typeName: "record",
-          children: children
-            ? Object.fromEntries(
-              (children as RecordOfVisitChild<Node>[]).map(
-                ({ propertyName, child }) => [propertyName, child],
-              ),
-            )
-            : undefined,
+          children: children ? Object.fromEntries(children.map(({ propertyName, child }) => [propertyName, child])) : undefined,
         };
       default:
-        return { typeName: type.kind, children: children as Node[] };
+        return { typeName: type.kind, children: children as TypeNode[] };
     }
   },
 };
 
-// use the visitor on a Dilser data type
-
-const type = Type.Record({
+const MyType = Type.Record({
   foo: Type.String,
   bar: Type.Array(Type.Number),
-  baz: Type.OneOf(Type.String, Type.Number),
 });
 
-const nodeTree = parseWith(visitor, type);
+const tree = parseWith(visitor, MyType);
 ```
 
 ##### Example output
@@ -1025,28 +814,8 @@ const nodeTree = parseWith(visitor, type);
 {
   "typeName": "record",
   "children": {
-    "foo": {
-      "typeName": "string"
-    },
-    "bar": {
-      "typeName": "array",
-      "children": [
-        {
-          "typeName": "number"
-        }
-      ]
-    },
-    "baz": {
-      "typeName": "union",
-      "children": [
-        {
-          "typeName": "string"
-        },
-        {
-          "typeName": "number"
-        }
-      ]
-    }
+    "foo": { "typeName": "string" },
+    "bar": { "typeName": "array", "children": [{ "typeName": "number" }]}
   }
 }
 ```
