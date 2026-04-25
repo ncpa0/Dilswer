@@ -1,6 +1,7 @@
 import { BaseType } from "@DataTypes/base-type";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type {
+  AnyType,
   FieldDescriptor,
   RecordTypeSchema,
   RecordVisitChild,
@@ -44,6 +45,38 @@ export class RecordType<
         this.fieldDescriptors.push([key, descriptor]);
       }
     }
+
+    this.fieldDescriptors.sort((a, b) => {
+      const aSchema = a[1].type;
+      const bSchema = b[1].type;
+      const aKind = aSchema.kind;
+      const bKind = bSchema.kind;
+
+      const aMaybeDiscriminator = aKind === "literal"
+        || aKind === "enumMember"
+        || aKind === "stringMatching"
+        || (aKind === "union"
+          && aSchema.oneOf.every((t: AnyType) =>
+            t.kind === "literal" || t.kind === "enumMember"
+            || t.kind === "stringMatching"
+          ));
+      const bMaybeDiscriminator = bKind === "literal"
+        || bKind === "enumMember"
+        || bKind === "stringMatching"
+        || (bKind === "union"
+          && bSchema.oneOf.every((t: AnyType) =>
+            t.kind === "literal" || t.kind === "enumMember"
+            || t.kind === "stringMatching"
+          ));
+      if (
+        aMaybeDiscriminator !== bMaybeDiscriminator
+        && (aMaybeDiscriminator || bMaybeDiscriminator)
+      ) {
+        return aMaybeDiscriminator ? -1 : 1;
+      }
+
+      return kindToPriority(aKind) - kindToPriority(bKind);
+    });
 
     Object.freeze(this.keys);
     Object.freeze(this.recordOf);
@@ -142,5 +175,38 @@ export class RecordType<
       )
         .join("; ")
     } ]`;
+  }
+}
+
+function kindToPriority(kind: AnyType["kind"]) {
+  switch (kind) {
+    case "simple":
+    case "enumMember":
+    case "enumUnion":
+    case "stringMatching":
+    case "literal":
+      return 0;
+    case "instanceOf":
+      return 1;
+    case "tuple":
+      return 2;
+    case "union":
+      return 4;
+    case "record":
+      return 5;
+    case "dictionary":
+      return 6;
+    case "array":
+      return 7;
+    case "set":
+      return 8;
+    case "circular":
+      return 9;
+    case "circularRef":
+      return 10;
+    case "intersection":
+      return 11;
+    case "custom":
+      return 12;
   }
 }

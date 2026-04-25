@@ -1,4 +1,5 @@
 import { describe, expect, it } from "@jest/globals";
+import dedent from "dedent";
 import { Type } from "../src/index";
 import { StandardSchemaV1 } from "../src/standard-schema";
 
@@ -99,7 +100,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a boolean",
+              message: dedent`
+                ValidationError: not a boolean
+                Path: $
+                Expected: PrimitiveSchema[ boolean ]
+                Got: string`,
               path: [{ key: "$" }],
             },
           ],
@@ -110,7 +115,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a string",
+              message: dedent`
+                ValidationError: not a string
+                Path: $
+                Expected: PrimitiveSchema[ string ]
+                Got: boolean
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -121,7 +131,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a number",
+              message: dedent`
+                ValidationError: not a number
+                Path: $
+                Expected: PrimitiveSchema[ number ]
+                Got: boolean
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -132,7 +147,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a null",
+              message: dedent`
+                ValidationError: not a null
+                Path: $
+                Expected: PrimitiveSchema[ null ]
+                Got: boolean
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -143,7 +163,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a symbol",
+              message: dedent`
+                ValidationError: not a symbol
+                Path: $
+                Expected: PrimitiveSchema[ symbol ]
+                Got: boolean
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -154,7 +179,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a undefined",
+              message: dedent`
+                ValidationError: not a undefined
+                Path: $
+                Expected: PrimitiveSchema[ undefined ]
+                Got: boolean
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -165,7 +195,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a number",
+              message: dedent`
+                ValidationError: not a number
+                Path: $
+                Expected: PrimitiveSchema[ int ]
+                Got: boolean
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -204,7 +239,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a number",
+              message: dedent`
+                ValidationError: not a number
+                Path: $.b
+                Expected: PrimitiveSchema[ number ]
+                Got: string`,
               path: [{ key: "$" }, { key: "b" }],
             },
           ],
@@ -237,7 +276,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a string",
+              message: dedent`
+                ValidationError: not a string
+                Path: $.foo.bar.baz
+                Expected: PrimitiveSchema[ string ]
+                Got: boolean
+              `,
               path: [
                 { key: "$" },
                 { key: "foo" },
@@ -268,7 +312,19 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "does not match any of the types in the union",
+              message: dedent`
+                AggregateValidationError: does not match any of the types in the union
+                Path: $[1]
+                Errors:
+                  ValidationError: not a string
+                  Path: $[1]
+                  Expected: PrimitiveSchema[ string ]
+                  Got: number
+
+                  ValidationError: not an object
+                  Path: $[1]
+                  Expected: SetSchema[ PrimitiveSchema[ number ] ]
+                  Got: number`,
               path: [{ key: "$" }, { key: "1" }],
             },
           ],
@@ -295,7 +351,19 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "does not match any of the types in the union",
+              message: dedent`
+                AggregateValidationError: does not match any of the types in the union
+                Path: $["SET_ELEMENT"]
+                Errors:
+                  ValidationError: not a string
+                  Path: $["SET_ELEMENT"]
+                  Expected: PrimitiveSchema[ string ]
+                  Got: number
+
+                  ValidationError: not an object
+                  Path: $["SET_ELEMENT"]
+                  Expected: RecordSchema[ foo=PrimitiveSchema[ string ] ]
+                  Got: number`,
               path: [{ key: "$" }, { key: "SET_ELEMENT" }],
             },
           ],
@@ -329,7 +397,19 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "does not match any of the types in the union",
+              message: dedent`
+                AggregateValidationError: does not match any of the types in the union
+                Path: $.key2
+                Errors:
+                  ValidationError: not a string
+                  Path: $.key2
+                  Expected: PrimitiveSchema[ string ]
+                  Got: number
+
+                  ValidationError: not an object
+                  Path: $.key2
+                  Expected: RecordSchema[ args=PrimitiveSchema[ string ] ]
+                  Got: number`,
               path: [{ key: "$" }, { key: "key2" }],
             },
           ],
@@ -361,7 +441,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not an object",
+              message: dedent`
+                ValidationError: not an object
+                Path: $[1]
+                Expected: RecordSchema[ arr=ArraySchema[ PrimitiveSchema[ number ] ] ]
+                Got: string`,
               path: [{ key: "$" }, { key: "1" }],
             },
           ],
@@ -401,7 +485,24 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "does not match any of the types in the union",
+              message: dedent`
+                AggregateValidationError: does not match any of the types in the union
+                Path: $
+                Errors:
+                  ValidationError: not a string
+                  Path: $
+                  Expected: PrimitiveSchema[ string ]
+                  Got: boolean
+
+                  ValidationError: not a number
+                  Path: $
+                  Expected: PrimitiveSchema[ number ]
+                  Got: boolean
+
+                  ValidationError: not an object
+                  Path: $
+                  Expected: RecordSchema[ args=PrimitiveSchema[ string ] ]
+                  Got: boolean`,
               path: [{ key: "$" }],
             },
           ],
@@ -440,7 +541,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not equal to the expected literal value",
+              message: dedent`
+                ValidationError: not equal to the expected literal value
+                Path: $.bar
+                Expected: LiteralSchema[ bar ]
+                Got: string`,
               path: [{ key: "$" }, { key: "bar" }],
             },
           ],
@@ -465,7 +570,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not equal to the expected literal value",
+              message: dedent`
+                ValidationError: not equal to the expected literal value
+                Path: $
+                Expected: LiteralSchema[ hello ]
+                Got: string`,
               path: [{ key: "$" }],
             },
           ],
@@ -494,7 +603,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a valid enum value",
+              message: dedent`
+                ValidationError: not a valid enum value
+                Path: $
+                Expected: EnumSchema[ A | B ]
+                Got: string`,
               path: [{ key: "$" }],
             },
           ],
@@ -523,7 +636,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not a valid enum member",
+              message: dedent`
+                ValidationError: not a valid enum member
+                Path: $
+                Expected: EnumMemberSchema[ A ]
+                Got: string`,
               path: [{ key: "$" }],
             },
           ],
@@ -550,7 +667,11 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not an instance of TestClass",
+              message: dedent`
+                ValidationError: not an instance of TestClass
+                Path: $
+                Expected: InstanceofSchema[ TestClass() ]
+                Got: object`,
               path: [{ key: "$" }],
             },
           ],
@@ -579,8 +700,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message:
-                "value does not conform the data type structure definition",
+              message: dedent`
+                ValidationError: value does not conform the data type structure definition
+                Path: $
+                Expected: CustomSchema[  ]
+                Got: string
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -607,7 +732,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "does not match the pattern",
+              message: dedent`
+                ValidationError: does not match the pattern
+                Path: $
+                Expected: PrimitiveSchema[ string (/^START.+END$/) ]
+                Got: string
+              `,
               path: [{ key: "$" }],
             },
           ],
@@ -661,7 +791,12 @@ describe("validating via the Standard Schema", () => {
         validationResults: {
           issues: [
             {
-              message: "not an object",
+              message: dedent`
+                ValidationError: not an object
+                Path: $
+                Expected: RecordSchema[ foo=PrimitiveSchema[ string ]; childs=ArraySchema[ RecursiveRefSchema[] ] ]
+                Got: string
+              `,
               path: [{ key: "$" }],
             },
           ],

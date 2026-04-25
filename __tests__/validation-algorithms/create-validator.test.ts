@@ -5017,17 +5017,17 @@ describe("createValidator", () => {
               Errors:
                 ValidationError: not an object
                 Path: $
-                Expected: RecordSchema[ foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ]; type=LiteralSchema[ a ] ]
+                Expected: RecordSchema[ type=LiteralSchema[ a ]; foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ] ]
                 Got: object
 
                 ValidationError: not an object
                 Path: $
-                Expected: RecordSchema[ foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ]; type=LiteralSchema[ b ] ]
+                Expected: RecordSchema[ type=LiteralSchema[ b ]; foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ] ]
                 Got: object
 
                 ValidationError: not an object
                 Path: $
-                Expected: RecordSchema[ foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ]; type=LiteralSchema[ c ] ]
+                Expected: RecordSchema[ type=LiteralSchema[ c ]; foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ] ]
                 Got: object
             `);
           }
@@ -5040,23 +5040,23 @@ describe("createValidator", () => {
               AggregateValidationError: does not match any of the types in the union
               Path: $
               Errors:
-                By: RecordSchema[ foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ]; type=LiteralSchema[ a ] ]
+                By: RecordSchema[ type=LiteralSchema[ a ]; foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ] ]
                 ValidationError: not a string
                 Path: $.bar
                 Expected: PrimitiveSchema[ string ]
                 Got: number
 
-                By: RecordSchema[ foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ]; type=LiteralSchema[ b ] ]
-                ValidationError: not a string
-                Path: $.foo
-                Expected: PrimitiveSchema[ string ]
-                Got: number
+                By: RecordSchema[ type=LiteralSchema[ b ]; foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ] ]
+                ValidationError: not equal to the expected literal value
+                Path: $.type
+                Expected: LiteralSchema[ b ]
+                Got: string
 
-                By: RecordSchema[ foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ]; type=LiteralSchema[ c ] ]
-                ValidationError: not a boolean
-                Path: $.foo
-                Expected: PrimitiveSchema[ boolean ]
-                Got: number
+                By: RecordSchema[ type=LiteralSchema[ c ]; foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ] ]
+                ValidationError: not equal to the expected literal value
+                Path: $.type
+                Expected: LiteralSchema[ c ]
+                Got: string
             `);
           }
         });
