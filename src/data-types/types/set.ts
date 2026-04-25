@@ -67,4 +67,8 @@ export class SetType<DT extends AnyType[] = any[]> extends BaseType {
     }
     return true;
   }
+
+  toString(): string {
+    return `SetSchema[ ${this.union.toString()} ]`;
+  }
 }

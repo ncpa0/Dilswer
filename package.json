@@ -61,7 +61,8 @@
     "zod": "^4.3.6"
   },
   "dependencies": {
-    "@types/json-schema": "^7.0.15"
+    "@types/json-schema": "^7.0.15",
+    "dedent": "^1.7.2"
   },
   "packageManager": "yarn@1.22.19",
   "sideEffects": false,

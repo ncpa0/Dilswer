@@ -69,6 +69,10 @@ export class StringType extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "string";
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ string ]`;
+  }
 }
 
 export class ComplexStringType extends StringType {
@@ -115,5 +119,9 @@ export class ComplexStringType extends StringType {
     }
 
     return true;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ string ${JSON.stringify(this._options)} ]`;
   }
 }

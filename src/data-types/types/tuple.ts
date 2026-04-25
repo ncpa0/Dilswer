@@ -67,4 +67,8 @@ export class TupleType<DT extends AnyType[] = any[]> extends BaseType {
 
     return true;
   }
+
+  toString(): string {
+    return `TupleSchema[ ${this.tuple.map(t => t.toString()).join(", ")} ]`;
+  }
 }

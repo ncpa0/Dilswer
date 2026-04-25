@@ -71,4 +71,8 @@ export class DictType<DT extends AnyType[] = any[]> extends BaseType {
     }
     return true;
   }
+
+  toString(): string {
+    return `DictSchema[ ${this.union.toString()} ]`;
+  }
 }

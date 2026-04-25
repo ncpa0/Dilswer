@@ -50,4 +50,10 @@ export class IntersectionType<DT extends AnyType[] = any[]> extends BaseType {
     }
     return true;
   }
+
+  toString(): string {
+    return `IntersectionSchema[ ${
+      this.allOf.map(t => t.toString()).join(" & ")
+    } ]`;
+  }
 }

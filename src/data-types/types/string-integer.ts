@@ -98,6 +98,10 @@ export class StringIntegerType extends BaseType {
 
     return value.length > 0;
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (int) ]`;
+  }
 }
 
 export class ZeroStringIntegerType extends StringIntegerType {
@@ -155,7 +159,7 @@ export class ZeroStringIntegerType extends StringIntegerType {
         path,
         this,
         value,
-        "value contained by the string is not equalt to zero",
+        "value contained by the string is not equal to zero",
       );
     }
   }
@@ -178,6 +182,10 @@ export class ZeroStringIntegerType extends StringIntegerType {
     }
 
     return value.length > 0;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (int) ${JSON.stringify(this._options)} ]`;
   }
 }
 
@@ -214,6 +222,15 @@ export class PositiveStringIntegerType extends StringIntegerType {
 
     if (value.length === 0) {
       throw new ValidationError(path, this, value, "empty string");
+    }
+
+    if (value[0] === "-") {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not positive",
+      );
     }
 
     let hasNonZeroDigit = false;
@@ -263,6 +280,10 @@ export class PositiveStringIntegerType extends StringIntegerType {
     }
 
     return hasNonZeroDigit;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (int) ${JSON.stringify(this._options)} ]`;
   }
 }
 
@@ -362,5 +383,9 @@ export class NegativeStringIntegerType extends StringIntegerType {
     }
 
     return hasNonZeroDigit;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (int) ${JSON.stringify(this._options)} ]`;
   }
 }

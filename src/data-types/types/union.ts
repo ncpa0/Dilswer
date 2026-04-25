@@ -3,7 +3,10 @@ import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
 import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
 import type { InferDType, ReWrap } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
-import { ValidationError } from "@Validation/validation-error/validation-error";
+import {
+  AggregateValidationError,
+  ValidationError,
+} from "@Validation/validation-error/validation-error";
 import type { StandardSchemaV1 } from "~/standard-schema";
 
 export class UnionType<DT extends AnyType[] = any[]> extends BaseType {
@@ -38,17 +41,22 @@ export class UnionType<DT extends AnyType[] = any[]> extends BaseType {
       return oneOfType["~validate"](path, value);
     }
 
+    const validationErrors: ValidationError[] = [];
     for (let i = 0; i < this.oneOf.length; i++) {
       const oneOfType = this.oneOf[i];
-      if (oneOfType["~matches"](value)) {
+      try {
+        oneOfType["~validate"](path, value);
         return;
+      } catch (err) {
+        const typedErr = err as ValidationError;
+        typedErr.originType = oneOfType;
+        validationErrors.push(typedErr);
       }
     }
 
-    throw new ValidationError(
+    throw new AggregateValidationError(
       path,
-      this,
-      value,
+      validationErrors,
       "does not match any of the types in the union",
     );
   }
@@ -67,5 +75,13 @@ export class UnionType<DT extends AnyType[] = any[]> extends BaseType {
     }
 
     return false;
+  }
+
+  toString(): string {
+    if (this.oneOf.length === 1) {
+      return this.oneOf[0].toString();
+    }
+
+    return `UnionSchema[ ${this.oneOf.map(t => t.toString()).join(" | ")} ]`;
   }
 }

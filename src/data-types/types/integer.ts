@@ -64,6 +64,10 @@ export class IntegerType extends BaseType {
       && Number.isInteger(value)
     );
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ int ]`;
+  }
 }
 
 export class ComplexIntegerType extends IntegerType {
@@ -115,5 +119,9 @@ export class ComplexIntegerType extends IntegerType {
     }
 
     return true;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ int ${JSON.stringify(this._options)} ]`;
   }
 }

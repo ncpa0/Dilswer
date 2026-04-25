@@ -75,6 +75,10 @@ export class RecursiveTypeReference extends BaseType {
     const refType = this._getReferencedType();
     return refType["~matches"](value);
   }
+
+  toString(): string {
+    return `RecursiveRefSchema[]`;
+  }
 }
 
 export class RecursiveType<DT extends AnyType = any> extends BaseType {
@@ -113,5 +117,9 @@ export class RecursiveType<DT extends AnyType = any> extends BaseType {
     }
 
     return this.type["~matches"](value);
+  }
+
+  toString(): string {
+    return `RecursiveSchema[ ${this.type.toString()} ]`;
   }
 }

@@ -87,4 +87,8 @@ export class EnumMemberType<DT = any> extends BaseType {
   ["~matches"](value: any): boolean {
     return this.enumMember === value;
   }
+
+  toString(): string {
+    return `EnumMemberSchema[ ${this.enumMember} ]`;
+  }
 }

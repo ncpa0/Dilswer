@@ -58,6 +58,10 @@ export class NumberType extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "number" && !Number.isNaN(value);
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ number ]`;
+  }
 }
 
 export class ComplexNumberType extends NumberType {
@@ -103,5 +107,9 @@ export class ComplexNumberType extends NumberType {
     }
 
     return true;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ number ${JSON.stringify(this._options)} ]`;
   }
 }

@@ -32,4 +32,8 @@ export class UndefinedType extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "undefined";
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ undefined ]`;
+  }
 }

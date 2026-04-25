@@ -113,6 +113,10 @@ export class StringFloatType extends BaseType {
 
     return dotCount <= 1 && value.length > 0;
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (float) ]`;
+  }
 }
 
 export class ZeroStringFloatType extends StringFloatType {
@@ -153,6 +157,11 @@ export class ZeroStringFloatType extends StringFloatType {
     if (typeof value !== "string") {
       throw new ValidationError(path, this, value, "not a string");
     }
+
+    if (value.length === 0) {
+      throw new ValidationError(path, this, value, "empty string");
+    }
+
     let i = 0;
     if (value[0] === "-") {
       i++;
@@ -209,6 +218,10 @@ export class ZeroStringFloatType extends StringFloatType {
 
     return dotCount <= 1 && value.length > 0;
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (float) ${JSON.stringify(this._options)} ]`;
+  }
 }
 
 export class PositiveStringFloatType extends StringFloatType {
@@ -241,6 +254,19 @@ export class PositiveStringFloatType extends StringFloatType {
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
       throw new ValidationError(path, this, value, "not a string");
+    }
+
+    if (value.length === 0) {
+      throw new ValidationError(path, this, value, "empty string");
+    }
+
+    if (value[0] === "-") {
+      throw new ValidationError(
+        path,
+        this,
+        value,
+        "value contained by the string is not positive",
+      );
     }
 
     let hasNonZeroDigit = false;
@@ -310,6 +336,10 @@ export class PositiveStringFloatType extends StringFloatType {
 
     return dotCount <= 1 && hasNonZeroDigit;
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (float) ${JSON.stringify(this._options)} ]`;
+  }
 }
 
 export class NegativeStringFloatType extends StringFloatType {
@@ -342,6 +372,10 @@ export class NegativeStringFloatType extends StringFloatType {
   ["~validate"](path: Path, value: any): void {
     if (typeof value !== "string") {
       throw new ValidationError(path, this, value, "not a string");
+    }
+
+    if (value.length === 0) {
+      throw new ValidationError(path, this, value, "empty string");
     }
 
     if (value[0] !== "-") {
@@ -417,5 +451,9 @@ export class NegativeStringFloatType extends StringFloatType {
     }
 
     return dotCount <= 1 && hasNonZeroDigit;
+  }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (float) ${JSON.stringify(this._options)} ]`;
   }
 }

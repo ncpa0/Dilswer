@@ -27,4 +27,8 @@ export class UnknownType extends BaseType {
   ["~matches"](): boolean {
     return true;
   }
+
+  toString(): string {
+    return `UnknownSchema[]`;
+  }
 }

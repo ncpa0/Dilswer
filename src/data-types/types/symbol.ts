@@ -32,4 +32,8 @@ export class SymbolType extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "symbol";
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ symbol ]`;
+  }
 }

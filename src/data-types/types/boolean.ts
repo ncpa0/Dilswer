@@ -32,4 +32,8 @@ export class BooleanType extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "boolean";
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ boolean ]`;
+  }
 }

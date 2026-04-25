@@ -32,4 +32,8 @@ export class CustomType<
   ["~matches"](value: any): boolean {
     return this.custom(value);
   }
+
+  toString(): string {
+    return `CustomSchema[ ${this.custom.name} ]`;
+  }
 }

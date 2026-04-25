@@ -93,4 +93,8 @@ export class EnumType<
 
     return false;
   }
+
+  toString(): string {
+    return `EnumSchema[ ${this.memberNames.join(" | ")} ]`;
+  }
 }

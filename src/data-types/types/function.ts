@@ -32,4 +32,8 @@ export class FunctionType extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "function";
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ function ]`;
+  }
 }

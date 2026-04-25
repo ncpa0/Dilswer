@@ -5,6 +5,7 @@ import type {
   UnknownFunction,
 } from "@DataTypes/type-utils";
 import { describe, expect, it } from "@jest/globals";
+import dedent from "dedent";
 import { AnyType, Type, validator } from "../../src";
 
 const TRUE_SYM = Symbol("true");
@@ -3767,6 +3768,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate(0);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a string
+            Path: $
+            Expected: PrimitiveSchema[ string ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a constrained string", () => {
@@ -3842,6 +3854,17 @@ describe("createValidator", () => {
         expect(validateRange(["foo"]).success).toEqual(false);
         expect(validateRange({ foo: "foo" }).success).toEqual(false);
         expect(validateRange(new Set(["foo"])).success).toEqual(false);
+
+        const res = validateRange(0);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a string
+            Path: $
+            Expected: PrimitiveSchema[ string {"min":2,"max":6} ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a number", () => {
@@ -3866,6 +3889,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("0");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a number
+            Path: $
+            Expected: PrimitiveSchema[ number ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a constrained number", () => {
@@ -3946,6 +3980,17 @@ describe("createValidator", () => {
         expect(validateRange(["foo"]).success).toEqual(false);
         expect(validateRange({ foo: "foo" }).success).toEqual(false);
         expect(validateRange(new Set(["foo"])).success).toEqual(false);
+
+        const res = validateRange("0");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a number
+            Path: $
+            Expected: PrimitiveSchema[ number {"min":5,"max":20} ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a integer", () => {
@@ -3973,6 +4018,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate(2.2);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not an integer
+            Path: $
+            Expected: PrimitiveSchema[ int ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a constrained integer", () => {
@@ -4051,6 +4107,17 @@ describe("createValidator", () => {
         expect(validateRange(["foo"]).success).toEqual(false);
         expect(validateRange({ foo: "foo" }).success).toEqual(false);
         expect(validateRange(new Set(["foo"])).success).toEqual(false);
+
+        const res = validateRange(2);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: integer greater than max
+            Path: $
+            Expected: PrimitiveSchema[ int {"min":-100,"max":0} ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a boolean", () => {
@@ -4073,6 +4140,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate(0);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a boolean
+            Path: $
+            Expected: PrimitiveSchema[ boolean ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a symbol", () => {
@@ -4094,6 +4172,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate(0);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a symbol
+            Path: $
+            Expected: PrimitiveSchema[ symbol ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a null", () => {
@@ -4115,6 +4204,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate(0);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a null
+            Path: $
+            Expected: PrimitiveSchema[ null ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against a undefined", () => {
@@ -4136,6 +4236,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate(0);
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: not a undefined
+            Path: $
+            Expected: PrimitiveSchema[ undefined ]
+            Got: number
+          `);
+        }
       });
 
       it("should validate against unknown", () => {
@@ -4205,6 +4316,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("A");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not a valid float
+            Path: $
+            Expected: PrimitiveSchema[ string (float) ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a positive string float", () => {
@@ -4259,6 +4381,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("-3");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not positive
+            Path: $
+            Expected: PrimitiveSchema[ string (float) {"positive":true,"negative":false,"zero":false} ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a negative string float", () => {
@@ -4314,6 +4447,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("3");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not negative
+            Path: $
+            Expected: PrimitiveSchema[ string (float) {"positive":false,"negative":true,"zero":false} ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a string integer", () => {
@@ -4349,6 +4493,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("1.1");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not a valid integer
+            Path: $
+            Expected: PrimitiveSchema[ string (int) ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a positive string integer", () => {
@@ -4389,6 +4544,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("-1");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not positive
+            Path: $
+            Expected: PrimitiveSchema[ string (int) {"positive":true,"negative":false,"zero":false} ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a negative string integer", () => {
@@ -4429,6 +4595,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("1");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not negative
+            Path: $
+            Expected: PrimitiveSchema[ string (int) {"positive":false,"negative":true,"zero":false} ]
+            Got: string
+          `);
+        }
       });
 
       it("should validate against a zero string integer", () => {
@@ -4469,6 +4646,17 @@ describe("createValidator", () => {
         expect(validate(["foo"]).success).toEqual(false);
         expect(validate({ foo: "foo" }).success).toEqual(false);
         expect(validate(new Set(["foo"])).success).toEqual(false);
+
+        const res = validate("-1");
+        expect(res.success).toEqual(false);
+        if (res.success === false) {
+          expect(res.error.details()).toEqual(dedent`
+            ValidationError: value contained by the string is not equal to zero
+            Path: $
+            Expected: PrimitiveSchema[ string (int) {"positive":false,"negative":false,"zero":true} ]
+            Got: string
+          `);
+        }
       });
     });
 
@@ -4496,6 +4684,17 @@ describe("createValidator", () => {
           expect(validate([]).success).toEqual(false);
           expect(validate(["foo"]).success).toEqual(false);
           expect(validate(() => "foo").success).toEqual(false);
+
+          const res = validate("-1");
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not equal to the expected literal value
+              Path: $
+              Expected: LiteralSchema[ foo ]
+              Got: string
+            `);
+          }
         });
 
         it("should validate against a numeric literal", () => {
@@ -4628,6 +4827,25 @@ describe("createValidator", () => {
           expect(validate({}).success).toEqual(false);
           expect(validate([]).success).toEqual(false);
           expect(validate(Symbol()).success).toEqual(false);
+
+          const res = validate(null);
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              AggregateValidationError: does not match any of the types in the union
+              Path: $
+              Errors:
+                ValidationError: not a string
+                Path: $
+                Expected: PrimitiveSchema[ string ]
+                Got: object
+
+                ValidationError: not a number
+                Path: $
+                Expected: PrimitiveSchema[ number ]
+                Got: object
+            `);
+          }
         });
 
         it("should validate a union of boolean and null", () => {
@@ -4722,6 +4940,125 @@ describe("createValidator", () => {
           expect(validate({}).success).toEqual(false);
           expect(validate([]).success).toEqual(false);
           expect(validate(Symbol()).success).toEqual(false);
+        });
+
+        it("should validate a union of object with discriminant", () => {
+          const typeDef = Type.OneOf(
+            Type.Record({
+              foo: Type.Number,
+              bar: Type.String,
+              type: Type.Literal("a"),
+            }),
+            Type.Record({
+              foo: Type.String,
+              baz: Type.String,
+              type: Type.Literal("b"),
+            }),
+            Type.Record({
+              foo: Type.Boolean,
+              qux: Type.String,
+              type: Type.Literal("c"),
+            }),
+          );
+
+          type ExpectedType = {
+            foo: number;
+            bar: string;
+            type: "a";
+          } | {
+            foo: string;
+            baz: string;
+            type: "b";
+          } | {
+            foo: boolean;
+            qux: string;
+            type: "c";
+          };
+
+          assert<AssertType<ExpectedType, typeof typeDef>>();
+
+          const validate = validator(typeDef, { details: true });
+
+          expect(validate({ foo: 1, bar: "", type: "a" }).success).toEqual(
+            true,
+          );
+          expect(validate({ foo: "1", baz: "", type: "b" }).success).toEqual(
+            true,
+          );
+          expect(validate({ foo: true, qux: "", type: "c" }).success).toEqual(
+            true,
+          );
+
+          expect(validate(null).success).toEqual(false);
+          expect(validate(undefined).success).toEqual(false);
+          expect(validate(1).success).toEqual(false);
+          expect(validate(true).success).toEqual(false);
+          expect(validate(false).success).toEqual(false);
+          expect(validate(Symbol()).success).toEqual(false);
+          expect(validate(() => {}).success).toEqual(false);
+          expect(validate({}).success).toEqual(false);
+          expect(validate([]).success).toEqual(false);
+          expect(validate({ foo: "1", baz: "", type: "a" }).success).toEqual(
+            false,
+          );
+          expect(validate({ foo: true, qux: "", type: "b" }).success).toEqual(
+            false,
+          );
+          expect(validate({ foo: "1", baz: "", type: "c" }).success).toEqual(
+            false,
+          );
+
+          const res = validate(null);
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              AggregateValidationError: does not match any of the types in the union
+              Path: $
+              Errors:
+                ValidationError: not an object
+                Path: $
+                Expected: RecordSchema[ foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ]; type=LiteralSchema[ a ] ]
+                Got: object
+
+                ValidationError: not an object
+                Path: $
+                Expected: RecordSchema[ foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ]; type=LiteralSchema[ b ] ]
+                Got: object
+
+                ValidationError: not an object
+                Path: $
+                Expected: RecordSchema[ foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ]; type=LiteralSchema[ c ] ]
+                Got: object
+            `);
+          }
+
+          const res2 = validate({ foo: 1, bar: 0, type: "a" });
+          expect(res2.success).toEqual(false);
+          if (res2.success === false) {
+            // console.log(res2.error.details());
+            expect(res2.error.details()).toEqual(dedent`
+              AggregateValidationError: does not match any of the types in the union
+              Path: $
+              Errors:
+                By: RecordSchema[ foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ]; type=LiteralSchema[ a ] ]
+                ValidationError: not a string
+                Path: $.bar
+                Expected: PrimitiveSchema[ string ]
+                Got: number
+
+                By: RecordSchema[ foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ]; type=LiteralSchema[ b ] ]
+                ValidationError: not a string
+                Path: $.foo
+                Expected: PrimitiveSchema[ string ]
+                Got: number
+
+                By: RecordSchema[ foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ]; type=LiteralSchema[ c ] ]
+                ValidationError: not a boolean
+                Path: $.foo
+                Expected: PrimitiveSchema[ boolean ]
+                Got: number
+            `);
+          }
         });
 
         it("should validate a union of functions, string and arrays of objects with foo property", () => {
@@ -4917,6 +5254,17 @@ describe("createValidator", () => {
           expect(validate([]).success).toEqual(false);
           expect(validate("bar").success).toEqual(false);
           expect(validate("").success).toEqual(false);
+
+          const res = validate({ foo: 1 });
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not a string
+              Path: $.foo
+              Expected: PrimitiveSchema[ string ]
+              Got: number
+            `);
+          }
         });
 
         it("should validate intersection of records with optional properties", () => {
@@ -5041,6 +5389,28 @@ describe("createValidator", () => {
           expect(validate(1).success).toEqual(false);
           expect(validate(true).success).toEqual(false);
           expect(validate(() => {}).success).toEqual(false);
+
+          const res = validate({ 0: "lol" });
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not an array
+              Path: $
+              Expected: ArraySchema[ PrimitiveSchema[ string ] ]
+              Got: object
+            `);
+          }
+
+          const res2 = validate(["", 2]);
+          expect(res2.success).toEqual(false);
+          if (res2.success === false) {
+            expect(res2.error.details()).toEqual(dedent`
+              ValidationError: not a string
+              Path: $[1]
+              Expected: PrimitiveSchema[ string ]
+              Got: number
+            `);
+          }
         });
 
         it("should validate against simple array of enum values", () => {
@@ -5180,6 +5550,17 @@ describe("createValidator", () => {
           expect(validate(() => {}).success).toEqual(false);
           expect(validate(0).success).toEqual(false);
           expect(validate(Symbol()).success).toEqual(false);
+
+          const res = validate({ 0: "lol" });
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not an array
+              Path: $
+              Expected: TupleSchema[ PrimitiveSchema[ string ], PrimitiveSchema[ number ] ]
+              Got: object
+            `);
+          }
         });
 
         it("should validate against nested tuples", () => {
@@ -5256,6 +5637,17 @@ describe("createValidator", () => {
 
           expect(validate({ foo: "foo", bar: "1" }).success).toEqual(false);
           expect(validate({ bar: 1 }).success).toEqual(false);
+
+          const res = validate("");
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not an object
+              Path: $
+              Expected: RecordSchema[ foo=PrimitiveSchema[ string ]; bar?=PrimitiveSchema[ number ] ]
+              Got: string
+            `);
+          }
         });
 
         it("should validate for optional properties defined with Type.Option", () => {
@@ -5399,6 +5791,20 @@ describe("createValidator", () => {
               bar: { baz: 1, qux: { corge: () => {} }, thud: 0 },
             }).success,
           ).toEqual(false);
+
+          const res = validate({
+            foo: "foo",
+            bar: { baz: 1, qux: { corge: () => {} }, thud: T.FOO },
+          });
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not a valid enum member
+              Path: $.bar.thud
+              Expected: EnumMemberSchema[ BAR ]
+              Got: string
+            `);
+          }
         });
 
         it("should correctly validate against a record with undefined and null properties", () => {
@@ -5539,6 +5945,17 @@ describe("createValidator", () => {
           expect(validate([]).success).toEqual(false);
           expect(validate("foo").success).toEqual(false);
           expect(validate(76).success).toEqual(false);
+
+          const res = validate("");
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not an object
+              Path: $
+              Expected: DictSchema[ UnionSchema[ PrimitiveSchema[ string ] | PrimitiveSchema[ number ] ] ]
+              Got: string
+            `);
+          }
         });
 
         it("should validate for nested dictionaries", () => {
@@ -5724,6 +6141,17 @@ describe("createValidator", () => {
           expect(validate(true).success).toEqual(false);
           expect(validate({}).success).toEqual(false);
           expect(validate([]).success).toEqual(false);
+
+          const res = validate({});
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not a Set instance
+              Path: $
+              Expected: SetSchema[ UnionSchema[ PrimitiveSchema[ symbol ] | PrimitiveSchema[ string ] ] ]
+              Got: object
+            `);
+          }
         });
 
         it("should validate for set of records or undefined", () => {
@@ -5795,6 +6223,17 @@ describe("createValidator", () => {
           expect(validate({}).success).toEqual(false);
           expect(validate(true).success).toEqual(false);
           expect(validate(false).success).toEqual(false);
+
+          const res = validate("");
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not a valid enum value
+              Path: $
+              Expected: EnumSchema[ A | B | C ]
+              Got: string
+            `);
+          }
         });
 
         it("should correctly check if the numeric value is assignable to the enum", () => {
@@ -5896,6 +6335,17 @@ describe("createValidator", () => {
           expect(validate({}).success).toEqual(false);
           expect(validate(true).success).toEqual(false);
           expect(validate(false).success).toEqual(false);
+
+          const res = validate("");
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not a valid enum member
+              Path: $
+              Expected: EnumMemberSchema[ A ]
+              Got: string
+            `);
+          }
         });
 
         it("should correctly check if the string value equals to the enum member", () => {
@@ -5964,6 +6414,17 @@ describe("createValidator", () => {
           expect(validate({}).success).toEqual(false);
           expect(validate(true).success).toEqual(false);
           expect(validate(false).success).toEqual(false);
+
+          const res = validate("");
+          expect(res.success).toEqual(false);
+          if (res.success === false) {
+            expect(res.error.details()).toEqual(dedent`
+              ValidationError: not an instance of Foo
+              Path: $
+              Expected: InstanceofSchema[ Foo() ]
+              Got: string
+            `);
+          }
         });
 
         it("should correctly check if the value is an instance of a builtin class", () => {

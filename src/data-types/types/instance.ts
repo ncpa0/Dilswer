@@ -39,4 +39,8 @@ export class InstanceOfType<
   ["~matches"](value: any): boolean {
     return value instanceof this.instanceOf;
   }
+
+  toString(): string {
+    return `InstanceofSchema[ ${this.instanceOf.name}() ]`;
+  }
 }

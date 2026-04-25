@@ -2,13 +2,16 @@ import type { AnyType } from "@DataTypes/type-types";
 import type { InferDType, ReWrap } from "@DataTypes/type-utils";
 import { validatedCircularValues } from "@DataTypes/types/recursive";
 import { Path } from "@Validation/path";
-import { ValidationError } from "@Validation/validation-error/validation-error";
+import {
+  AggregateValidationError,
+  ValidationError,
+} from "@Validation/validation-error/validation-error";
 
 const DEFAULT_ROOT = Path.init("$");
 
 type ValidationResults<T> = {
   success: false;
-  error: ValidationError;
+  error: ValidationError | AggregateValidationError;
 } | {
   success: true;
   value: T;
@@ -34,11 +37,16 @@ export function validator(
           value: data,
         };
       } catch (e) {
-        if (!ValidationError.isValidationError(e)) throw e;
-        return {
-          success: false,
-          error: e,
-        };
+        if (
+          ValidationError.isValidationError(e)
+          || AggregateValidationError.isAggregateValidationError(e)
+        ) {
+          return {
+            success: false,
+            error: e,
+          };
+        }
+        throw e;
       } finally {
         validatedCircularValues.clear();
       }

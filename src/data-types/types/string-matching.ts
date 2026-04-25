@@ -78,4 +78,8 @@ export class StringMatchingType<T extends string = string> extends BaseType {
   ["~matches"](value: any): boolean {
     return typeof value === "string" && this.pattern.test(value);
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ string (/${this.pattern.source}/${this.pattern.flags}) ]`;
+  }
 }

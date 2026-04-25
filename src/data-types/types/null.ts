@@ -32,4 +32,8 @@ export class NullType extends BaseType {
   ["~matches"](value: any): boolean {
     return value === null;
   }
+
+  toString(): string {
+    return `PrimitiveSchema[ null ]`;
+  }
 }

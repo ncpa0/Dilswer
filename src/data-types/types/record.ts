@@ -134,4 +134,13 @@ export class RecordType<
 
     return true;
   }
+
+  toString(): string {
+    return `RecordSchema[ ${
+      this.fieldDescriptors.map(([key, des]) =>
+        `${key}${!des.required ? "?" : ""}=${des.type.toString()}`
+      )
+        .join("; ")
+    } ]`;
+  }
 }

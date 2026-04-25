@@ -36,4 +36,8 @@ export class LiteralType<
   ["~matches"](value: any): boolean {
     return this.literal === value;
   }
+
+  toString(): string {
+    return `LiteralSchema[ ${this.literal} ]`;
+  }
 }

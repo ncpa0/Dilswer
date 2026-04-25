@@ -55,4 +55,8 @@ export class ArrayType<DT extends AnyType[] = any[]> extends BaseType {
     }
     return true;
   }
+
+  toString(): string {
+    return `ArraySchema[ ${this.union.toString()} ]`;
+  }
 }
