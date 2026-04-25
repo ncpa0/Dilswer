@@ -83,7 +83,7 @@ import { Type } from "dilswer";
 const PersonDataType = Type.Record({
   id: Type.String,
   name: Type.String,
-  age: { type: Type.Number },
+  age: Type.Number,
   email: Type.Option(Type.String),
   friends: Type.Option(Type.Array(Type.String)),
 });
@@ -97,8 +97,6 @@ const PersonDataType = Type.Record({
 //   friends?: string[];
 // }
 ```
-
-**Note:** The `required` attribute in Record fields defaults to `true`.
 
 ### Infer TypeScript Types from Dilswer Definitions
 
@@ -144,10 +142,41 @@ if (result.success) {
 } else {
   console.error("Validation failed:", result.error.message);
   // Access the path where validation failed:
-  console.error("Failed at:", result.error.fieldPath());
-  console.error("Expected:", result.error.expectedValueType);
-  console.error("Got:", result.error.receivedValue);
+  console.error("Failed at:", result.error.fieldPath);
+  console.error("Details:", result.error.details());
+  console.error("DetailsObject:", JSON.stringify(result.error.detailsJson()));
 }
+```
+
+`details()` returns a string containing information about the error more detailed than just the error message.
+
+#### Details Examples
+
+```
+ValidationError: not an array
+Path: $.foo.bar
+Expected: ArraySchema[ PrimitiveSchema[ string ] ]
+Got: object
+```
+
+```
+AggregateValidationError: does not match any of the types in the union
+Path: $
+Errors:
+  ValidationError: not an object
+  Path: $
+  Expected: RecordSchema[ type=LiteralSchema[ a ]; foo=PrimitiveSchema[ number ]; bar=PrimitiveSchema[ string ] ]
+  Got: object
+
+  ValidationError: not an object
+  Path: $
+  Expected: RecordSchema[ type=LiteralSchema[ b ]; foo=PrimitiveSchema[ string ]; baz=PrimitiveSchema[ string ] ]
+  Got: object
+
+  ValidationError: not an object
+  Path: $
+  Expected: RecordSchema[ type=LiteralSchema[ c ]; foo=PrimitiveSchema[ boolean ]; qux=PrimitiveSchema[ string ] ]
+  Got: object
 ```
 
 ### ValidateWith
