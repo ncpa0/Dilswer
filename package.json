@@ -50,7 +50,7 @@
     "axios": "^1.15.0",
     "benchmark": "^2.1.4",
     "dprint": "^0.54.0",
-    "esbuild": "0.28.0",
+    "esbuild": "0.28.1",
     "git-hook-tasks": "git+https://github.com/ncpa0cpl/git-hook-tasks#2.0.1",
     "husky": "^8.0.3",
     "jest": "^30.3.0",
