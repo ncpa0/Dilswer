@@ -47,7 +47,6 @@
     "@types/jest": "^30.0.0",
     "ajv": "^8.20.0",
     "arktype": "^2.2.0",
-    "axios": "^1.18.1",
     "benchmark": "^2.1.4",
     "dprint": "^0.55.2",
     "esbuild": "0.28.1",

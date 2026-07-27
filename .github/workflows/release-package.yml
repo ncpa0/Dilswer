@@ -6,8 +6,9 @@ permissions:
   repository-projects: write
 
 on:
-  release:
-    types: [created]
+  push:
+    branches:
+      - release
 
 env:
   NPM_TOKEN: ""
@@ -49,10 +50,5 @@ jobs:
         uses: borales/actions-yarn@v5
         with:
           cmd: build
-      - name: Publishing
-        env:
-          TAG_NAME: ${{ github.event.release.tag_name }}
-          GH_BOT_API_URL: ${{ secrets.GH_BOT_API_URL }}
-          GH_BOT_AUTH_TOKEN: ${{ secrets.GH_BOT_AUTH_TOKEN }}
-          GH_BOT_ENCRYPTION_SECRET: ${{ secrets.GH_BOT_ENCRYPTION_SECRET }}
-        run: ./scripts/publish.sh
+      - name: Publish
+        run: npm publish --access public
