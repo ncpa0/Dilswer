@@ -8,17 +8,69 @@ import { validateWith, validator } from "@Validation/create-validator";
 import { assertType } from "@Validation/ensure-data-type";
 import { ValidationError } from "@Validation/validation-error/validation-error";
 
+export type { BaseType, TypeMetadata } from "@DataTypes/base-type";
+export type {
+  ChangeDefault,
+  DefaultReplacementType,
+  GetTypeFromRecursive,
+  IsDefaultReplacement,
+  MapRecordTypeSchema,
+  MapToIntersection,
+  MapToUnion,
+  MapTupleType,
+  ParseRecursiveDataType,
+  RecursiveTypesMap,
+  ReplaceIfRef,
+  ReplacementType,
+  ReplaceRecursiveRefs,
+  UnRecursiveType,
+} from "@DataTypes/recursive-type-utils";
 export type {
   AnyType,
   BasicType,
   BasicTypeNames,
   ComplexType,
+  DataTypeKind,
   FieldDescriptor,
-  Metadata as TypeMetadata,
+  Metadata,
+  OptionalField,
   RecordTypeSchema,
+  RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/type-types";
-export type { Infer } from "@DataTypes/type-utils";
+export type {
+  EnsureStringType,
+  ExcludeOptional,
+  ExcludeRequired,
+  GetDescriptorType,
+  GetFieldDescriptorsFromSetOf,
+  GetFnAssertType,
+  GetTypeFromAllOf,
+  GetTypeFromArrayOf,
+  GetTypeFromCustom,
+  GetTypeFromDict,
+  GetTypeFromEnum,
+  GetTypeFromEnumMember,
+  GetTypeFromInstanceOf,
+  GetTypeFromLiteral,
+  GetTypeFromOneOf,
+  GetTypeFromRecordOf,
+  GetTypeFromStringMatching,
+  GetTypeFromTuple,
+  Infer,
+  InferDType,
+  InferRecordType,
+  IsRequiredDescriptor,
+  ParseBasicDataType,
+  ParseComplexType,
+  ParseDataTypeIntersectionTuple,
+  RepackTuple,
+  ReWrap,
+  Static,
+  TypeMap,
+  UnknownFunction,
+  ValueOf,
+} from "@DataTypes/type-utils";
 export type { ArrayType } from "@DataTypes/types/array";
 export type { BooleanType } from "@DataTypes/types/boolean";
 export type { CustomType } from "@DataTypes/types/custom";

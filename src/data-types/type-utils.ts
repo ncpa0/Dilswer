@@ -1,4 +1,4 @@
-import type { GetTypeFromCircular } from "@DataTypes/circular-type-utils";
+import type { GetTypeFromRecursive } from "@DataTypes/recursive-type-utils";
 import type {
   AnyType,
   BasicType,
@@ -31,8 +31,8 @@ export type ParseDataTypeIntersectionTuple<
 export type GetDescriptorType<T extends AnyType | FieldDescriptor> = T extends
   { kind: any } ? T : T extends FieldDescriptor ? T["type"] : T;
 
-type IsRequiredDescriptor<T extends AnyType | FieldDescriptor> = T extends
-  FieldDescriptor ? T["required"] : true;
+export type IsRequiredDescriptor<T extends AnyType | FieldDescriptor> =
+  T extends FieldDescriptor ? T["required"] : true;
 
 export type ValueOf<R extends Record<any, any>> = R extends Record<any, infer T>
   ? T
@@ -140,7 +140,7 @@ export type GetTypeFromTuple<D extends ComplexType> = D extends TupleType<
 export type GetTypeFromStringMatching<D extends ComplexType> = D extends
   StringMatchingType<infer T> ? T : never;
 
-type TypeMap<D extends ComplexType> = {
+export type TypeMap<D extends ComplexType> = {
   array: Array<InferDType<GetTypeFromArrayOf<D>>>;
   tuple: GetTypeFromTuple<D>;
   record: InferRecordType<GetTypeFromRecordOf<D>>;
@@ -154,7 +154,7 @@ type TypeMap<D extends ComplexType> = {
   instanceOf: GetTypeFromInstanceOf<D>;
   custom: GetTypeFromCustom<D>;
   stringMatching: GetTypeFromStringMatching<D>;
-  circular: GetTypeFromCircular<D>;
+  circular: GetTypeFromRecursive<D>;
 };
 
 export type ParseComplexType<D extends ComplexType> = D["kind"] extends
