@@ -78,8 +78,11 @@ export const Type = {
   AllOf<DT extends AnyType[]>(...args: DT) {
     return new IntersectionType(args);
   },
-  Literal<V extends string | number | boolean>(value: V) {
-    return new LiteralType(value);
+  Literal<V extends Array<string | number | boolean>>(
+    ...values: V
+  ): UnionType<[LiteralType<V[number]>]> {
+    if (values.length === 1) return new LiteralType(values[0]) as any;
+    return Type.OneOf(...values.map(v => new LiteralType(v))) as any;
   },
   EnumMember<M extends number | string>(enumMember: M) {
     return new EnumMemberType(enumMember);

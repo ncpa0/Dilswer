@@ -17,13 +17,16 @@ type ValidationResults<T> = {
   value: T;
 };
 
+type Validator<T> = (data: unknown) => data is T;
+type ValidatorWithDetails<T> = (data: unknown) => ValidationResults<T>;
+
 export function validator<DT extends AnyType>(
   dataType: DT,
-): (data: unknown) => data is ReWrap<InferDType<DT>>;
+): Validator<ReWrap<InferDType<DT>>>;
 export function validator<DT extends AnyType>(
   dataType: DT,
   options: { details: true },
-): (data: unknown) => ValidationResults<ReWrap<InferDType<DT>>>;
+): ValidatorWithDetails<ReWrap<InferDType<DT>>>;
 export function validator(
   dataType: AnyType,
   options?: { details: true },

@@ -4,7 +4,7 @@ import type {
   RecordVisitChild,
   TypeVisitor,
 } from "@DataTypes/type-types";
-import type { InferDType, ReWrap } from "@DataTypes/type-utils";
+import { InferDType, ReWrap } from "@DataTypes/type-utils";
 import type { ArrayType } from "@DataTypes/types/array";
 import type { CustomType } from "@DataTypes/types/custom";
 import type { DictType } from "@DataTypes/types/dict";
@@ -1189,8 +1189,8 @@ const recursiveTracker = /* js */ `
     };
 `.trim();
 
-export interface FastValidator<DT extends AnyType> {
-  (data: unknown): data is ReWrap<InferDType<DT>>;
+export interface FastValidator<T> {
+  (data: unknown): data is T;
   asString(name?: string): string;
 }
 
@@ -1216,7 +1216,7 @@ type CompileOptions = {
 export const compile = <DT extends AnyType>(
   dataType: DT,
   options?: CompileOptions,
-): FastValidator<DT> => {
+): FastValidator<ReWrap<InferDType<DT>>> => {
   const visitor = new DataTypeValidatorVisitor(options);
 
   const generator = dataType._acceptVisitor(visitor);
