@@ -1,3 +1,17 @@
+## 3.2.1 (July 17, 2026)
+
+### Features
+
+- #### feat: allow multiple arguments to the Type.Literal type ([#281](https://github.com/ncpa0/Dilswer/pull/281))
+
+  Updated the function signature to allow multiple arguments, where each argument is an another literal type also allowed. This change allows creating literal unions without using the Type.OneOf (i.e. `Type.OneOf(Type.Literal("foo"), Type.Literal("bar"))` can now be written as `Type.Literal("foo", "bar")`)
+
+### Bug Fixes
+
+- #### feat: export all internal types ([#282](https://github.com/ncpa0/Dilswer/pull/282))
+
+  Exported all internal types and type utilities to fix potential issues with typescripts The inferred type of '...' cannot be named without a reference to errors
+
 ## 3.2.0
 
 ### Breaking Changes
