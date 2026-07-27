@@ -27,10 +27,10 @@ import type { StringMatchingType } from "@DataTypes/types/string-matching";
 import type { TupleType } from "@DataTypes/types/tuple";
 import type { UnionType } from "@DataTypes/types/union";
 
-type IsDefaultReplacement<W extends ReplacementType<any>> = W extends
+export type IsDefaultReplacement<W extends ReplacementType<any>> = W extends
   DefaultReplacementType<any> ? true : false;
 
-type ChangeDefault<
+export type ChangeDefault<
   W extends ReplacementType<any>,
   T,
 > = IsDefaultReplacement<W> extends true ? ReplacementType<T> : W;
@@ -44,11 +44,13 @@ class DefaultReplacementType<T> extends ReplacementType<T> {
   isDefault!: true;
 }
 
-type ReplaceIfRef<T, W extends ReplacementType<any>> = T extends
-  RecursiveTypeReference ? W["T"]
-  : ParseCircularDataType<T, W>;
+export type { DefaultReplacementType, ReplacementType };
 
-type MapRecordTypeSchema<
+export type ReplaceIfRef<T, W extends ReplacementType<any>> = T extends
+  RecursiveTypeReference ? W["T"]
+  : ParseRecursiveDataType<T, W>;
+
+export type MapRecordTypeSchema<
   S extends RecordTypeSchema,
   W extends ReplacementType<any>,
 > =
@@ -59,26 +61,31 @@ type MapRecordTypeSchema<
     [K in ExcludeOptional<S>]: ReplaceIfRef<GetDescriptorType<S[K]>, W>;
   };
 
-type MapToIntersection<
+export type MapToIntersection<
   T extends any[],
   W extends ReplacementType<any>,
 > = T extends [infer A, ...infer B] ? B["length"] extends 0 ? ReplaceIfRef<A, W>
   : ReplaceIfRef<A, W> & MapToIntersection<B, W>
   : never;
 
-type MapToUnion<T extends any[], W extends ReplacementType<any>> = T extends [
-  infer A,
-  ...infer B,
-] ? ReplaceIfRef<A, W> | MapToUnion<B, W>
-  : never;
+export type MapToUnion<T extends any[], W extends ReplacementType<any>> =
+  T extends [
+    infer A,
+    ...infer B,
+  ] ? ReplaceIfRef<A, W> | MapToUnion<B, W>
+    : never;
 
-type MapTupleType<T extends any[], W extends ReplacementType<any>> = T extends [
-  infer A,
-  ...infer B,
-] ? [ReplaceIfRef<A, W>, ...MapTupleType<B, W>]
-  : [];
+export type MapTupleType<T extends any[], W extends ReplacementType<any>> =
+  T extends [
+    infer A,
+    ...infer B,
+  ] ? [ReplaceIfRef<A, W>, ...MapTupleType<B, W>]
+    : [];
 
-type CircularTypesMap<D extends AnyType, W extends ReplacementType<any>> = {
+export type RecursiveTypesMap<
+  D extends AnyType,
+  W extends ReplacementType<any>,
+> = {
   array: D extends ArrayType<infer T>
     ? Array<MapToUnion<T, ChangeDefault<W, any>>>
     : never;
@@ -103,26 +110,26 @@ type CircularTypesMap<D extends AnyType, W extends ReplacementType<any>> = {
   instanceOf: D extends InstanceType<infer T> ? InstanceType<T> : never;
   custom: D extends ComplexType ? GetTypeFromCustom<D> : never;
   stringMatching: D extends StringMatchingType<infer T> ? T : never;
-  circular: D extends RecursiveType ? GetTypeFromCircular<D> : never;
+  circular: D extends RecursiveType ? GetTypeFromRecursive<D> : never;
 };
 
-type ReplaceCircularRefs<
+export type ReplaceRecursiveRefs<
   D extends AnyType,
   W extends ReplacementType<any>,
-> = D["kind"] extends keyof CircularTypesMap<D, W>
-  ? CircularTypesMap<D, W>[D["kind"]]
+> = D["kind"] extends keyof RecursiveTypesMap<D, W>
+  ? RecursiveTypesMap<D, W>[D["kind"]]
   : D;
 
-export type CircularType<T extends AnyType> = ReplaceCircularRefs<
+export type UnRecursiveType<T extends AnyType> = ReplaceRecursiveRefs<
   T,
   ReplacementType<
-    ReplaceCircularRefs<
+    ReplaceRecursiveRefs<
       T,
       ReplacementType<
-        ReplaceCircularRefs<
+        ReplaceRecursiveRefs<
           T,
           ReplacementType<
-            ReplaceCircularRefs<T, DefaultReplacementType<any>>
+            ReplaceRecursiveRefs<T, DefaultReplacementType<any>>
           >
         >
       >
@@ -130,15 +137,15 @@ export type CircularType<T extends AnyType> = ReplaceCircularRefs<
   >
 >;
 
-export type GetTypeFromCircular<D extends ComplexType> = D extends
+export type GetTypeFromRecursive<D extends ComplexType> = D extends
   RecursiveType<
     infer T
-  > ? CircularType<T>
+  > ? UnRecursiveType<T>
   : never;
 
-export type ParseCircularDataType<
+export type ParseRecursiveDataType<
   D,
   W extends ReplacementType<any>,
 > = D extends BasicType ? ParseBasicDataType<D["simpleType"]>
-  : D extends ComplexType ? ReplaceCircularRefs<D, W>
+  : D extends ComplexType ? ReplaceRecursiveRefs<D, W>
   : never;

@@ -1,6 +1,6 @@
 import { BaseType } from "@DataTypes/base-type";
-import type { CircularType } from "@DataTypes/circular-type-utils";
 import { getStandardSchemaProps } from "@DataTypes/generate-standard-schema";
+import type { UnRecursiveType } from "@DataTypes/recursive-type-utils";
 import type { AnyType, TypeVisitor } from "@DataTypes/type-types";
 import type { ReWrap } from "@DataTypes/type-utils";
 import { Path } from "@Validation/path";
@@ -98,7 +98,7 @@ export class RecursiveType<DT extends AnyType = any> extends BaseType {
 
   get ["~standard"](): StandardSchemaV1.Props<
     any,
-    ReWrap<CircularType<DT>>
+    ReWrap<UnRecursiveType<DT>>
   > {
     return getStandardSchemaProps(this);
   }
