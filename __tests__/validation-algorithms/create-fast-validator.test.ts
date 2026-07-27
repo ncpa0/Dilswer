@@ -943,6 +943,106 @@ describe("createFastValidator", () => {
         expect(validate([false])).toEqual(false);
         expect(validate(() => false)).toEqual(false);
       });
+
+      it("should validate against multiple string literal", () => {
+        const typeDef = Type.Literal("foo", "bar", "baz");
+
+        type ExpectedType = "foo" | "bar" | "baz";
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = compile(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate("foo")).toEqual(true);
+        expect(validate("bar")).toEqual(true);
+        expect(validate("baz")).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate("f")).toEqual(false);
+        expect(validate("fo")).toEqual(false);
+        expect(validate("fooo")).toEqual(false);
+        expect(validate("b")).toEqual(false);
+        expect(validate("ba")).toEqual(false);
+        expect(validate("barr")).toEqual(false);
+        expect(validate("bazz")).toEqual(false);
+        expect(validate(1)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate(["foo"])).toEqual(false);
+        expect(validate(() => "foo")).toEqual(false);
+        expect(validate(["bar"])).toEqual(false);
+        expect(validate(() => "bar")).toEqual(false);
+        expect(validate(["baz"])).toEqual(false);
+        expect(validate(() => "baz")).toEqual(false);
+      });
+
+      it("should validate against multiple numeric literal", () => {
+        const typeDef = Type.Literal(69, 420, 1111, 0);
+
+        type ExpectedType = 69 | 420 | 1111 | 0;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = compile(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate(69)).toEqual(true);
+        expect(validate(420)).toEqual(true);
+        expect(validate(1111)).toEqual(true);
+        expect(validate(0)).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(111)).toEqual(false);
+        expect(validate(42)).toEqual(false);
+        expect(validate(4200)).toEqual(false);
+        expect(validate(6)).toEqual(false);
+        expect(validate(9)).toEqual(false);
+        expect(validate(6.9)).toEqual(false);
+        expect(validate(0.69)).toEqual(false);
+        expect(validate(69.01)).toEqual(false);
+        expect(validate(true)).toEqual(false);
+        expect(validate(false)).toEqual(false);
+        expect(validate("69")).toEqual(false);
+        expect(validate("420")).toEqual(false);
+        expect(validate("1111")).toEqual(false);
+        expect(validate("0")).toEqual(false);
+        expect(validate("")).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate([69])).toEqual(false);
+        expect(validate(() => 69)).toEqual(false);
+        expect(validate([420])).toEqual(false);
+        expect(validate(() => 420)).toEqual(false);
+        expect(validate([1111])).toEqual(false);
+        expect(validate(() => 1111)).toEqual(false);
+      });
+
+      it("should validate against multiple boolean literal", () => {
+        const typeDef = Type.Literal(true, false);
+
+        type ExpectedType = true | false;
+        assert<AssertType<ExpectedType, typeof typeDef>>();
+
+        const validate = compile(typeDef);
+
+        assert<AssertValidator<ExpectedType, typeof validate>>();
+
+        expect(validate(false)).toEqual(true);
+        expect(validate(true)).toEqual(true);
+
+        expect(validate(null)).toEqual(false);
+        expect(validate(undefined)).toEqual(false);
+        expect(validate(0)).toEqual(false);
+        expect(validate({})).toEqual(false);
+        expect(validate([])).toEqual(false);
+        expect(validate([false])).toEqual(false);
+        expect(validate(() => false)).toEqual(false);
+      });
     });
 
     describe("for unions", () => {
