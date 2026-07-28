@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "bun:test";
 import dedent from "dedent";
 import { Type } from "../src/index";
 import { StandardSchemaV1 } from "../src/standard-schema";
@@ -109,7 +109,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e2.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -125,7 +125,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e3.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -141,7 +141,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e4.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -157,7 +157,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e5.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -173,7 +173,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e6.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -189,7 +189,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e7.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -205,7 +205,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates records", async () => {
@@ -248,7 +248,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
 
       const e2 = endpoint(
         Type.Record({
@@ -291,7 +291,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates arrays", async () => {
@@ -329,7 +329,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates sets", async () => {
@@ -368,7 +368,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates dictionaries", async () => {
@@ -414,7 +414,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates tuples", async () => {
@@ -450,7 +450,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates one of types", async () => {
@@ -507,7 +507,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates all of types", async () => {
@@ -550,7 +550,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates literals", async () => {
@@ -579,7 +579,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates enums", async () => {
@@ -612,7 +612,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates enum members", async () => {
@@ -645,7 +645,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates instances", async () => {
@@ -710,7 +710,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates string regex matcher", async () => {
@@ -801,7 +801,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
   });
 
@@ -869,7 +869,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e2.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -880,7 +880,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e3.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -891,7 +891,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e4.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -902,7 +902,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e5.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -913,7 +913,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e6.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -924,7 +924,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
       await expect(e7.post(true)).resolves.toEqual({
         data: true,
         validationResults: {
@@ -935,7 +935,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates records", async () => {
@@ -964,7 +964,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
 
       const e2 = endpoint(
         Type.Record({
@@ -991,7 +991,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates arrays", async () => {
@@ -1017,7 +1017,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates sets", async () => {
@@ -1043,7 +1043,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates dictionaries", async () => {
@@ -1071,7 +1071,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates tuples", async () => {
@@ -1099,7 +1099,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates one of types", async () => {
@@ -1135,7 +1135,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates all of types", async () => {
@@ -1166,7 +1166,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates literals", async () => {
@@ -1189,7 +1189,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates enums", async () => {
@@ -1216,7 +1216,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates enum members", async () => {
@@ -1243,7 +1243,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates instances", async () => {
@@ -1295,7 +1295,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
 
     it("correctly validates string regex matcher", async () => {
@@ -1361,7 +1361,7 @@ describe("validating via the Standard Schema", () => {
             },
           ],
         },
-      });
+      } as any);
     });
   });
 });

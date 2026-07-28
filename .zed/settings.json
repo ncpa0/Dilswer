@@ -4,8 +4,8 @@
       "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
       "formatter": {
         "external": {
-          "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+          "command": "dprint",
+          "arguments": ["fmt", "--stdin", "{buffer_path}"],
         },
       },
     },
@@ -13,8 +13,8 @@
       "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
       "formatter": {
         "external": {
-          "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+          "command": "dprint",
+          "arguments": ["fmt", "--stdin", "{buffer_path}"],
         },
       },
     },
@@ -22,24 +22,24 @@
       "language_servers": ["!eslint", "!vtsls", "typescript-language-server"],
       "formatter": {
         "external": {
-          "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+          "command": "dprint",
+          "arguments": ["fmt", "--stdin", "{buffer_path}"],
         },
       },
     },
     "CSS": {
       "formatter": {
         "external": {
-          "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+          "command": "dprint",
+          "arguments": ["fmt", "--stdin", "{buffer_path}"],
         },
       },
     },
     "JSON": {
       "formatter": {
         "external": {
-          "command": "yarn",
-          "arguments": ["--silent", "dprint", "fmt", "--stdin", "{buffer_path}"],
+          "command": "dprint",
+          "arguments": ["fmt", "--stdin", "{buffer_path}"],
         },
       },
     },

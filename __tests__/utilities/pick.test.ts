@@ -1,4 +1,4 @@
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "bun:test";
 import { Pick, Type } from "../../src";
 
 describe("Pick utility", () => {

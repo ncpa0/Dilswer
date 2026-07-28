@@ -1,5 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
 import Ajv from "ajv";
+import { describe, expect, it } from "bun:test";
 import { toJsonSchema, Type } from "../../src";
 
 enum Enum {

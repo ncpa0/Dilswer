@@ -4,7 +4,7 @@ import type {
   ReWrap,
   UnknownFunction,
 } from "@DataTypes/type-utils";
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "bun:test";
 import { AnyType, compile, Type } from "../../src";
 
 const TRUE_SYM = Symbol("true");

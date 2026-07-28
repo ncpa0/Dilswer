@@ -34,21 +34,15 @@ jobs:
           registry-url: "https://registry.npmjs.org"
       - name: Update npm
         run: npm install -g npm@latest
-      - name: Installing dependencies
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: install
+      - uses: oven-sh/setup-bun@v2
+        name: Setup Bun
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
       - name: Validating syntax
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: test:tsc
+        run: bun run test:tsc
       - name: Running unit tests
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: test:unit
+        run: bun run test:unit
       - name: Building
-        uses: borales/actions-yarn@v5
-        with:
-          cmd: build
+        run: bun run build
       - name: Publish
         run: npm publish --access public

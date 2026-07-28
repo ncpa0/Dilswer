@@ -1,5 +1,5 @@
 import { RecordVisitChild } from "@DataTypes/type-types";
-import { describe, expect, it } from "@jest/globals";
+import { describe, expect, it } from "bun:test";
 import {
   AnyType,
   parseWith,
@@ -93,7 +93,7 @@ describe("parseWith", () => {
           ],
         },
       ],
-    });
+    } as any);
   });
 
   it("readme example test", () => {

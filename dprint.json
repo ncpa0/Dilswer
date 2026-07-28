@@ -7,7 +7,6 @@
   "markdown": {
   },
   "excludes": [
-    "**/.yarn",
     "**/node_modules",
     "**/*-lock.json"
   ],

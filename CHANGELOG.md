@@ -24,14 +24,14 @@
 ### Features
 
 - #### feat: better error messages and details
-  
+
   Added `details()` and `detailsJson()` methods to the ValidationError.
 
-  Added a AggregateValidationError which is used if a Union Type Schema (OneOf) fails on every union member, which 
+  Added a AggregateValidationError which is used if a Union Type Schema (OneOf) fails on every union member, which
   previously would give a ValidationError with a basic message without indication on why each union type failed.
 
   `toString()` methods of all Type schemas has ben overridden to return a better representation of how the schema
-   looks like.
+  looks like.
 
 ## 3.1.0 (April 21, 2026)
 

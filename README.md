@@ -40,7 +40,7 @@ import { compile, Type } from "dilswer";
 const isString = compile(Type.String);
 
 isString("hello"); // true
-isString(123);    // false
+isString(123); // false
 ```
 
 For complex types:
@@ -55,7 +55,7 @@ const PersonValidator = compile(
     age: Type.Number,
     email: Type.Option(Type.String),
     friends: Type.Option(Type.Array(Type.String)),
-  })
+  }),
 );
 
 // Valid data
@@ -101,7 +101,7 @@ const PersonDataType = Type.Record({
 ### Infer TypeScript Types from Dilswer Definitions
 
 ```ts
-import { Infer, compile, Type } from "dilswer";
+import { compile, Infer, Type } from "dilswer";
 
 const PersonDataType = Type.Record({
   id: Type.String,
@@ -131,7 +131,7 @@ const PersonValidator = compile(PersonDataType);
 If you need detailed information about validation failures, use `validator()` with the `details` option:
 
 ```ts
-import { validator, Type } from "dilswer";
+import { Type, validator } from "dilswer";
 
 const isPerson = validator(PersonDataType, { details: true });
 
@@ -184,7 +184,7 @@ Errors:
 A shorthand for validate with details.
 
 ```ts
-import { validateWith, Type } from "dilswer";
+import { Type, validateWith } from "dilswer";
 
 const result = validateWith(Type.String, value);
 
@@ -244,7 +244,7 @@ const router = t.router({
     .input(
       Type.Record({
         name: Type.String,
-      })
+      }),
     )
     .query(async ({ input }) => {
       return `Hello, ${input.name}!`;
@@ -263,7 +263,7 @@ Matches any string value.
 ```ts
 const validator = compile(Type.String);
 validator("hello"); // true
-validator(123);     // false
+validator(123); // false
 ```
 
 #### Type.Number
@@ -272,8 +272,8 @@ Matches any numeric value (including floats and integers).
 
 ```ts
 const validator = compile(Type.Number);
-validator(1.5);    // true
-validator(42);    // true
+validator(1.5); // true
+validator(42); // true
 validator("123"); // false
 ```
 
@@ -283,8 +283,8 @@ Matches only integer values.
 
 ```ts
 const validator = compile(Type.Int);
-validator(42);    // true
-validator(1.5);   // false
+validator(42); // true
+validator(1.5); // false
 ```
 
 #### Type.Boolean
@@ -293,9 +293,9 @@ Matches `true` and `false` values.
 
 ```ts
 const validator = compile(Type.Boolean);
-validator(true);  // true
+validator(true); // true
 validator(false); // true
-validator(1);     // false
+validator(1); // false
 ```
 
 #### Type.Symbol
@@ -305,7 +305,7 @@ Matches symbol values.
 ```ts
 const validator = compile(Type.Symbol);
 validator(Symbol("test")); // true
-validator("sym");          // false
+validator("sym"); // false
 ```
 
 #### Type.Null
@@ -314,7 +314,7 @@ Matches only the `null` value.
 
 ```ts
 const validator = compile(Type.Null);
-validator(null);     // true
+validator(null); // true
 validator(undefined); // false
 ```
 
@@ -325,7 +325,7 @@ Matches only the `undefined` value.
 ```ts
 const validator = compile(Type.Undefined);
 validator(undefined); // true
-validator(null);      // false
+validator(null); // false
 ```
 
 #### Type.Function
@@ -334,9 +334,9 @@ Matches any function.
 
 ```ts
 const validator = compile(Type.Function);
-validator(() => {});     // true
+validator(() => {}); // true
 validator(async () => {}); // true
-validator("not a fn");   // false
+validator("not a fn"); // false
 ```
 
 #### Type.Unknown
@@ -345,9 +345,9 @@ Matches any value.
 
 ```ts
 const validator = compile(Type.Unknown);
-validator("anything");  // true
-validator(123);         // true
-validator(null);       // true
+validator("anything"); // true
+validator(123); // true
+validator(null); // true
 ```
 
 #### String Variations
@@ -356,29 +356,29 @@ validator(null);       // true
 // Matches strings containing only numeric characters
 // Safe to convert to number without producing NaN
 const numeralValidator = compile(Type.String.Float);
-numeralValidator("123");    // true
-numeralValidator("12.5");   // true (float strings match)
-numeralValidator("abc");    // false
+numeralValidator("123"); // true
+numeralValidator("12.5"); // true (float strings match)
+numeralValidator("abc"); // false
 
 // Matches strings containing only integer characters
 const intValidator = compile(Type.String.Int);
-intValidator("123");    // true
-intValidator("12.5");   // false
+intValidator("123"); // true
+intValidator("12.5"); // false
 
 // Matches strings containing only positive integer characters
 const positiveIntValidator = compile(Type.String.Int.positive());
-positiveIntValidator("123");    // true
-positiveIntValidator("-1");     // false
+positiveIntValidator("123"); // true
+positiveIntValidator("-1"); // false
 
 // Matches strings that conform to a regular expression
 const hexValidator = compile(Type.String.matching(/^[0-9a-f]+$/i));
 hexValidator("abc123"); // true
-hexValidator("xyz");    // false
+hexValidator("xyz"); // false
 
 // Matches strings with length contraints
 const lenValidator = compile(Type.String.len({ min: 2, max: 5 }));
-lenValidator("abc");      // true
-lenValidator("x");        // false
+lenValidator("abc"); // true
+lenValidator("x"); // false
 lenValidator("12345678"); // false
 ```
 
@@ -394,12 +394,12 @@ const PersonValidator = compile(
     name: Type.String,
     age: Type.Number,
     active: Type.Option(Type.Boolean),
-  })
+  }),
 );
 
-PersonValidator({ name: "Alice", age: 30 });          // true
+PersonValidator({ name: "Alice", age: 30 }); // true
 PersonValidator({ name: "Bob", age: 25, active: true }); // true
-PersonValidator({ name: "Carol" });                     // false (age is required)
+PersonValidator({ name: "Carol" }); // false (age is required)
 ```
 
 #### Type.Array
@@ -410,9 +410,9 @@ Matches arrays containing elements of specified types.
 const ArrayValidator = compile(Type.Array(Type.String, Type.Number));
 
 ArrayValidator(["a", "b", 1, 2]); // true
-ArrayValidator(["a", "b", "c"]);  // true
-ArrayValidator([1, 2, 3]);         // true
-ArrayValidator("not an array");    // false
+ArrayValidator(["a", "b", "c"]); // true
+ArrayValidator([1, 2, 3]); // true
+ArrayValidator("not an array"); // false
 ```
 
 #### Type.Tuple
@@ -421,12 +421,12 @@ Matches arrays with a fixed number of elements of specific types.
 
 ```ts
 const TupleValidator = compile(
-  Type.Tuple(Type.String, Type.Number, Type.Boolean)
+  Type.Tuple(Type.String, Type.Number, Type.Boolean),
 );
 
-TupleValidator(["hello", 42, true]);  // true
-TupleValidator(["hello", 42]);         // false (wrong length)
-TupleValidator(["hello", "world"]);    // false (second element is not a number)
+TupleValidator(["hello", 42, true]); // true
+TupleValidator(["hello", 42]); // false (wrong length)
+TupleValidator(["hello", "world"]); // false (second element is not a number)
 ```
 
 #### Type.Set
@@ -437,8 +437,8 @@ Matches Set objects containing elements of specified types.
 const SetValidator = compile(Type.Set(Type.String));
 
 SetValidator(new Set(["a", "b", "c"])); // true
-SetValidator(new Set([1, 2, 3]));        // false
-SetValidator(["a", "b"]);                // false (not a Set)
+SetValidator(new Set([1, 2, 3])); // false
+SetValidator(["a", "b"]); // false (not a Set)
 ```
 
 #### Type.Dict
@@ -448,9 +448,9 @@ Matches objects where all values match the specified types.
 ```ts
 const DictValidator = compile(Type.Dict(Type.String));
 
-DictValidator({ a: "x", b: "y" });    // true
-DictValidator({ a: 1, b: 2 });          // false
-DictValidator("not an object");         // false
+DictValidator({ a: "x", b: "y" }); // true
+DictValidator({ a: 1, b: 2 }); // false
+DictValidator("not an object"); // false
 ```
 
 #### Type.OneOf
@@ -461,8 +461,8 @@ Matches values that match any one of the provided types (union).
 const UnionValidator = compile(Type.OneOf(Type.String, Type.Number));
 
 UnionValidator("hello"); // true
-UnionValidator(123);     // true
-UnionValidator(true);   // false
+UnionValidator(123); // true
+UnionValidator(true); // false
 ```
 
 #### Type.AllOf
@@ -476,7 +476,7 @@ const B = Type.Record({ bar: Type.Number });
 const IntersectedValidator = compile(Type.AllOf(A, B));
 
 IntersectedValidator({ foo: "hello", bar: 42 }); // true
-IntersectedValidator({ foo: "hello" });           // false (missing bar)
+IntersectedValidator({ foo: "hello" }); // false (missing bar)
 ```
 
 #### Type.Literal
@@ -488,12 +488,12 @@ const TrueValidator = compile(Type.Literal(true));
 const StrValidator = compile(Type.Literal("hello"));
 const NumValidator = compile(Type.Literal(42));
 
-TrueValidator(true);            // true
-TrueValidator(false);           // false
-StrValidator("hello");          // true
-StrValidator("world");          // false
-NumValidator(42);               // true
-NumValidator(100);              // false
+TrueValidator(true); // true
+TrueValidator(false); // false
+StrValidator("hello"); // true
+StrValidator("world"); // false
+NumValidator(42); // true
+NumValidator(100); // false
 ```
 
 #### Type.Enum
@@ -510,7 +510,7 @@ const EnumValidator = compile(Type.Enum(MyEnum));
 
 EnumValidator(MyEnum.A); // true
 EnumValidator(MyEnum.B); // true
-EnumValidator("C");      // false
+EnumValidator("C"); // false
 ```
 
 #### Type.EnumMember
@@ -525,9 +525,9 @@ enum MyEnum {
 
 const MemberValidator = compile(Type.EnumMember(MyEnum.A));
 
-MemberValidator(MyEnum.A);    // true
-MemberValidator("VALUE_A");   // true (string value matches)
-MemberValidator(MyEnum.B);     // false
+MemberValidator(MyEnum.A); // true
+MemberValidator("VALUE_A"); // true (string value matches)
+MemberValidator(MyEnum.B); // false
 ```
 
 #### Type.InstanceOf
@@ -542,7 +542,7 @@ class User {
 const UserValidator = compile(Type.InstanceOf(User));
 
 UserValidator(new User("Alice")); // true
-UserValidator({ name: "Bob" });    // false
+UserValidator({ name: "Bob" }); // false
 ```
 
 #### Type.Custom
@@ -551,14 +551,14 @@ Matches values using a custom validation function. The function must be a type g
 
 ```ts
 const NonEmptyString = Type.Custom(
-  (v: any): v is string => typeof v === "string" && v.length > 0
+  (v: any): v is string => typeof v === "string" && v.length > 0,
 );
 
 const NonEmptyValidator = compile(NonEmptyString);
 
 NonEmptyValidator("hello"); // true
-NonEmptyValidator("");      // false
-NonEmptyValidator(123);     // false
+NonEmptyValidator(""); // false
+NonEmptyValidator(123); // false
 ```
 
 ### Special Types
@@ -595,13 +595,13 @@ const Validator = compile(
   Type.Record({
     name: Type.String,
     email: Type.Option(Type.String),
-  })
+  }),
 );
 
-Validator({ name: "Alice" });              // true
+Validator({ name: "Alice" }); // true
 Validator({ name: "Bob", email: "bob@example.com" }); // true
-Validator({ name: "Carol", email: undefined });        // true
-Validator({ email: "dan@example.com" });              // false (name is required)
+Validator({ name: "Carol", email: undefined }); // true
+Validator({ email: "dan@example.com" }); // false (name is required)
 ```
 
 ## Utility Functions
@@ -702,7 +702,9 @@ Each type can have metadata attached to it, such as titles, descriptions, and fo
 
 ```ts
 const UserDT = Type.Record({
-  name: Type.String.meta.title("User Name").meta.description("The user's full name"),
+  name: Type.String.meta.title("User Name").meta.description(
+    "The user's full name",
+  ),
   email: Type.String.meta.title("Email").meta.format("email"),
 }).meta.title("User")
   .meta.description("A user account with contact information");
@@ -755,11 +757,28 @@ type ParseToJsonSchemaOptions = {
   additionalProperties?: boolean;
   /** Custom parsers for specific types */
   customParser?: {
-    Set?: (schemas: JSONSchema6[], type: SetType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
-    Custom?: (fn: Function, type: CustomType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
-    Undefined?: (type: BasicType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
-    Symbol?: (type: BasicType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
-    Function?: (type: BasicType, options: ParseToJsonSchemaOptions) => JSONSchema6 | undefined;
+    Set?: (
+      schemas: JSONSchema6[],
+      type: SetType,
+      options: ParseToJsonSchemaOptions,
+    ) => JSONSchema6 | undefined;
+    Custom?: (
+      fn: Function,
+      type: CustomType,
+      options: ParseToJsonSchemaOptions,
+    ) => JSONSchema6 | undefined;
+    Undefined?: (
+      type: BasicType,
+      options: ParseToJsonSchemaOptions,
+    ) => JSONSchema6 | undefined;
+    Symbol?: (
+      type: BasicType,
+      options: ParseToJsonSchemaOptions,
+    ) => JSONSchema6 | undefined;
+    Function?: (
+      type: BasicType,
+      options: ParseToJsonSchemaOptions,
+    ) => JSONSchema6 | undefined;
   };
 };
 ```
@@ -797,7 +816,14 @@ type TsParsingOptions = {
   /** How to handle duplicate names */
   onDuplicateName?: "error" | "rename";
   /** Custom import paths for external types */
-  getExternalTypeImport?: (type: EnumType | EnumMemberType | InstanceOfType | CustomType | FunctionType) => ExternalTypeImport | undefined;
+  getExternalTypeImport?: (
+    type:
+      | EnumType
+      | EnumMemberType
+      | InstanceOfType
+      | CustomType
+      | FunctionType,
+  ) => ExternalTypeImport | undefined;
 };
 ```
 
@@ -821,7 +847,11 @@ const visitor = {
       case "record":
         return {
           typeName: "record",
-          children: children ? Object.fromEntries(children.map(({ propertyName, child }) => [propertyName, child])) : undefined,
+          children: children
+            ? Object.fromEntries(
+              children.map(({ propertyName, child }) => [propertyName, child]),
+            )
+            : undefined,
         };
       default:
         return { typeName: type.kind, children: children as TypeNode[] };
@@ -844,7 +874,7 @@ const tree = parseWith(visitor, MyType);
   "typeName": "record",
   "children": {
     "foo": { "typeName": "string" },
-    "bar": { "typeName": "array", "children": [{ "typeName": "number" }]}
+    "bar": { "typeName": "array", "children": [{ "typeName": "number" }] }
   }
 }
 ```

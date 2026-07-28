@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "module": "CommonJS",
+    "module": "es6",
     "declaration": true,
     "outDir": "./dist",
     "rootDirs": ["./src", "./__tests__"],
@@ -10,6 +10,7 @@
     "experimentalDecorators": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "types": ["bun"],
     "paths": {
       "@DataTypes/*": ["./src/data-types/*"],
       "@Utilities/*": ["./src/utilities/*"],

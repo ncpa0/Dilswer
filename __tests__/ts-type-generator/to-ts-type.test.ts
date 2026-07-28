@@ -1,5 +1,5 @@
-import { describe, expect, it } from "@jest/globals";
 import { ExternalTypeImport } from "@TsTypeGenerator/parser-options";
+import { describe, expect, it } from "bun:test";
 import { toTsType, Type } from "../../src/index";
 
 enum Enum {
