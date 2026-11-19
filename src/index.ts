@@ -99,7 +99,16 @@ export type { TupleType } from "@DataTypes/types/tuple";
 export type { UndefinedType } from "@DataTypes/types/undefined";
 export type { UnionType } from "@DataTypes/types/union";
 export type { UnknownType } from "@DataTypes/types/unknown";
-export * from "@Intrinsic/index";
+
+export type {
+  ExcludeOneOf,
+  OmitRecord,
+  PartialRecord,
+  PickRecord,
+  RequiredRecord,
+  SumRecord,
+} from "@Intrinsic/index";
+
 export type { ParseToJsonSchemaOptions } from "@JSONSchemaParser/to-json-schema";
 export type {
   TsParsingMode,

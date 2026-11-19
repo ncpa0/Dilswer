@@ -4,3 +4,4 @@ export * from "@Intrinsic/omit";
 export * from "@Intrinsic/partial";
 export * from "@Intrinsic/pick";
 export * from "@Intrinsic/required";
+export * from "@Intrinsic/types";
